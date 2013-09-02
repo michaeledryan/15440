@@ -9,3 +9,20 @@ jar {
     attributes 'Implementation-Title': 'Migratable Processes', 'Implementation-Version': version
   }
 }
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+    compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
+}
+
+test {
+    testLogging {
+        // Show that tests are run in the command-line output
+        events 'started', 'passed'
+    }
+}
+
