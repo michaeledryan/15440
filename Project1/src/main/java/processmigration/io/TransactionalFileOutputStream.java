@@ -45,7 +45,6 @@ public class TransactionalFileOutputStream extends OutputStream implements
 		// Is there a more sensible way to accomplish this?
 		if (!append) {
 			FileOutputStream out = new FileOutputStream(f);
-			out.write(0);
 			out.close();
 		}
 		file = f;
