@@ -10,7 +10,8 @@ public class TestTransactionalFileInputStream {
 
 	@Test
 	public void test1() throws IOException {
-		String s = "build/resources/test/TestTransactionalFileInputStream/in1.txt";
+	
+		String s = "src/test/resources/TestTransactionalFileInputStream/in1.txt";
 		TransactionalFileInputStream t = new TransactionalFileInputStream(s);
 		int c, i = 65;
 		while ((c = t.read()) >= 65) {

@@ -24,16 +24,16 @@ public class TestGrepProcess {
 
 	@Test
 	public void test1() throws Exception {
-		runTest("foo", "build/resources/test/TestGrepProcess/in1.txt",
-				"build/resources/test/TestGrepProcess/out1.txt",
-				"build/resources/test/TestGrepProcess/expected1.txt");
+		runTest("foo", "src/test/resources/TestGrepProcess/in1.txt",
+				"src/test/resources/TestGrepProcess/out1.txt",
+				"src/test/resources/TestGrepProcess/expected1.txt");
 	}
 
 	@Test
 	public void test2() throws Exception {
-		runTest("st", "build/resources/test/TestGrepProcess/in2.txt",
-				"build/resources/test/TestGrepProcess/out2.txt",
-				"build/resources/test/TestGrepProcess/expected2.txt");
+		runTest("st", "src/test/resources/TestGrepProcess/in2.txt",
+				"src/test/resources/TestGrepProcess/out2.txt",
+				"src/test/resources/TestGrepProcess/expected2.txt");
 	}
 
 }
