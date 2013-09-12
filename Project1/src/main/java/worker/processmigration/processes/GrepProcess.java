@@ -1,17 +1,13 @@
-package processmigration.processes;
+package worker.processmigration.processes;
 
-import java.io.PrintStream;
-import java.io.EOFException;
 import java.io.DataInputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
-import java.lang.Thread;
-import java.lang.InterruptedException;
+import java.io.PrintStream;
 
-import processmigration.MigratableProcess;
-import processmigration.io.TransactionalFileInputStream;
-import processmigration.io.TransactionalFileOutputStream;
+import worker.processmigration.MigratableProcess;
+import worker.processmigration.io.TransactionalFileInputStream;
+import worker.processmigration.io.TransactionalFileOutputStream;
 
 public class GrepProcess implements MigratableProcess {
 	/**

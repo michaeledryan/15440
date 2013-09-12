@@ -1,11 +1,10 @@
-package processmigration.io;
+package worker.processmigration.io;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /*

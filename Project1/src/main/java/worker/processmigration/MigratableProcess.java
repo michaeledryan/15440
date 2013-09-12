@@ -1,4 +1,4 @@
-package processmigration;
+package worker.processmigration;
 
 import java.io.Serializable;
 

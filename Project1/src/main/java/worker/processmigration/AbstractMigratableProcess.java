@@ -1,4 +1,4 @@
-package processmigration;
+package worker.processmigration;
 
 /**
  * Abstract base class for a migratable process.

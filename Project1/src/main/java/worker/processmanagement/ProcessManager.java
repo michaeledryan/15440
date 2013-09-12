@@ -1,4 +1,4 @@
-package processmanagement;
+package worker.processmanagement;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
-import processmigration.MigratableProcess;
+import worker.processmigration.MigratableProcess;
 
 public class ProcessManager implements Runnable{
 

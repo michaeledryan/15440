@@ -1,4 +1,4 @@
-package processmanagement;
+package worker.processmanagement;
 
 /**
  * Wrapper for information about remote process managers.
