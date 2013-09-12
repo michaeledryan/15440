@@ -10,30 +10,18 @@ def components = [
     [name: "client"]
 ]
 
-components.each { comp ->
-    project.task(comp.name, type: Jar, dependsOn: 'classes') {
-        manifest {
-            attributes 'Implementation-Title': 'Migratable Processes', 'Implementation-Version': version, 'Main-Class': comp.name+'.Main'
-        }
-        from {
-            [ configurations.compile.collect { it.isDirectory() ? it : zipTree(it) },
-              fileTree('build/classes/main/') ]
-        }
-        archiveName=comp.name+".jar"
-        destinationDir=file(".")
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Migratable Processes', 'Implementation-Version': version
     }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    archiveName="ProcessMigration.jar"
 }
 
 repositories {
     mavenCentral()
-}
-
-task all (dependsOn: [ 'assemble', 'master', 'worker', 'client' ]) {
-
-}
-
-task cleanup (type: Delete, dependsOn: clean) {
-    delete 'master.jar', 'worker.jar', 'client.jar'
 }
 
 dependencies {
