@@ -43,6 +43,22 @@ public class TestInitialSerialization {
 		
 		man1.migrateProcess(process1, node2);
 	}
+	
+	@Test
+	public void testLargeInput() {
+		
+		GrepProcess p = null;
+		try {
+			p = buildGrep("cat",
+					"src/test/resources/TestGrepProcess/twitter_1k.txt",
+					"src/test/resources/TestGrepProcess/twitter_1k-out.txt");
+			p.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//man1.migrateProcess(p, node2);
+	}
 
 	private GrepProcess buildGrep(String pattern, String in, String out)
 			throws Exception {
