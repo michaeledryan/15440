@@ -13,6 +13,8 @@ public class Main {
 			"Project 1: Process Migration. 15-440, Fall 2013.";
 	static private String helpFooter = 
 			"Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+	
+	private static int port;
 
 	/**
 	 * @param args
@@ -21,7 +23,7 @@ public class Main {
 		
 		Options opt= new Options();
 		opt.addOption("h", "host-file", true, "Host list file for worker nodes.");
-		opt.addOption("t", "trace-file", true, "Trace file.");
+		opt.addOption("p", "port", true, "Port to listen on. Default: 8000.");
 		opt.addOption("?", "help", false, "Display help.");
 		
 		CommandLineParser parser = new GnuParser();
@@ -31,7 +33,17 @@ public class Main {
 				HelpFormatter help = new HelpFormatter();
 				help.printHelp("java -jar master.jar", helpHeader,
 						opt, helpFooter, true);
+				System.exit(1);
 			}
+			try {
+				port = Integer.parseInt(cmd.getOptionValue("p", "8000"));
+			}
+			catch (NumberFormatException e) {
+				System.err.println("Invalid port number.");
+				System.exit(1);
+			}
+			Listener L = new Listener(port);
+			L.run();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
