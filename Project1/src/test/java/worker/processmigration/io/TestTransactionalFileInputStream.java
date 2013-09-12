@@ -1,10 +1,12 @@
-package processmigration.io;
+package worker.processmigration.io;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
 import org.junit.Test;
+
+import worker.processmigration.io.TransactionalFileInputStream;
 
 public class TestTransactionalFileInputStream {
 

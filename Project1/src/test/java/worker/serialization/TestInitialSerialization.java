@@ -1,11 +1,11 @@
-package serialization;
+package worker.serialization;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import processmanagement.MPNode;
-import processmanagement.ProcessManager;
-import processmigration.processes.GrepProcess;
+import worker.processmanagement.MPNode;
+import worker.processmanagement.ProcessManager;
+import worker.processmigration.processes.GrepProcess;
 
 public class TestInitialSerialization {
 

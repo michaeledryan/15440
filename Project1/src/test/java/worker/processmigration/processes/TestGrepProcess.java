@@ -1,10 +1,13 @@
-package processmigration.processes;
+package worker.processmigration.processes;
 
-import processmigration.processes.GrepProcess;
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
+
+import worker.processmigration.processes.GrepProcess;
 
 public class TestGrepProcess {
 
