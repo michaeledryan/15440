@@ -21,7 +21,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		Options opt= new Options();
+		Options opt = new Options();
 		opt.addOption("h", "host-file", true, "Host list file for worker nodes.");
 		opt.addOption("p", "port", true, "Port to listen on. Default: 8000.");
 		opt.addOption("?", "help", false, "Display help.");

@@ -7,8 +7,6 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import worker.processmigration.processes.GrepProcess;
-
 public class TestGrepProcess {
 
 	private void runTest(String pattern, String in, String out, String expected)

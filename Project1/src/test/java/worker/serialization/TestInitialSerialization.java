@@ -4,16 +4,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import worker.processmanagement.MPNode;
-import worker.processmanagement.ProcessManager;
+import worker.processmanagement.ProcessRunner;
 import worker.processmigration.processes.GrepProcess;
 
 public class TestInitialSerialization {
 
-	static MPNode node1 = new MPNode("127.0.0.1", 8000);
-	static MPNode node2 = new MPNode("127.0.0.1", 8001);
 
-	static ProcessManager man1 = new ProcessManager(node1);
-	static ProcessManager man2 = new ProcessManager(node2);
 
 	@BeforeClass
 	public static void beforeTests() {

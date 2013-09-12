@@ -19,6 +19,7 @@ public class TestTransactionalFileInputStream {
 		while ((c = t.read()) >= 65) {
 			assertEquals(c, i++);
 		}
+		t.close();
 	}
 
 }

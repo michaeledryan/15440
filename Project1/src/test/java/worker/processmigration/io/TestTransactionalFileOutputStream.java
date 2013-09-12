@@ -34,6 +34,8 @@ public class TestTransactionalFileOutputStream {
 
 		String e = "build/resources/test/TestTransactionalFileOutputStream/expected.txt";
 		compare(s, e);
+		
+		t.close();
 	}
 
 }

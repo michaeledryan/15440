@@ -7,22 +7,34 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import worker.processmigration.MigratableProcess;
 
-public class ProcessManager implements Runnable{
+public class ProcessRunner implements Runnable{
 
-	private MPNode node;
-	private Set<MigratableProcess> local = new HashSet<MigratableProcess>();
-	private Set<MigratableProcess> migrated = new HashSet<MigratableProcess>();
+	private Map<ProcessRunner, MigratableProcess> processes = new HashMap<ProcessRunner, MigratableProcess>();
 	private ServerSocket socket;
+	private static ProcessRunner instance = null;
+	private static int port;
+	
+	
+	public static void setPort(int portNum) {
+		port = portNum;
+	}
 
-	public ProcessManager(MPNode node) {
-		setNode(node);
+	public static ProcessRunner getInstance() {
+		if (instance == null) {
+			instance = new ProcessRunner();
+		}
+		
+		return instance;
+	}
+	
+	private ProcessRunner() {
 		try {
-			socket = new ServerSocket(node.getPort());
+			socket = new ServerSocket(port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,7 +48,9 @@ public class ProcessManager implements Runnable{
 			Socket client;
 			try {
 				client = socket.accept();
-				ObjectInputStream in =new ObjectInputStream(
+				
+				// TODO: Establish protocol for sending data back to Progess
+				ObjectInputStream in = new ObjectInputStream(
 						client.getInputStream());
 				
 				Object obj;
@@ -76,24 +90,17 @@ public class ProcessManager implements Runnable{
 		}
 	}
 	
+	private ProcessRunner selectRunner() {
+		return null;
+	}
+	
+	
 	public void registerProcess(MigratableProcess process) {
-		local.add(process);
-		new Thread(process).run();
+		ProcessRunner runner = selectRunner();
+		runner.registerProcess(process);
 	}
 
-	public void migrateProcess(MigratableProcess process, MPNode node) {
-		migrated.add(process);
-		sendToNode(process, node);
-	}
-
-	public MPNode getNode() {
-		return node;
-	}
-
-	public void setNode(MPNode node) {
-		this.node = node;
-	}
-
+	
 	private void sendToNode(MigratableProcess process, MPNode node) {
 
 		Socket clientSocket = null;
