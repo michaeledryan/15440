@@ -5,11 +5,13 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import worker.processmigration.MigratableProcess;
+import worker.processmigration.AbstractMigratableProcess;
 import worker.processmigration.io.TransactionalFileInputStream;
 import worker.processmigration.io.TransactionalFileOutputStream;
 
-public class GrepProcess implements MigratableProcess {
+public class GrepProcess extends AbstractMigratableProcess {
+	
+	
 	/**
 	 * 
 	 */
