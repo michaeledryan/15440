@@ -35,10 +35,8 @@ public class Main {
 //				help.printHelp("worker", helpHeader,
 //						opt, helpFooter, true);
 //			}
-			if (cmd.hasOption("p")) {
-				ProcessRunner r = new ProcessRunner(Integer.parseInt(cmd.getOptionValue("p")));
+				ProcessRunner r = new ProcessRunner(Integer.parseInt(cmd.getOptionValue("p", "8001")));
 				r.run();
-			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
