@@ -14,9 +14,11 @@ public class ResponseManager implements Runnable {
 
 	private AtomicInteger waitingCount;
 	private Socket sock;
+	private InputStream inStream;
 
-	public ResponseManager(Socket sock, AtomicInteger waitingCount) {
+	public ResponseManager(Socket sock, AtomicInteger waitingCount) throws IOException {
 		this.setSock(sock);
+		this.inStream = this.sock.getInputStream();
 		this.waitingCount = waitingCount;
 		this.setPrompt("");
 	}
@@ -25,13 +27,11 @@ public class ResponseManager implements Runnable {
 	public void run() {
 
 		System.out.println("Starting socket read.");
-		InputStream in;
 
 		while (true) {
 			try {
 				byte[] buf = new byte[BUFSIZE];
-				in = this.sock.getInputStream();
-				int count = in.read(buf);
+				int count = this.inStream.read(buf);
 				if (count > 0) {
 					System.out.printf("Response: %s\n%s", new String(buf),
 							this.prompt);

@@ -31,6 +31,7 @@ public class Main {
 	private static AtomicInteger waitingCount;
 
 	private static Socket sock = null;
+	private static ObjectOutputStream outStream;
 
 	private static ResponseManager responses;
 	private static Thread t;
@@ -39,24 +40,27 @@ public class Main {
 		randGen = new Random();
 		waitingCount = new AtomicInteger(0);
 		sock = new Socket(masterAddress, masterPort);
+		outStream = new ObjectOutputStream(sock.getOutputStream());
 		responses = new ResponseManager(sock, waitingCount);
 		t = new Thread(responses);
 		t.start();
 	}
 
 	private static void cleanup() throws IOException, InterruptedException {
+		System.out.println("Waiting for outstanding jobs to complete...");
+		while (waitingCount.get() > 0) {
+			Thread.sleep(100);
+		}
 		sock.close();
 		t.join();
 	}
 
 	private static void sendRequest(String message) {
 		try {
-			ObjectOutputStream out = new ObjectOutputStream(
-					sock.getOutputStream());
 			int pid = randGen.nextInt();
 			System.out.printf("Sending: pid: %d, command: %s\n", pid, message);
 			ClientRequest req = new ClientRequest(id, pid, message);
-			out.writeObject(req);
+			outStream.writeObject(req);
 			waitingCount.getAndIncrement();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -135,9 +139,6 @@ public class Main {
 					runtrace(in);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
-				while (waitingCount.get() > 0) {
-					Thread.sleep(100);
 				}
 			} else {
 				System.out.println("Entered interactive client mode:");

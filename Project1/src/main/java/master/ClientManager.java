@@ -13,6 +13,8 @@ public class ClientManager implements Runnable {
 
 	private int uuid;
 	private Socket sock = null;
+	private OutputStream outStream;
+	private ObjectInputStream inStream;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 
 	// private OutputStream sockOutput = null;
@@ -21,25 +23,24 @@ public class ClientManager implements Runnable {
 			ConcurrentLinkedQueue<ClientRequest> workQueue) throws IOException {
 		this.uuid = uuid;
 		this.sock = sock;
+		this.outStream = sock.getOutputStream();
+		this.inStream = new ObjectInputStream(sock.getInputStream());
 		this.workQueue = workQueue;
 		// sockOutput = sock.getOutputStream();
 	}
 
 	public void sendResponse(String message) throws IOException {
-		OutputStream out = sock.getOutputStream();
-		out.write(message.getBytes());
+		this.outStream.write(message.getBytes());
 	}
 
 	@Override
 	public void run() {
 
 		System.out.println("Starting socket read.");
-		ObjectInputStream in;
 
 		while (true) {
 			try {
-				in = new ObjectInputStream(sock.getInputStream());
-				Object obj = in.readObject();
+				Object obj = this.inStream.readObject();
 				if (obj != null && obj instanceof ClientRequest) {
 					ClientRequest req = (ClientRequest) obj;
 					System.out.printf("Received: pid: %d, command: %s\n",
