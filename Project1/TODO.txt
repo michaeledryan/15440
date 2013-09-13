@@ -58,3 +58,7 @@ Master:
 
 	GET A PROCESS ID???
 	
+
+
+Process:
+	Store ID of client and process.

@@ -4,13 +4,13 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmanagement.DoneMessage;
 import worker.processmigration.MigratableProcess;
-import worker.processmigration.processes.DummyProcess;
 
 import common.ClientRequest;
 
@@ -40,17 +40,25 @@ public class WorkerInfo implements Runnable {
 	}
 
 	public void sendToWorker(ClientRequest req) {
-		// Assuming it's a DummyProcess....
 
 		try {
+			
+			System.out.println(req.getRequest());
+			
 			String[] requestArray = req.getRequest().split(" ", 2);
-			MigratableProcess dp = new DummyProcess(requestArray[1].split(" "));
+			
+			Class<?> clazz = Class.forName(requestArray[0]);
+			Constructor<?> ctor = clazz.getConstructor(String[].class);
+			Object object = ctor.newInstance((Object) requestArray[1].split(" "));
+			
+			if (object instanceof MigratableProcess) {
+				MigratableProcess dp = (MigratableProcess) object; //new DummyProcess(requestArray[1].split(" "));
+			
+				dp.setProcessID(req.getProcessId());
+				dp.setClientID(req.getClientId());
+				this.outStream.writeObject(dp);
+			}
 
-			dp.setProcessID(req.getProcessId());
-			dp.setClientID(req.getClientId());
-			this.outStream.writeObject(dp);
-
-			// getRunner().sendProcess(dp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

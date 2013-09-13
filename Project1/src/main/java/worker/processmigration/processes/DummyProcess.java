@@ -12,6 +12,7 @@ public class DummyProcess extends AbstractMigratableProcess {
 	private static final long serialVersionUID = 8647456055805832810L;
 	private boolean suspended = false;
 	private int limit;
+	private int time;
 	
 	@Override
 	public void suspend() {
@@ -19,12 +20,13 @@ public class DummyProcess extends AbstractMigratableProcess {
 	}
 
 	public DummyProcess(String[] args) throws Exception {
-		if (args.length != 1) {
+		if (args.length != 2) {
 			System.out
 			.println("usage: DummyProcess <limit>");
 			throw new Exception("Invalid Arguments");
 		}
 		limit = Integer.parseInt(args[0]);
+		time = Integer.parseInt(args[1]);
 	}
 	
 	
@@ -32,7 +34,7 @@ public class DummyProcess extends AbstractMigratableProcess {
 	public void run() {
 		Random rand = new Random();
 		int i = 0;
-		while (i++ < 10 && !suspended) {
+		while (i++ < time && !suspended) {
 			System.out.println(rand.nextInt(limit));
 			try {
 				Thread.sleep(1000 + rand.nextInt() % 1000);

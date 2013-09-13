@@ -46,6 +46,7 @@ public class ClientManager implements Runnable {
 							req.getProcessId(), req.getRequest());
 					req.setClientId(this.uuid);
 					workQueue.add(req);
+					System.out.printf("Received: %s\n", req.getRequest());	
 				}
 			} catch (EOFException e) {
 				System.out.println("Client disconnected.");

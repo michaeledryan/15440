@@ -19,6 +19,7 @@ public class ProcessThread implements Runnable{
 	@Override
 	public void run() {
 		process.run();
+		System.out.println("SHIT'S DONE!");
 		runner.ackDone(process);
 	}
 	
