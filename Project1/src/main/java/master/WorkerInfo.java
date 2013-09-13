@@ -46,7 +46,6 @@ public class WorkerInfo implements Runnable {
 	 *            Request to be parsed into a MigratableProcess.
 	 */
 	public void sendToWorker(ClientRequest req) {
-		System.out.println(req.getRequest());
 		try {
 			String[] requestArray = req.getRequest().split(" ", 2);
 

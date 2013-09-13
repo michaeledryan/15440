@@ -1,5 +1,8 @@
 package worker.processmigration;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 /**
  * Abstract base class for a migratable process.
  * 
@@ -36,6 +39,5 @@ public abstract class AbstractMigratableProcess implements MigratableProcess {
 	public void setProcessID(int id) {
 		processID = id;
 	}
-	
 	
 }

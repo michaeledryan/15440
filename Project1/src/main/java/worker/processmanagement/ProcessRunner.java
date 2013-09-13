@@ -3,7 +3,6 @@ package worker.processmanagement;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
@@ -24,6 +23,10 @@ public class ProcessRunner implements Runnable {
 
 	public ProcessRunner(int port) {
 		this.port = port;
+	}
+	
+	public int getPort () {
+		return this.port;
 	}
 
 	@Override
@@ -82,10 +85,20 @@ public class ProcessRunner implements Runnable {
 			// idsToProcesses.get(pcm.getProcessID()).
 			break;
 		case SUSPEND:
-			procHandle.suspend();
+			try {
+				procHandle.suspend();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case MIGRATE:
-			procHandle.suspend();
+			try {
+				procHandle.suspend();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// ObjectOutputStream oos = new ObjectOutputStream(new
 			// TransactionalFileOutputStream(generateProcessFilename(procHandle)));
 			// clientSocket.getOutputStream(); //Write message back to master.

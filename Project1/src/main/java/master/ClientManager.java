@@ -79,7 +79,6 @@ public class ClientManager implements Runnable {
 					
 					req.setClientId(this.uuid);
 					// Branch here to handle migrate request.
-					workQueue.add(req);
 					System.out.printf("Received: %s\n", req.getRequest());
 					System.out.println(req.getType());
 					if (req.getType() == ClientRequestType.START) {
@@ -88,7 +87,6 @@ public class ClientManager implements Runnable {
 					} else {
 						System.out.println("got non-start request");
 					}
-					System.out.printf("Received: %s\n", req.getRequest());	
 				}
 			} catch (EOFException e) {
 				System.out.println("Client disconnected.");

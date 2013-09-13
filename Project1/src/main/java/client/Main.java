@@ -101,7 +101,7 @@ public class Main {
 				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
 				return;
 			}
-			ClientRequest req = new ClientRequest(id, pid, commandAndType[1], type);
+			ClientRequest req = new ClientRequest(id, pid, message, type);
 			
 			outStream.writeObject(req);
 			waitingCount.getAndIncrement();
