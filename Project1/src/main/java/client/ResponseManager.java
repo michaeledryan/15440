@@ -7,6 +7,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Listen for responses from the master.
+ * 
+ * @author acappiel
+ * 
+ */
 public class ResponseManager implements Runnable {
 
 	private static int BUFSIZE = 1024;
@@ -16,20 +22,35 @@ public class ResponseManager implements Runnable {
 	private Socket sock;
 	private InputStream inStream;
 
-	public ResponseManager(Socket sock, AtomicInteger waitingCount) throws IOException {
+	/**
+	 * Sit on existing socket.
+	 * 
+	 * @param sock
+	 *            Socket created in Main.
+	 * @param waitingCount
+	 *            Tracks outstanding requests. Decrement with each received
+	 *            message.
+	 * @throws IOException
+	 */
+	public ResponseManager(Socket sock, AtomicInteger waitingCount)
+			throws IOException {
 		this.setSock(sock);
 		this.inStream = this.sock.getInputStream();
 		this.waitingCount = waitingCount;
+		
+		// Just to keep things looking nice in interactive mode.
 		this.setPrompt("");
 	}
 
+	/**
+	 * Listen until disconnected.
+	 */
 	@Override
 	public void run() {
 
-		System.out.println("Starting socket read.");
-
 		while (true) {
 			try {
+				// Assumes buffer holds the full message.
 				byte[] buf = new byte[BUFSIZE];
 				int count = this.inStream.read(buf);
 				if (count > 0) {
@@ -49,8 +70,7 @@ public class ResponseManager implements Runnable {
 				break;
 			}
 		}
-
-		System.out.println("Ending socket read.");
+		
 	}
 
 	public Socket getSock() {

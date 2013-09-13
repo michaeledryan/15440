@@ -3,16 +3,31 @@ package common;
 import java.io.Serializable;
 import java.util.Random;
 
+/**
+ * Request originates in a client and is sent to the master.
+ * 
+ * @author acappiel
+ * 
+ */
 public class ClientRequest implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5177348684388096883L;
 	private String request;
 	private int clientId;
 	private int processId;
 
+	/**
+	 * Create request.
+	 * 
+	 * @param cid
+	 *            Although client initially assigns a value, master ignores and
+	 *            assigns its own.
+	 * @param pid
+	 *            Assigned by client.
+	 * @param request
+	 *            Command to process by the master. This may be a new process or
+	 *            a control command.
+	 */
 	public ClientRequest(int cid, int pid, String request) {
 		this.setClientId(cid);
 		this.setProcessId(pid);
