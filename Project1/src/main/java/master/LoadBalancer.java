@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.ClientRequest;
+import common.ClientRequestType;
 
 /**
  * The LoadBalancer is the primary thread of the master. Centralized data
@@ -24,6 +25,7 @@ public class LoadBalancer implements Runnable {
 	private int nextWorker;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
+	private ConcurrentHashMap<Integer, WorkerInfo> pidsToWorkers;
 
 	/**
 	 * Initialize central data structures and contact workers.
@@ -42,6 +44,7 @@ public class LoadBalancer implements Runnable {
 		this.nextWorker = 0;
 		this.workQueue = new ConcurrentLinkedQueue<ClientRequest>();
 		this.clients = new ConcurrentHashMap<Integer, ClientManager>();
+		this.pidsToWorkers = new ConcurrentHashMap<Integer, WorkerInfo>();
 
 		String[] workerList = workers.split("\n");
 		this.workers = new WorkerInfo[workerList.length];
@@ -76,8 +79,12 @@ public class LoadBalancer implements Runnable {
 				}
 			}
 			ClientRequest req = this.workQueue.poll();
-			this.workers[this.nextWorker++].sendToWorker(req);
-			this.nextWorker %= this.workers.length;
+			if (req.getType() == ClientRequestType.START) {
+				this.workers[this.nextWorker++].sendToWorker(req);
+				this.nextWorker %= this.workers.length;
+			} else {
+				pidsToWorkers.get(req.getProcessId()).sendToWorker(req);
+			}
 		}
 	}
 

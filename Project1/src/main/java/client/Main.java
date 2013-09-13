@@ -16,6 +16,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import common.ClientRequest;
+import common.ClientRequestType;
 import common.Util;
 
 /**
@@ -89,11 +90,19 @@ public class Main {
 	 * @param message
 	 *            Command string.
 	 */
-	private static void sendRequest(String message) {
+	private static void sendRequest(String message, ClientRequestType type) {
 		try {
 			int pid = randGen.nextInt();
 			System.out.printf("Sending: pid: %d, command: %s\n", pid, message);
-			ClientRequest req = new ClientRequest(id, pid, message);
+			
+			String[] commandAndType = message.split(" ", 2);
+			
+			if (commandAndType.length != 2) {
+				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
+				return;
+			}
+			ClientRequest req = new ClientRequest(id, pid, commandAndType[1], type);
+			
 			outStream.writeObject(req);
 			waitingCount.getAndIncrement();
 		} catch (IOException e) {
@@ -110,26 +119,33 @@ public class Main {
 	private static void runtrace(String req) {
 		String[] lines = req.split("\n");
 		for (int i = 0; i < lines.length; i++) {
-			String[] line = lines[i].split(" ", 2);
-			if (line[0].compareTo("") == 0) {
-				return;
-			} else if (line.length != 2) {
-				System.err
-						.println("Bad input. Try again. Format: <delay (ms)> <command>");
-				return;
-			}
-			try {
-				int wait = Integer.parseInt(line[0]);
-				if (wait > 0) {
-					Thread.sleep(wait);
-				}
-				sendRequest(line[1]);
-			} catch (NumberFormatException e) {
-				System.err
-						.println("Bad input. Try again. Format: <delay (ms)> <command>");
-			} catch (InterruptedException e) {
+			
+			String[] line = lines[i].split(" ", 3);
+			
+			if (line[0].equalsIgnoreCase("start")) {
+				try {
+					int wait = Integer.parseInt(line[1]);
+					if (wait > 0) {
+						Thread.sleep(wait);
+					}
+					sendRequest(line[2], ClientRequestType.START);
+				} catch (NumberFormatException e) {
+					System.err
+							.println("Bad input. Try again. Format: <delay (ms)> <command>");
+				} catch (InterruptedException e) {
 
+				}
+				
+			} else if (line[0].equalsIgnoreCase("stop")) {
+				sendRequest(lines[i], ClientRequestType.STOP);
+				
+			} else if (line[0].equalsIgnoreCase("migrate")) {
+				sendRequest(lines[i], ClientRequestType.MIGRATE);
+			} else {
+				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
 			}
+			
+			
 		}
 	}
 
@@ -188,6 +204,7 @@ public class Main {
 				responses.setPrompt(prompt);
 
 				System.out.print(prompt);
+				
 				while (stdin.hasNextLine()) {
 					String line = stdin.nextLine();
 					runtrace(line);

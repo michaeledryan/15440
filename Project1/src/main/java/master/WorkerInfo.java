@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmanagement.DoneMessage;
 import worker.processmigration.MigratableProcess;
-
 import common.ClientRequest;
 
 public class WorkerInfo implements Runnable {
@@ -39,45 +39,45 @@ public class WorkerInfo implements Runnable {
 		t.start();
 	}
 
+	/**
+	 * Generates a process to send to a worker.
+	 * 
+	 * @param req
+	 *            Request to be parsed into a MigratableProcess.
+	 */
 	public void sendToWorker(ClientRequest req) {
-
+		System.out.println(req.getRequest());
 		try {
-			
-			System.out.println(req.getRequest());
-			
 			String[] requestArray = req.getRequest().split(" ", 2);
-			
-			Class<?> clazz = Class.forName(requestArray[0]);
+
+			Class<?> clazz;
+			clazz = Class.forName(requestArray[0]);
+
 			Constructor<?> ctor = clazz.getConstructor(String[].class);
-			Object object = ctor.newInstance((Object) requestArray[1].split(" "));
-			
+			Object object = ctor.newInstance((Object) requestArray[1]
+					.split(" "));
+
 			if (object instanceof MigratableProcess) {
-				MigratableProcess dp = (MigratableProcess) object; //new DummyProcess(requestArray[1].split(" "));
-			
+				MigratableProcess dp = (MigratableProcess) object;
 				dp.setProcessID(req.getProcessId());
 				dp.setClientID(req.getClientId());
 				this.outStream.writeObject(dp);
 			}
-
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | NoSuchMethodException
+				| SecurityException | InstantiationException
+				| IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			try {
+				clients.get(req.getClientId()).sendResponse(
+						"Problem handling the given request: Received error: " + e.getLocalizedMessage());
+			} catch (IOException e1) {
+				e1.printStackTrace(); // Can't reach client.	
+			}
+			
+		} catch (IOException e) {
 			e.printStackTrace();
+			// Socket is closed. Cannot reach worker. TODO:
 		}
-	}
-
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	@Override
@@ -105,5 +105,21 @@ public class WorkerInfo implements Runnable {
 			}
 		}
 
+	}
+	
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 }

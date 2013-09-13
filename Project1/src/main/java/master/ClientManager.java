@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.ClientRequest;
+import common.ClientRequestType;
 
 /**
  * IO between master and client for the duration of the connection.
@@ -75,10 +76,19 @@ public class ClientManager implements Runnable {
 					ClientRequest req = (ClientRequest) obj;
 					System.out.printf("Received: pid: %d, command: %s\n",
 							req.getProcessId(), req.getRequest());
+					
 					req.setClientId(this.uuid);
 					// Branch here to handle migrate request.
 					workQueue.add(req);
 					System.out.printf("Received: %s\n", req.getRequest());
+					System.out.println(req.getType());
+					if (req.getType() == ClientRequestType.START) {
+						System.out.println("got start request");
+						workQueue.add(req);
+					} else {
+						System.out.println("got non-start request");
+					}
+					System.out.printf("Received: %s\n", req.getRequest());	
 				}
 			} catch (EOFException e) {
 				System.out.println("Client disconnected.");

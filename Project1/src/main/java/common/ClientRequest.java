@@ -13,6 +13,7 @@ public class ClientRequest implements Serializable {
 
 	private static final long serialVersionUID = -5177348684388096883L;
 	private String request;
+	private ClientRequestType type;
 	private int clientId;
 	private int processId;
 
@@ -28,10 +29,11 @@ public class ClientRequest implements Serializable {
 	 *            Command to process by the master. This may be a new process or
 	 *            a control command.
 	 */
-	public ClientRequest(int cid, int pid, String request) {
+	public ClientRequest(int cid, int pid, String request, ClientRequestType type) {
 		this.setClientId(cid);
 		this.setProcessId(pid);
 		this.setRequest(request);
+		this.setType(type);
 	}
 
 	public String getRequest() {
@@ -56,6 +58,14 @@ public class ClientRequest implements Serializable {
 
 	public void setProcessId(int processId) {
 		this.processId = processId;
+	}
+
+	public ClientRequestType getType() {
+		return type;
+	}
+
+	public void setType(ClientRequestType type) {
+		this.type = type;
 	}
 
 }
