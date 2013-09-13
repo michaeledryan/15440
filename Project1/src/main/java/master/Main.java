@@ -1,5 +1,7 @@
 package master;
 
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -7,17 +9,22 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import common.Util;
+
 public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+	
+	private static LoadBalancer bal;
 
 	private static int port;
 
 	/**
 	 * @param args
+	 * @throws IOException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		Options opt = new Options();
 		opt.addOption("h", "host-file", true,
@@ -34,14 +41,22 @@ public class Main {
 						helpFooter, true);
 				System.exit(1);
 			}
+			System.out.println("Starting master...");
+			String workersFile = cmd.getOptionValue("h", null);
+			String workers;
+			if (workersFile != null) {
+				workers = Util.readFile(workersFile);
+			} else {
+				workers = "localhost:8001";
+			}
 			try {
 				port = Integer.parseInt(cmd.getOptionValue("p", "8000"));
 			} catch (NumberFormatException e) {
 				System.err.println("Invalid port number.");
 				System.exit(1);
 			}
-			Listener L = new Listener(port);
-			L.run();
+			bal = new LoadBalancer(port, workers);
+			bal.run();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

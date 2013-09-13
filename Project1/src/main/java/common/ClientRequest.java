@@ -11,12 +11,12 @@ public class ClientRequest implements Serializable {
 	private static final long serialVersionUID = -5177348684388096883L;
 	private String request;
 	private int clientId;
-	private int taskId;
+	private int processId;
 
-	public ClientRequest(int id, String request) {
-		this.setClientId(id);
+	public ClientRequest(int cid, int pid, String request) {
+		this.setClientId(cid);
+		this.setProcessId(pid);
 		this.setRequest(request);
-		this.setTaskId(new Random().nextInt());
 	}
 
 	public String getRequest() {
@@ -35,12 +35,12 @@ public class ClientRequest implements Serializable {
 		this.clientId = clientId;
 	}
 
-	public int getTaskId() {
-		return taskId;
+	public int getProcessId() {
+		return processId;
 	}
 
-	public void setTaskId(int taskId) {
-		this.taskId = taskId;
+	public void setProcessId(int processId) {
+		this.processId = processId;
 	}
 
 }

@@ -8,6 +8,8 @@ public interface MigratableProcess extends Runnable, Serializable {
 	
 	public int getClientID();
 	
+	void setClientID(int clientID);
+	
 	public int getProcessID();
 
 	void setProcessID(int id);

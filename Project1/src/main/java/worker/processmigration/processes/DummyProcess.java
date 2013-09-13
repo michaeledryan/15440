@@ -6,6 +6,10 @@ import worker.processmigration.AbstractMigratableProcess;
 
 public class DummyProcess extends AbstractMigratableProcess {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8647456055805832810L;
 	private boolean suspended = false;
 	private int limit;
 	
@@ -27,10 +31,11 @@ public class DummyProcess extends AbstractMigratableProcess {
 	@Override
 	public void run() {
 		Random rand = new Random();
-		while (!suspended) {
+		int i = 0;
+		while (i++ < 10 && !suspended) {
 			System.out.println(rand.nextInt(limit));
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(1000 + rand.nextInt() % 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

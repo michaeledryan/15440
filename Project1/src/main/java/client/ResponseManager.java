@@ -5,16 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResponseManager implements Runnable {
 
 	private static int BUFSIZE = 1024;
 	private String prompt;
 
+	private AtomicInteger waitingCount;
 	private Socket sock;
 
-	public ResponseManager(Socket sock) {
+	public ResponseManager(Socket sock, AtomicInteger waitingCount) {
 		this.setSock(sock);
+		this.waitingCount = waitingCount;
 		this.setPrompt("");
 	}
 
@@ -33,6 +36,7 @@ public class ResponseManager implements Runnable {
 					System.out.printf("Response: %s\n%s", new String(buf),
 							this.prompt);
 				}
+				this.waitingCount.getAndDecrement();
 			} catch (EOFException e) {
 				System.out.println("Master disconnected.");
 				break;

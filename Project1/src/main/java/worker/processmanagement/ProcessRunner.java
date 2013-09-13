@@ -3,55 +3,58 @@ package worker.processmanagement;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmigration.MigratableProcess;
-import worker.processmigration.io.TransactionalFileOutputStream;
 
-public class ProcessRunner implements Runnable{
+public class ProcessRunner implements Runnable {
 
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
-	
+	private ObjectOutputStream outStream;
+	private ObjectInputStream inStream;
+
 	private int port;
-	
-	private Map<Integer, ProcessThread> idsToProcesses = new ConcurrentHashMap<Integer, ProcessThread>(); 
-	
+
+	private Map<Integer, ProcessThread> idsToProcesses = new ConcurrentHashMap<Integer, ProcessThread>();
+
 	public ProcessRunner(int port) {
 		this.port = port;
 	}
-	
+
 	@Override
 	public void run() {
-		
+
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
+
 		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
-				
+				this.outStream = new ObjectOutputStream(
+						this.clientSocket.getOutputStream());
+				this.inStream = new ObjectInputStream(
+						this.clientSocket.getInputStream());
+
 				// TODO: Establish protocol for sending data back to Master
-				ObjectInputStream in = new ObjectInputStream(
-						clientSocket.getInputStream());
-				
-				ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-				
+
 				Object obj;
-				while ((obj = in.readObject()) != null) {
+				while (true) {
+					obj = this.inStream.readObject();
+					if (obj == null) {
+						break;
+					}
 					System.out.println(obj);
 					if (obj instanceof MigratableProcess) {
-						
-						
+
 						MigratableProcess mp = (MigratableProcess) obj;
 						ProcessThread pt = new ProcessThread(mp, this);
 						new Thread(pt).start();
@@ -59,11 +62,11 @@ public class ProcessRunner implements Runnable{
 					} else if (obj instanceof ProcessControlMessage) {
 						handleControlMessage((ProcessControlMessage) obj);
 					}
-				 
+
 				}
 
 			} catch (IOException e) {
-				System.err.println("Error connecting to client on HTTP.");
+				System.err.println("Master disconnected.");
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -76,44 +79,40 @@ public class ProcessRunner implements Runnable{
 		switch (pcm.getCommand()) {
 		case START:
 			procHandle.unSuspend();
-			//idsToProcesses.get(pcm.getProcessID()).
+			// idsToProcesses.get(pcm.getProcessID()).
 			break;
 		case SUSPEND:
 			procHandle.suspend();
 			break;
 		case MIGRATE:
 			procHandle.suspend();
-//			ObjectOutputStream oos = new ObjectOutputStream(new TransactionalFileOutputStream(generateProcessFilename(procHandle)));
-//			clientSocket.getOutputStream(); //Write message back to master.
+			// ObjectOutputStream oos = new ObjectOutputStream(new
+			// TransactionalFileOutputStream(generateProcessFilename(procHandle)));
+			// clientSocket.getOutputStream(); //Write message back to master.
 			break;
-			
-			}
+
+		}
 	}
 
 	private String generateProcessFilename(ProcessThread procHandle) {
-		return "wow doge. So processID: " + procHandle.getProcess().getProcessID();
+		return "wow doge. So processID: "
+				+ procHandle.getProcess().getProcessID();
 	}
-	
+
 	/**
 	 * 
-	 * @param process the process
+	 * @param process
+	 *            the process
 	 */
 	public void ackDone(MigratableProcess process) {
 		try {
-			(new ObjectOutputStream(clientSocket.getOutputStream())).writeObject(new DoneMessage(process.getProcessID()));
+			this.outStream.writeObject(new DoneMessage(process.getProcessID(),
+					process.getClientID()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	public class DoneMessage {
-		public int processID;
-		
-		public DoneMessage(int id) {
-			processID = id;
-		}
-	}
-	
 }

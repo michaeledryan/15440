@@ -3,23 +3,25 @@ package master;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import worker.processmigration.MigratableProcess;
-import worker.processmigration.processes.DummyProcess;
 import common.ClientRequest;
 
 public class ClientManager implements Runnable {
 
+	private int uuid;
 	private Socket sock = null;
+	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 
 	// private OutputStream sockOutput = null;
 
-	public ClientManager(Socket sock) throws IOException {
+	public ClientManager(int uuid, Socket sock,
+			ConcurrentLinkedQueue<ClientRequest> workQueue) throws IOException {
+		this.uuid = uuid;
 		this.sock = sock;
+		this.workQueue = workQueue;
 		// sockOutput = sock.getOutputStream();
 	}
 
@@ -40,27 +42,10 @@ public class ClientManager implements Runnable {
 				Object obj = in.readObject();
 				if (obj != null && obj instanceof ClientRequest) {
 					ClientRequest req = (ClientRequest) obj;
-					System.out.printf("Received: %s\n", req.getRequest());
-					String[] requestArray = req.getRequest().split(" ", 2);
-					
-					// Assuming it's a DummyProcess....
-					
-					try {
-						MigratableProcess dp = new DummyProcess(requestArray[1].split(" "));
-						
-						dp.setProcessID(0);
-						Socket hardCoding = new Socket("localhost", 8001);
-						ObjectOutputStream oos = new ObjectOutputStream(hardCoding.getOutputStream());
-						oos.writeObject(dp);
-						
-						//getRunner().sendProcess(dp);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-					this.sendResponse("done");
-					
-					
+					System.out.printf("Received: pid: %d, command: %s\n",
+							req.getProcessId(), req.getRequest());
+					req.setClientId(this.uuid);
+					workQueue.add(req);
 				}
 			} catch (EOFException e) {
 				System.out.println("Client disconnected.");

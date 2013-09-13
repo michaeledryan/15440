@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,6 +27,8 @@ public class Main {
 	private static int masterPort;
 	private static int id;
 	private static String prompt = "--> ";
+	private static Random randGen;
+	private static AtomicInteger waitingCount;
 
 	private static Socket sock = null;
 
@@ -32,9 +36,10 @@ public class Main {
 	private static Thread t;
 
 	private static void init() throws UnknownHostException, IOException {
+		randGen = new Random();
+		waitingCount = new AtomicInteger(0);
 		sock = new Socket(masterAddress, masterPort);
-		responses = new ResponseManager(sock);
-		responses.setPrompt(prompt);
+		responses = new ResponseManager(sock, waitingCount);
 		t = new Thread(responses);
 		t.start();
 	}
@@ -48,8 +53,11 @@ public class Main {
 		try {
 			ObjectOutputStream out = new ObjectOutputStream(
 					sock.getOutputStream());
-			ClientRequest req = new ClientRequest(id, message);
+			int pid = randGen.nextInt();
+			System.out.printf("Sending: pid: %d, command: %s\n", pid, message);
+			ClientRequest req = new ClientRequest(id, pid, message);
 			out.writeObject(req);
+			waitingCount.getAndIncrement();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -71,7 +79,6 @@ public class Main {
 				if (wait > 0) {
 					Thread.sleep(wait);
 				}
-				System.out.printf("Sending: %s\n", line[1]);
 				sendRequest(line[1]);
 			} catch (NumberFormatException e) {
 				System.err
@@ -109,6 +116,7 @@ public class Main {
 						helpFooter, true);
 				System.exit(1);
 			}
+			System.out.println("Starting client...");
 			masterAddress = cmd.getOptionValue("a", "127.0.0.1");
 			try {
 				masterPort = Integer.parseInt(cmd.getOptionValue("p", "8000"));
@@ -121,15 +129,20 @@ public class Main {
 			if (cmd.hasOption("t")) {
 				System.out.println("Running trace file...");
 				prompt = "";
+				responses.setPrompt(prompt);
 				try {
 					String in = Util.readFile(cmd.getOptionValue("t"));
 					runtrace(in);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				while (waitingCount.get() > 0) {
+					Thread.sleep(100);
+				}
 			} else {
 				System.out.println("Entered interactive client mode:");
 				Scanner stdin = new Scanner(System.in);
+				responses.setPrompt(prompt);
 
 				System.out.print(prompt);
 				while (stdin.hasNextLine()) {
