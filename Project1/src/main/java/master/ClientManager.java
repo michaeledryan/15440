@@ -9,6 +9,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.ClientRequest;
 
+/**
+ * IO between master and client for the duration of the connection.
+ * 
+ * @author acappiel
+ * 
+ */
 public class ClientManager implements Runnable {
 
 	private int uuid;
@@ -17,22 +23,46 @@ public class ClientManager implements Runnable {
 	private ObjectInputStream inStream;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 
-	// private OutputStream sockOutput = null;
-
+	/**
+	 * Start the ClientManager.
+	 * 
+	 * @param uuid
+	 *            Assigned by the Listener.
+	 * @param sock
+	 *            Accepted by the Listener.
+	 * @param workQueue
+	 *            Passed through from LoadBalancer.
+	 * @throws IOException
+	 */
 	public ClientManager(int uuid, Socket sock,
 			ConcurrentLinkedQueue<ClientRequest> workQueue) throws IOException {
 		this.uuid = uuid;
 		this.sock = sock;
+
+		// Only create these once!
 		this.outStream = sock.getOutputStream();
-		this.inStream = new ObjectInputStream(sock.getInputStream());
+		this.inStream = new ObjectInputStream(this.sock.getInputStream());
+
+		// Shared among all ClientManager instances.
 		this.workQueue = workQueue;
-		// sockOutput = sock.getOutputStream();
 	}
 
+	/**
+	 * Sends a message back to the client.
+	 * 
+	 * @param message
+	 *            Format should be pid:text.
+	 * @throws IOException
+	 */
 	public void sendResponse(String message) throws IOException {
 		this.outStream.write(message.getBytes());
 	}
 
+	/**
+	 * For the life of the socket, wait for new client commands and trigger an
+	 * appropriate action. New processes are sent to the centralized queue
+	 * Management commands are handled directly.
+	 */
 	@Override
 	public void run() {
 
@@ -46,8 +76,9 @@ public class ClientManager implements Runnable {
 					System.out.printf("Received: pid: %d, command: %s\n",
 							req.getProcessId(), req.getRequest());
 					req.setClientId(this.uuid);
+					// Branch here to handle migrate request.
 					workQueue.add(req);
-					System.out.printf("Received: %s\n", req.getRequest());	
+					System.out.printf("Received: %s\n", req.getRequest());
 				}
 			} catch (EOFException e) {
 				System.out.println("Client disconnected.");

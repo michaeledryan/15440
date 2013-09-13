@@ -7,6 +7,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.ClientRequest;
 
+/**
+ * The LoadBalancer is the primary thread of the master. Centralized data
+ * structures are created here and initial communication with the workers
+ * established.
+ * 
+ * @author acappiel
+ * 
+ */
 public class LoadBalancer implements Runnable {
 
 	private Listener L;
@@ -17,6 +25,17 @@ public class LoadBalancer implements Runnable {
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 
+	/**
+	 * Initialize central data structures and contact workers.
+	 * 
+	 * @param port
+	 *            From command line (or default).
+	 * @param workers
+	 *            Newline-delimited list of workers.
+	 *            Format is hostname:port or ip:port.
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	public LoadBalancer(int port, String workers) throws UnknownHostException,
 			IOException {
 		this.port = port;
@@ -38,6 +57,9 @@ public class LoadBalancer implements Runnable {
 		}
 	}
 
+	/**
+	 * Assign new work and redistribute (migrate) existing work.
+	 */
 	@Override
 	public void run() {
 		L = new Listener(this.port, this.workQueue, this.clients);

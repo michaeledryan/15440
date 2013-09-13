@@ -9,12 +9,29 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.ClientRequest;
 
+/**
+ * Waits for new clients to connect. Each is assigned a uuid and given a
+ * ClientManager to handle its input.
+ * 
+ * @author acappiel
+ * 
+ */
 public class Listener implements Runnable {
 
 	private ServerSocket socket;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 
+	/**
+	 * Start the Listener. There is only one instance of this.
+	 * 
+	 * @param port
+	 *            Specified on the command line (or default).
+	 * @param workQueue
+	 *            Created by LoadBalancer and passed through to ClientManagers.
+	 * @param clients
+	 *            Created by LoadBalancer.
+	 */
 	public Listener(int port, ConcurrentLinkedQueue<ClientRequest> workQueue,
 			ConcurrentHashMap<Integer, ClientManager> clients) {
 		this.workQueue = workQueue;
@@ -27,6 +44,9 @@ public class Listener implements Runnable {
 		}
 	}
 
+	/**
+	 * Accept new client connections.
+	 */
 	@Override
 	public void run() {
 		Random uuidGen = new Random();
@@ -36,8 +56,9 @@ public class Listener implements Runnable {
 			try {
 				incoming = socket.accept();
 				int uuid = uuidGen.nextInt();
-				ClientManager request = new ClientManager(uuid,
-						incoming, this.workQueue);
+				ClientManager request = new ClientManager(uuid, incoming,
+						this.workQueue);
+				// Add to the clients map.
 				clients.put(uuid, request);
 				Thread t = new Thread(request);
 				t.start();
