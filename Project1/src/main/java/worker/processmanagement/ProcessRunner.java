@@ -3,61 +3,61 @@ package worker.processmanagement;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmigration.MigratableProcess;
+import worker.processmigration.io.TransactionalFileOutputStream;
 
 public class ProcessRunner implements Runnable{
 
-	private Map<ProcessRunner, MigratableProcess> processes = new HashMap<ProcessRunner, MigratableProcess>();
-	private ServerSocket socket;
-	private static ProcessRunner instance = null;
-	private static int port;
+	private ServerSocket serverSocket;
+	private Socket clientSocket;
 	
+	private int port;
 	
-	public static void setPort(int portNum) {
-		port = portNum;
-	}
-
-	public static ProcessRunner getInstance() {
-		if (instance == null) {
-			instance = new ProcessRunner();
-		}
-		
-		return instance;
-	}
+	private Map<Integer, ProcessThread> idsToProcesses = new ConcurrentHashMap<Integer, ProcessThread>(); 
 	
-	private ProcessRunner() {
-		try {
-			socket = new ServerSocket(port);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public ProcessRunner(int port) {
+		this.port = port;
 	}
 	
 	@Override
 	public void run() {
-		// Listen for clients
+		
+		try {
+			serverSocket = new ServerSocket(port);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		while (true) {
-			Socket client;
 			try {
-				client = socket.accept();
+				clientSocket = serverSocket.accept();
 				
-				// TODO: Establish protocol for sending data back to Progess
+				// TODO: Establish protocol for sending data back to Master
 				ObjectInputStream in = new ObjectInputStream(
-						client.getInputStream());
+						clientSocket.getInputStream());
+				
+				ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 				
 				Object obj;
 				while ((obj = in.readObject()) != null) {
 					System.out.println(obj);
 					if (obj instanceof MigratableProcess) {
-						((MigratableProcess) obj).run();
+						
+						
+						MigratableProcess mp = (MigratableProcess) obj;
+						ProcessThread pt = new ProcessThread(mp, this);
+						new Thread(pt).start();
+						idsToProcesses.put(mp.getProcessID(), pt);
+					} else if (obj instanceof ProcessControlMessage) {
+						handleControlMessage((ProcessControlMessage) obj);
 					}
 				 
 				}
@@ -69,54 +69,51 @@ public class ProcessRunner implements Runnable{
 				e.printStackTrace();
 			}
 		}
-
 	}
 
-	public void testMessage(MPNode node) {
-		String testObject = "TESTING SERIALIZATION";
-		Socket clientSocket = null;
+	private void handleControlMessage(ProcessControlMessage pcm) {
+		ProcessThread procHandle = idsToProcesses.get(pcm.getProcessID());
+		switch (pcm.getCommand()) {
+		case START:
+			procHandle.unSuspend();
+			//idsToProcesses.get(pcm.getProcessID()).
+			break;
+		case SUSPEND:
+			procHandle.suspend();
+			break;
+		case MIGRATE:
+			procHandle.suspend();
+//			ObjectOutputStream oos = new ObjectOutputStream(new TransactionalFileOutputStream(generateProcessFilename(procHandle)));
+//			clientSocket.getOutputStream(); //Write message back to master.
+			break;
+			
+			}
+	}
+
+	private String generateProcessFilename(ProcessThread procHandle) {
+		return "wow doge. So processID: " + procHandle.getProcess().getProcessID();
+	}
+	
+	/**
+	 * 
+	 * @param process the process
+	 */
+	public void ackDone(MigratableProcess process) {
 		try {
-			clientSocket = new Socket(InetAddress.getByName(node.getIP()),
-					node.getPort());
-			ObjectOutputStream oos = new ObjectOutputStream(
-					clientSocket.getOutputStream());
-			oos.writeObject(testObject);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			(new ObjectOutputStream(clientSocket.getOutputStream())).writeObject(new DoneMessage(process.getProcessID()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private ProcessRunner selectRunner() {
-		return null;
-	}
-	
-	
-	public void registerProcess(MigratableProcess process) {
-		ProcessRunner runner = selectRunner();
-		runner.registerProcess(process);
+		
 	}
 
-	
-	private void sendToNode(MigratableProcess process, MPNode node) {
-
-		Socket clientSocket = null;
-		try {
-			clientSocket = new Socket(InetAddress.getByName(node.getIP()),
-					node.getPort());
-			ObjectOutputStream oos = new ObjectOutputStream(
-					clientSocket.getOutputStream());
-			oos.writeObject(process);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public class DoneMessage {
+		public int processID;
+		
+		public DoneMessage(int id) {
+			processID = id;
 		}
-
 	}
+	
 }

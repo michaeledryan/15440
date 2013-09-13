@@ -7,6 +7,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import worker.processmanagement.ProcessRunner;
+
 public class Main {
 	
 	static private String helpHeader = 
@@ -23,14 +25,19 @@ public class Main {
 		opt.addOption("h", "host-file", true, "Host list file for worker nodes.");
 		opt.addOption("t", "trace-file", true, "Trace file.");
 		opt.addOption("?", "help", false, "Display help.");
+		opt.addOption("p", "port", true, "Port to listen on.");
 		
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine cmd = parser.parse(opt, args);
-			if (cmd.hasOption("?")) {
-				HelpFormatter help = new HelpFormatter();
-				help.printHelp("worker", helpHeader,
-						opt, helpFooter, true);
+//			if (cmd.hasOption("?")) {
+//				HelpFormatter help = new HelpFormatter();
+//				help.printHelp("worker", helpHeader,
+//						opt, helpFooter, true);
+//			}
+			if (cmd.hasOption("p")) {
+				ProcessRunner r = new ProcessRunner(Integer.parseInt(cmd.getOptionValue("p")));
+				r.run();
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
