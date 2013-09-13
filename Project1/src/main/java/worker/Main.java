@@ -9,12 +9,19 @@ import org.apache.commons.cli.ParseException;
 
 import worker.processmanagement.ProcessRunner;
 
+/**
+ * Main class for worker node.
+ * 
+ * @author acappiel
+ *
+ */
 public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
 	/**
+	 * Parse cli and start ProcessRunner.
 	 * @param args
 	 */
 	public static void main(String[] args) {

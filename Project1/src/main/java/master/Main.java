@@ -11,6 +11,12 @@ import org.apache.commons.cli.ParseException;
 
 import common.Util;
 
+/**
+ * Main class for master node.
+ * 
+ * @author acappiel
+ *
+ */
 public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
@@ -21,6 +27,7 @@ public class Main {
 	private static int port;
 
 	/**
+	 * Parse cli and start LoadBalancer.
 	 * @param args
 	 * @throws IOException
 	 */
