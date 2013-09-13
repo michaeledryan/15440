@@ -18,6 +18,17 @@ import org.apache.commons.cli.ParseException;
 import common.ClientRequest;
 import common.Util;
 
+/**
+ * Main class that runs a client process. The client can be thought of as
+ * essentially a testing harness for the assignment. It has two modes, reading a
+ * trace file with -t or as an interactive repl.
+ * 
+ * Requests are of the form: <delay in ms> <fully qualified class name of
+ * process> <input args>
+ * 
+ * @author acappiel
+ * 
+ */
 public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
@@ -25,7 +36,7 @@ public class Main {
 
 	private static String masterAddress;
 	private static int masterPort;
-	private static int id;
+	private static int id; // Currently ignored by master.
 	private static String prompt = "--> ";
 	private static Random randGen;
 	private static AtomicInteger waitingCount;
@@ -36,25 +47,48 @@ public class Main {
 	private static ResponseManager responses;
 	private static Thread t;
 
+	/**
+	 * Startup tasks.
+	 * 
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	private static void init() throws UnknownHostException, IOException {
 		randGen = new Random();
 		waitingCount = new AtomicInteger(0);
 		sock = new Socket(masterAddress, masterPort);
+
+		// Only create these once!
 		outStream = new ObjectOutputStream(sock.getOutputStream());
 		responses = new ResponseManager(sock, waitingCount);
+
 		t = new Thread(responses);
 		t.start();
 	}
 
+	/**
+	 * Cleanup tasks.
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private static void cleanup() throws IOException, InterruptedException {
 		System.out.println("Waiting for outstanding jobs to complete...");
 		while (waitingCount.get() > 0) {
 			Thread.sleep(100);
 		}
+		// Kill the socket to interrupt the thread. Is there anything
+		// nicer to do instead?
 		sock.close();
 		t.join();
 	}
 
+	/**
+	 * Sends a request to the master over existing socket.
+	 * 
+	 * @param message
+	 *            Command string.
+	 */
 	private static void sendRequest(String message) {
 		try {
 			int pid = randGen.nextInt();
@@ -67,6 +101,12 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Handles either a full request file or a line from the repl.
+	 * 
+	 * @param req
+	 *            Newline-delimited sequence of commands.
+	 */
 	private static void runtrace(String req) {
 		String[] lines = req.split("\n");
 		for (int i = 0; i < lines.length; i++) {
@@ -94,6 +134,8 @@ public class Main {
 	}
 
 	/**
+	 * Start the client.
+	 * 
 	 * @param args
 	 * @throws IOException
 	 * @throws UnknownHostException
