@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import common.RequestReader;
-
 public class Listener implements Runnable {
-	
+
 	private ServerSocket socket;
-	
-	public Listener (int port) {
+
+	public Listener(int port) {
 		try {
 			socket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -26,10 +24,10 @@ public class Listener implements Runnable {
 			Socket incoming;
 			try {
 				incoming = socket.accept();
-				RequestReader request = new RequestReader(incoming);
-				request.run();
-			}
-			catch (IOException e) {
+				ClientManager request = new ClientManager(incoming);
+				Thread t = new Thread(request);
+				t.start();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
