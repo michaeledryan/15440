@@ -26,6 +26,18 @@ public class LoadBalancer implements Runnable {
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 	private ConcurrentHashMap<Integer, WorkerInfo> pidsToWorkers;
+	
+	private static LoadBalancer INSTANCE = null;
+	
+	
+	public static LoadBalancer getInstance() {
+		return INSTANCE;
+	}
+	
+	public static LoadBalancer initLoadBalancer(int port, String workers) throws UnknownHostException, IOException {
+		INSTANCE = new LoadBalancer(port, workers);
+		return getInstance();
+	}
 
 	/**
 	 * Initialize central data structures and contact workers.
@@ -38,7 +50,7 @@ public class LoadBalancer implements Runnable {
 	 * @throws UnknownHostException
 	 * @throws IOException
 	 */
-	public LoadBalancer(int port, String workers) throws UnknownHostException,
+	private LoadBalancer(int port, String workers) throws UnknownHostException,
 			IOException {
 		this.port = port;
 		this.nextWorker = 0;
@@ -58,6 +70,18 @@ public class LoadBalancer implements Runnable {
 						this.clients);
 			}
 		}
+	}
+
+	public ConcurrentLinkedQueue<ClientRequest> getWorkQueue() {
+		return workQueue;
+	}
+
+	public ConcurrentHashMap<Integer, ClientManager> getClients() {
+		return clients;
+	}
+
+	public ConcurrentHashMap<Integer, WorkerInfo> getPidsToWorkers() {
+		return pidsToWorkers;
 	}
 
 	/**

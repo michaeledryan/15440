@@ -62,7 +62,7 @@ public class Main {
 				System.err.println("Invalid port number.");
 				System.exit(1);
 			}
-			bal = new LoadBalancer(port, workers);
+			bal = LoadBalancer.initLoadBalancer(port, workers);
 			bal.run();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
