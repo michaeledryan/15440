@@ -37,7 +37,6 @@ public class Main {
 
 	private static String masterAddress;
 	private static int masterPort;
-	private static int id; // Currently ignored by master.
 	private static String prompt = "--> ";
 	private static Random randGen;
 	private static AtomicInteger waitingCount;
@@ -101,7 +100,9 @@ public class Main {
 				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
 				return;
 			}
-			ClientRequest req = new ClientRequest(id, pid, message, type);
+			
+			
+			ClientRequest req = new ClientRequest(pid, message, type);
 			
 			outStream.writeObject(req);
 			waitingCount.getAndIncrement();
@@ -140,7 +141,7 @@ public class Main {
 				sendRequest(lines[i], ClientRequestType.STOP);
 				
 			} else if (line[0].equalsIgnoreCase("migrate")) {
-				sendRequest(lines[i], ClientRequestType.MIGRATE);
+				sendRequest(line[i], ClientRequestType.MIGRATE);
 			} else {
 				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
 			}
@@ -164,7 +165,6 @@ public class Main {
 		opt.addOption("t", "trace-file", true, "Trace file.");
 		opt.addOption("a", "address", true,
 				"Address of master node (ip or url). Default: localhost.");
-		opt.addOption("i", "identifier", true, "Client identifier.");
 		opt.addOption("p", "port", true,
 				"Port to connect to master. Default: 8000.");
 		opt.addOption("?", "help", false, "Display help.");
@@ -182,7 +182,6 @@ public class Main {
 			masterAddress = cmd.getOptionValue("a", "127.0.0.1");
 			try {
 				masterPort = Integer.parseInt(cmd.getOptionValue("p", "8000"));
-				id = Integer.parseInt(cmd.getOptionValue("i", "1"));
 			} catch (NumberFormatException e) {
 				System.err.println("Invalid command line args.");
 				System.exit(1);
