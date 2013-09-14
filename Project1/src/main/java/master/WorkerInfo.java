@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import worker.processmanagement.DoneMessage;
+import worker.processmanagement.WorkerResponse;
 import worker.processmigration.MigratableProcess;
 import common.ClientRequest;
 
@@ -85,11 +85,17 @@ public class WorkerInfo implements Runnable {
 		while (true) {
 			try {
 				Object obj = this.inStream.readObject();
-				if (obj != null && obj instanceof DoneMessage) {
-					DoneMessage m = (DoneMessage) obj;
-					ClientManager c = this.clients.get(m.clientID);
-					System.out.printf("Completed: pid: %d\n", m.processID);
-					c.sendResponse(Integer.toString(m.processID));
+				if (obj != null && obj instanceof WorkerResponse) {
+					WorkerResponse m = (WorkerResponse) obj;
+					switch (m.type) {
+					case PROCESS_FINISHED:
+						ClientManager c = this.clients.get(m.clientID);
+						System.out.printf("Completed: pid: %d\n", m.processID);
+						c.sendResponse(Integer.toString(m.processID));
+						break;
+					case PROCESS_SERIALIZED:
+						break;
+					}
 				}
 			} catch (EOFException e) {
 				System.out.println("Disconnected.");
