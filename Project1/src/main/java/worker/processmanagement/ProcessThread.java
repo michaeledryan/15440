@@ -12,6 +12,11 @@ import worker.processmigration.MigratableProcess;
 
 import common.Util;
 
+/**
+ * Wraps a MigratableProcess to simplify the interface.
+ * 
+ * @author michaelryan
+ */
 public class ProcessThread implements Runnable {
 
 	private MigratableProcess process;
@@ -26,9 +31,9 @@ public class ProcessThread implements Runnable {
 	 * @param runner
 	 *            Worker running this process.
 	 */
-	public ProcessThread(MigratableProcess process, ProcessRunner runner) {
+	public ProcessThread(MigratableProcess process) {
 		this.process = process;
-		this.runner = runner;
+		this.runner = ProcessRunner.getInstance();
 		this.ps = ProcessState.RUNNING;
 	}
 
@@ -37,30 +42,21 @@ public class ProcessThread implements Runnable {
 	 * 
 	 * @param serializedPath
 	 *            File to serialized output.
-	 * @param runner
-	 *            Worker running this process.
 	 * @throws Exception
 	 */
-	public ProcessThread(File serializedPath, ProcessRunner runner)
+	public ProcessThread(File serializedPath)
 			throws Exception {
-		this.runner = runner;
+		this.runner = ProcessRunner.getInstance();
 		this.restore(serializedPath);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void run() {
 		process.run();
 		System.out.println("SHIT'S DONE!");
-
-		// Test Serialization/Deserialization for now. Remove once actually
-		// implemented.
-		try {
-			File save = this.suspend();
-			new ProcessThread(save, this.runner);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		runner.ackDone(process);
 	}
 

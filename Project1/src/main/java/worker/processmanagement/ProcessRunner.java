@@ -13,28 +13,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import worker.processmigration.MigratableProcess;
 import worker.processmigration.io.TransactionalFileInputStream;
 
+/**
+ * Object that handles process execution, suspension, and serialization. Uses
+ * Singleton pattern - each worker is running in a discrete JVM, and processes
+ * should not attempt to start more.
+ * 
+ * @author michaelryan
+ * 
+ */
 public class ProcessRunner implements Runnable {
 
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
-
 	private int port;
+
+	private static ProcessRunner INSTANCE;
 
 	private Map<Integer, ProcessThread> idsToProcesses = new ConcurrentHashMap<Integer, ProcessThread>();
 
-	public ProcessRunner(int port) {
-		this.port = port;
+	public static ProcessRunner init(int port) {
+		INSTANCE = new ProcessRunner(port);
+		return INSTANCE;
 	}
 
-	public int getPort() {
-		return this.port;
+	public static ProcessRunner getInstance() {
+		return INSTANCE;
+	}
+
+	private ProcessRunner(int port) {
+		this.port = port;
 	}
 
 	@Override
 	public void run() {
-
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e1) {
@@ -62,7 +75,7 @@ public class ProcessRunner implements Runnable {
 					if (obj instanceof MigratableProcess) {
 
 						MigratableProcess mp = (MigratableProcess) obj;
-						ProcessThread pt = new ProcessThread(mp, this);
+						ProcessThread pt = new ProcessThread(mp);
 						new Thread(pt).start();
 						idsToProcesses.put(mp.getProcessID(), pt);
 					} else if (obj instanceof ProcessControlMessage) {
@@ -89,14 +102,6 @@ public class ProcessRunner implements Runnable {
 			break;
 		case SUSPEND:
 			try {
-				procHandle.suspend();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case MIGRATE:
-			try {
 				location = (procHandle.suspend());
 				this.outStream.writeObject(new WorkerResponse(procHandle
 						.getProcess().getProcessID(), location));
@@ -110,15 +115,17 @@ public class ProcessRunner implements Runnable {
 				ObjectInputStream newProcessReader = new ObjectInputStream(
 						new TransactionalFileInputStream(
 								pcm.getProcessLocation()));
-				
-				MigratableProcess newProcess = (MigratableProcess) newProcessReader.readObject();
-				
-				procHandle = new ProcessThread(newProcess, this);
-				
+
+				MigratableProcess newProcess = (MigratableProcess) newProcessReader
+						.readObject();
+
+				procHandle = new ProcessThread(newProcess);
+
 				new Thread(procHandle).start();
-				
-				idsToProcesses.put(procHandle.getProcess().getProcessID(), procHandle);
-				
+
+				idsToProcesses.put(procHandle.getProcess().getProcessID(),
+						procHandle);
+
 				newProcessReader.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -135,17 +142,23 @@ public class ProcessRunner implements Runnable {
 	}
 
 	/**
+	 * Informs the master whether or not a process finished.
 	 * 
 	 * @param process
 	 *            the process
 	 */
 	public void ackDone(MigratableProcess process) {
 		try {
-			this.outStream.writeObject(new DoneMessage(process.getProcessID(),
+			this.outStream.writeObject(new WorkerResponse(process.getProcessID(),
 					process.getClientID()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+	public int getPort() {
+		return this.port;
+	}
+
 }
