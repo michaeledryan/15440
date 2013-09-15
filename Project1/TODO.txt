@@ -1,23 +1,7 @@
 Worker:
 
-	Run processes
-	Serialize to file when stopped
-	Send process location back to master after stopping process.
 	
 Client:
-	Tells master what to do.
-	Command line interface.
-	Can read text file as trace.
-
-	Format for the text file:
-	RUN <delayInMS : int> <class/processName> <process args>
-	MIGRATE? HOW DO WE HANDLE MIGRATION COMMANDS
-	STOP
-
-	Do requests have to be external?
-
-	REPL loop
-
 	ACKs when a particular process is done.
 	Should be able to display running processes.
 	Can start and kill processes.
@@ -27,38 +11,21 @@ Client:
 	When a client disconnects...?
 	Suspend processes
 	Kill processes
-	
-	Gets a client ID from master.
-	Unique client ID.
-
 	On disconnect, we keep processes running.
-	New clients can request the processes that belonged to the dead client.
+	New clients can request the processes that belonged to the dead client??
 
 Master:
-	Most complicated
-	Sends and receives multiple types of things
-	
-	Talk to clients:
-
-	Registers clients with a unique ID.
-	Receives requests to run processes from clients.
-	Can tell clients about the state of running processes.
-	
-	Tell clients about the state of each process runner?
-	Gets ACKs fromclients as keep-alive messages.
-	Maps clients to sets of processes.
-
-	Talk to workers:
-	
-	Sends jobs to workers
-	Load balancing - round robin/random until then.
-	Maps workers to sets of processes
-	Can migrate processes 
-	
-
 	GET A PROCESS ID???
 	
 
 
 Process:
 	Store ID of client and process.
+
+
+Cleanup!
+Heartbeats to see if we kill things?
+Need to fail more gracefully - if master disconnects, do we keep workers running for a few minutes?
+kill commands!!!!
+
+client killall command?
