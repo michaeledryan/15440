@@ -1,6 +1,6 @@
 #! /bin/bash
 
-foo=`which gradle`
+foo=`which gradle 2> /dev/null`
 
 if [ 0 -ne $? ]
 then
