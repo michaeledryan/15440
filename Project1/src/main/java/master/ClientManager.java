@@ -29,6 +29,10 @@ public class ClientManager implements Runnable {
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private List<Integer> pidList;
 
+	public List<Integer> getPidList() {
+		return pidList;
+	}
+
 	/**
 	 * Start the ClientManager.
 	 * 

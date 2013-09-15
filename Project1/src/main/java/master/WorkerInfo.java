@@ -121,7 +121,11 @@ public class WorkerInfo implements Runnable {
 						System.out.printf("Completed: pid: %d\n",
 								m.getProcessID());
 						c.sendResponse(Integer.toString(m.getProcessID()));
-						LoadBalancer.getInstance().getPidsToWorkers().remove(m.getProcessID());
+						LoadBalancer.getInstance().getPidsToWorkers()
+								.remove(m.getProcessID());
+						LoadBalancer.getInstance().getClients()
+								.get(m.getClientID()).getPidList()
+								.remove(new Integer(m.getProcessID()));
 						break;
 					case PROCESS_SERIALIZED: // TODO: Is this for suspension or
 												// migration?
