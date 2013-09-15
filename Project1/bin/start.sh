@@ -18,6 +18,8 @@ do
     i=$(($i+1))
 done
 
+sleep 2s
+
 ssh localhost "cd ${PWD}; sh ${DIR}/master -h $1 > master.log" &
 
 echo "Please start the client at your leisure."
