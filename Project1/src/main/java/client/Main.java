@@ -211,7 +211,7 @@ public class Main {
 				"Address of master node (ip or url). Default: localhost.");
 		opt.addOption("p", "port", true,
 				"Port to connect to master. Default: 8000.");
-		opt.addOption("?", "help", false, "Display help.");
+		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
 		try {
