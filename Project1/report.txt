@@ -1,0 +1,109 @@
+15-440 Lab 1 Report
+
+Alex Cappiello (acappiel)
+Michael Ryan (mer1)
+
+I. 
+
+  Migratable Process Framework
+
+  This project is a framework for running migratable processes on a distributed network.
+  Each process is represented by an object that meets the MigratableProcess interface by
+  extending the abstract class AbstractMigratableProcess. MigratableProcesses are expected
+  to use the included transactional file I/O streams. 
+
+  The process has three main components: a Master, Workers, and Clients.
+
+  Worker:
+
+  Workers handle the task of running and serializing processes. They are sent MigratableProcesses
+  and ProcessControlMessages from the Master and send back WorkerResponses after completing a given task.
+  Workers can start any task sent to them, serialize a task that they are currently running,
+  and restart a serialized task given the location of its serialized form on disk.
+
+  Main arguments:
+    -h,--help         Display help.
+    -p,--port <arg>   Port to listen on.
+
+
+  Master:
+
+  The Master receives requests from a client and executes them. It keeps track of processes running
+  on each worker and processes that each client has started. This is a single point of failure for the framework.
+    
+    -?,--help              Display help.
+    -h,--host-file <arg>   Host list file for worker nodes.
+    -p,--port <arg>        Port to listen on. Default: 8000.
+
+
+  Client:
+  The client connects to a running Master, then parses input from the user in a command line interface.
+  Commands include:
+    START <fully qualified class name> <command args>
+          Starts a process on a remote worker with the given arguments.
+          Returns the PID of the process.
+    MIGRATE <process ID>
+          Moves a process from its current worker to the next available one.
+    LIST
+      Returns a list of the PIDs of processes started from this client that are still running.
+    KILLALL
+      Shuts down the entire framework. Kills every worker and the master. Use sparingly.
+
+    Multiple clients can connect to the same master to run tasks simultaneously.
+
+
+    Main arguments:
+      -h,--help               Display help.
+      -a,--address <arg>      Address of master node (ip or url). Default: localhost.
+      -p,--port <arg>         Port to connect to master. Default: 8000.
+      -t,--trace-file <arg>   Trace file.
+
+  User-facing classes:
+  worker.processmigration.io.TransactionalFileInputStream
+  worker.processmigration.io.TransactionalFileOutputStream
+  worker.processmigration.MigratableProcess
+  worker.processmigration.AbstractMigratableProcess
+
+TransactionalFileInputStream
+
+TransactionalFileOutputStream
+
+
+II.
+  All parts of the spec were implemented. Here are points that were confusing and rationale for what
+  we decided to do.
+
+  Users have no direct control over where a process is executed. The user should not have to worry
+  about what nodes are under heavy load, and a shared filesystem means that files should be accessible
+  from anywhere.
+
+  We had considered load balancing, but deprioritized it. As a result, load balancing is currently
+  done with a round-robin method that rotates between workers.
+
+III.
+  We built this project using the gradle build system. from the top-level dir, run "gradle assemble"
+  to compile the source. Gradle should handle all dependencies.
+
+  A startup script has been included for convenience. It assumes that public key auth will work for 
+  sshing into remote boxes specified in a hosts.txt file or similar. The script will start a worker 
+  for each hostname and port in the specified file, then start a master listening for each one.
+  After the script runs, start the client separately (rlwrap is recommended). STDOUT for each worker
+  and the master is redirected to a file in the /logs subdirectory.
+
+  Running the client with a tracefile will execute each command in the trace, then wait for user input.
+
+
+IV.
+  Apache Commons CLI
+  Gradle - found 
+
+
+V.
+  InterleaveLineProcess
+  After building, run the startup script, then
+  > ./client -t interleave.trace
+
+  This trace starts several InterLeaveLineProcesses, then migrates them to different workers.
+  Input and output files can be seen in /interleave/input and /interleave/output
+
+
