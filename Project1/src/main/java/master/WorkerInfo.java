@@ -65,7 +65,6 @@ public class WorkerInfo implements Runnable {
 	public void sendToWorker(ClientRequest req) {
 		try {
 
-			System.out.println("GOT REQUEST: " + req.getRequest());
 			String[] requestArray = req.getRequest().split(" ", 2);
 
 			Class<?> clazz;

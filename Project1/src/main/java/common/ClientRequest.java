@@ -29,6 +29,11 @@ public class ClientRequest implements Serializable {
 	 *            Command to process by the master. This may be a new process or
 	 *            a control command.
 	 */
+	public ClientRequest(String request, ClientRequestType type) {
+		this.setProcessId(0);
+		this.setRequest(request);
+		this.setType(type);
+	}
 	public ClientRequest(int pid, String request, ClientRequestType type) {
 		this.setProcessId(pid);
 		this.setRequest(request);

@@ -34,11 +34,14 @@ public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+	static private String format = "Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>";
 
 	private static String masterAddress;
 	private static int masterPort;
 	private static String prompt = "--> ";
 	private static Random randGen;
+	private static int basePid;
+	private static int nextPid;
 	private static AtomicInteger waitingCount;
 
 	private static Socket sock = null;
@@ -55,6 +58,8 @@ public class Main {
 	 */
 	private static void init() throws UnknownHostException, IOException {
 		randGen = new Random();
+		basePid = randGen.nextInt(10000) * 10000;
+		nextPid = basePid;
 		waitingCount = new AtomicInteger(0);
 		sock = new Socket(masterAddress, masterPort);
 
@@ -91,11 +96,17 @@ public class Main {
 	 */
 	private static void sendRequest(String message, ClientRequestType type) {
 		try {
-			int pid = randGen.nextInt();
+			int pid;
+			if (type == ClientRequestType.START) {
+				pid = nextPid++;
+			}
+			else {
+				pid = 0;
+			}
 			System.out.printf("Sending: pid: %d, command: %s\n", pid, message);
 
 			if (type == ClientRequestType.MIGRATE) {
-				pid = Integer.parseInt(message);
+				pid = basePid + Integer.parseInt(message);
 			}
 
 			ClientRequest req = new ClientRequest(pid, message, type);
@@ -124,10 +135,9 @@ public class Main {
 
 			if (line[0].matches("\\d+(\\.\\d+)?")) {
 				// Contains a delay argument
-				
+
 				if (line.length < 2) {
-					System.err
-							.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
+					System.err.println(format);
 					continue;
 				}
 				try {
@@ -136,8 +146,7 @@ public class Main {
 						Thread.sleep(wait);
 					}
 				} catch (NumberFormatException e) {
-					System.err
-							.println("Bad input. Try again. Format: <delay (ms)> <command>");
+					System.err.println(format);
 				} catch (InterruptedException e) {
 
 				}
@@ -147,17 +156,16 @@ public class Main {
 				if (line.length == 3) {
 					args = line[2];
 				}
-				
-			} else { 
+
+			} else {
 				line = lines[i].trim().split(" ", 2);
-				
+
 				// No delay argument
 				if (line.length < 2) {
-					System.err
-							.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
+					System.err.println(format);
 					continue;
 				}
-				
+
 				cmd = line[0];
 				if (line.length == 2) {
 					args = line[1];
@@ -167,8 +175,7 @@ public class Main {
 			ClientRequestType type = ClientRequestType.fromString(cmd);
 
 			if (type == null) {
-				System.err
-						.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
+				System.err.println(format);
 				continue;
 			}
 
