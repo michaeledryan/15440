@@ -15,6 +15,7 @@ public class ClientRequest implements Serializable {
 	private String request;
 	private ClientRequestType type;
 	private int processId;
+	private int clientId;
 
 	/**
 	 * Create request.
@@ -56,6 +57,15 @@ public class ClientRequest implements Serializable {
 
 	public void setType(ClientRequestType type) {
 		this.type = type;
+	}
+
+	
+	public int getClientId() {
+		return clientId;
+	}
+	
+	public void setClientId(int uuid) {
+		clientId = uuid;		
 	}
 
 }

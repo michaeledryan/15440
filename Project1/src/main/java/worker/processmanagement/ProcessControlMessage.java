@@ -1,7 +1,13 @@
 package worker.processmanagement;
 
-public class ProcessControlMessage {
+import java.io.Serializable;
 
+public class ProcessControlMessage implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3809804617000219594L;
 	private int processID;
 	private ProcessControlCommand command;
 	private String processLocation;
@@ -25,6 +31,6 @@ public class ProcessControlMessage {
 	}
 	
 	public enum ProcessControlCommand {
-		START, SUSPEND, MIGRATE;
+		START, SUSPEND, MIGRATE, RESTART;
 	}
 }

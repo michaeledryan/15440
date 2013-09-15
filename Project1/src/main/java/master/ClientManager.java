@@ -7,6 +7,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import worker.processmanagement.ProcessControlMessage;
+import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
+
 import common.ClientRequest;
 import common.ClientRequestType;
 
@@ -76,11 +79,23 @@ public class ClientManager implements Runnable {
 					ClientRequest req = (ClientRequest) obj;
 					System.out.printf("Received: pid: %d, command: %s\n",
 							req.getProcessId(), req.getRequest());
-					
+
 					req.setClientId(this.uuid);
 					// Branch here to handle migrate request.
+					if (req.getType() == ClientRequestType.MIGRATE) {
+						
+						System.out.println(LoadBalancer.getInstance().getPidsToWorkers().get(req.getProcessId()) == null);
+						LoadBalancer
+								.getInstance()
+								.getPidsToWorkers()
+								.get(req.getProcessId())
+								.sendControlMessage(
+										new ProcessControlMessage(req
+												.getProcessId(),
+												ProcessControlCommand.MIGRATE,
+												""));
+					}
 					System.out.printf("Received: %s\n", req.getRequest());
-					System.out.println(req.getType());
 					if (req.getType() == ClientRequestType.START) {
 						System.out.println("got start request");
 						workQueue.add(req);

@@ -42,7 +42,9 @@ public class Main {
 			}
 			System.out.println("Starting worker...");
 			ProcessRunner r = new ProcessRunner(Integer.parseInt(cmd
-					.getOptionValue("p", "8001")));
+					.getOptionValue("p", "9001")));
+			System.out.println("PORT: " + cmd
+					.getOptionValue("p", "9001"));
 			r.run();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

@@ -6,6 +6,8 @@ public interface MigratableProcess extends Runnable, Serializable {
 
 	void suspend();
 	
+	void restart();
+	
 	public int getClientID();
 	
 	void setClientID(int clientID);

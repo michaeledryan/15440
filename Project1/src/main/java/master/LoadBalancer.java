@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import common.ClientRequest;
 import common.ClientRequestType;
@@ -22,7 +23,7 @@ public class LoadBalancer implements Runnable {
 	private Thread listener;
 	private int port;
 	private WorkerInfo[] workers;
-	private int nextWorker;
+	private AtomicInteger nextWorker;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 	private ConcurrentHashMap<Integer, WorkerInfo> pidsToWorkers;
@@ -53,7 +54,7 @@ public class LoadBalancer implements Runnable {
 	private LoadBalancer(int port, String workers) throws UnknownHostException,
 			IOException {
 		this.port = port;
-		this.nextWorker = 0;
+		this.nextWorker = new AtomicInteger();
 		this.workQueue = new ConcurrentLinkedQueue<ClientRequest>();
 		this.clients = new ConcurrentHashMap<Integer, ClientManager>();
 		this.pidsToWorkers = new ConcurrentHashMap<Integer, WorkerInfo>();
@@ -104,12 +105,18 @@ public class LoadBalancer implements Runnable {
 			}
 			ClientRequest req = this.workQueue.poll();
 			if (req.getType() == ClientRequestType.START) {
-				this.workers[this.nextWorker++].sendToWorker(req);
-				this.nextWorker %= this.workers.length;
+				this.workers[this.nextWorker.getAndIncrement()].sendToWorker(req);
+				this.nextWorker.set( this.nextWorker.get() % this.workers.length);
 			} else {
 				pidsToWorkers.get(req.getProcessId()).sendToWorker(req);
 			}
 		}
+	}
+	
+	public WorkerInfo getNextWorker() {
+		WorkerInfo worker = this.workers[this.nextWorker.getAndIncrement()];
+		this.nextWorker.set( this.nextWorker.get() % this.workers.length);
+		return worker;
 	}
 
 }

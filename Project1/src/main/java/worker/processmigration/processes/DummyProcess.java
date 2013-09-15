@@ -16,7 +16,7 @@ public class DummyProcess extends AbstractMigratableProcess {
 	
 	@Override
 	public void suspend() {
-		
+		suspended = true;
 	}
 
 	public DummyProcess(String[] args) throws Exception {
@@ -42,8 +42,12 @@ public class DummyProcess extends AbstractMigratableProcess {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
+		}		
+	}
+
+	@Override
+	public void restart() {
+		suspended = false;
 	}
 
 	

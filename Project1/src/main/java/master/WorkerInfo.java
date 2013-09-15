@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import worker.processmanagement.ProcessControlMessage;
+import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
 import worker.processmanagement.WorkerResponse;
 import worker.processmigration.MigratableProcess;
 import common.ClientRequest;
@@ -47,6 +49,8 @@ public class WorkerInfo implements Runnable {
 	 */
 	public void sendToWorker(ClientRequest req) {
 		try {
+			
+			System.out.println("GOT REQUEST: " + req.getRequest());
 			String[] requestArray = req.getRequest().split(" ", 2);
 
 			Class<?> clazz;
@@ -57,6 +61,12 @@ public class WorkerInfo implements Runnable {
 					.split(" "));
 
 			if (object instanceof MigratableProcess) {
+				
+				LoadBalancer.getInstance().getPidsToWorkers().put(req.getProcessId(), this);
+				if (LoadBalancer.getInstance().getPidsToWorkers().get(req.getProcessId()) == null){
+					System.out.println("fuck this shit");
+				}
+				
 				MigratableProcess dp = (MigratableProcess) object;
 				dp.setProcessID(req.getProcessId());
 				dp.setClientID(req.getClientId());
@@ -68,11 +78,12 @@ public class WorkerInfo implements Runnable {
 				| InvocationTargetException e) {
 			try {
 				clients.get(req.getClientId()).sendResponse(
-						"Problem handling the given request: Received error: " + e.getLocalizedMessage());
+						"Problem handling the given request: Received error: "
+								+ e.getLocalizedMessage());
 			} catch (IOException e1) {
-				e1.printStackTrace(); // Can't reach client.	
+				e1.printStackTrace(); // Can't reach client.
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			// Socket is closed. Cannot reach worker. TODO:
@@ -87,13 +98,24 @@ public class WorkerInfo implements Runnable {
 				Object obj = this.inStream.readObject();
 				if (obj != null && obj instanceof WorkerResponse) {
 					WorkerResponse m = (WorkerResponse) obj;
-					switch (m.type) {
+					switch (m.getType()) {
 					case PROCESS_FINISHED:
-						ClientManager c = this.clients.get(m.clientID);
-						System.out.printf("Completed: pid: %d\n", m.processID);
-						c.sendResponse(Integer.toString(m.processID));
+						ClientManager c = this.clients.get(m.getClientID());
+						System.out.printf("Completed: pid: %d\n",
+								m.getProcessID());
+						c.sendResponse(Integer.toString(m.getProcessID()));
 						break;
 					case PROCESS_SERIALIZED:
+						System.out.println("SERIALIZED PROCESS:"
+								+ m.getProcessID());
+						WorkerInfo migrantWorker = LoadBalancer.getInstance()
+								.getNextWorker();
+						migrantWorker.outStream
+								.writeObject(new ProcessControlMessage(m
+										.getProcessID(),
+										ProcessControlCommand.RESTART, m
+												.getSerializedFile()
+												.getAbsolutePath()));
 						break;
 					}
 				}
@@ -111,7 +133,7 @@ public class WorkerInfo implements Runnable {
 		}
 
 	}
-	
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -126,5 +148,9 @@ public class WorkerInfo implements Runnable {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public void sendControlMessage(ProcessControlMessage msg) throws IOException {
+		outStream.writeObject(msg);
 	}
 }

@@ -101,6 +101,9 @@ public class Main {
 				return;
 			}
 			
+			if (type == ClientRequestType.MIGRATE) {
+				pid = Integer.parseInt(commandAndType[1]);
+			}
 			
 			ClientRequest req = new ClientRequest(pid, message, type);
 			
@@ -141,7 +144,7 @@ public class Main {
 				sendRequest(lines[i], ClientRequestType.STOP);
 				
 			} else if (line[0].equalsIgnoreCase("migrate")) {
-				sendRequest(line[i], ClientRequestType.MIGRATE);
+				sendRequest(lines[i], ClientRequestType.MIGRATE);
 			} else {
 				System.out.println("Bad format. Usage: <START | STOP | MIGRATE> <command args>");
 			}

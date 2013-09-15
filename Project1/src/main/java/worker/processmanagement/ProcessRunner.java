@@ -1,5 +1,7 @@
 package worker.processmanagement;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmigration.MigratableProcess;
+import worker.processmigration.io.TransactionalFileInputStream;
 
 public class ProcessRunner implements Runnable {
 
@@ -24,8 +27,8 @@ public class ProcessRunner implements Runnable {
 	public ProcessRunner(int port) {
 		this.port = port;
 	}
-	
-	public int getPort () {
+
+	public int getPort() {
 		return this.port;
 	}
 
@@ -79,10 +82,10 @@ public class ProcessRunner implements Runnable {
 
 	private void handleControlMessage(ProcessControlMessage pcm) {
 		ProcessThread procHandle = idsToProcesses.get(pcm.getProcessID());
+		File location;
 		switch (pcm.getCommand()) {
 		case START:
 			procHandle.unSuspend();
-			// idsToProcesses.get(pcm.getProcessID()).
 			break;
 		case SUSPEND:
 			try {
@@ -94,22 +97,41 @@ public class ProcessRunner implements Runnable {
 			break;
 		case MIGRATE:
 			try {
-				procHandle.suspend();
+				location = (procHandle.suspend());
+				this.outStream.writeObject(new WorkerResponse(procHandle
+						.getProcess().getProcessID(), location));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// ObjectOutputStream oos = new ObjectOutputStream(new
-			// TransactionalFileOutputStream(generateProcessFilename(procHandle)));
-			// clientSocket.getOutputStream(); //Write message back to master.
 			break;
+		case RESTART:
+			try {
+				ObjectInputStream newProcessReader = new ObjectInputStream(
+						new TransactionalFileInputStream(
+								pcm.getProcessLocation()));
+				
+				MigratableProcess newProcess = (MigratableProcess) newProcessReader.readObject();
+				
+				procHandle = new ProcessThread(newProcess, this);
+				
+				new Thread(procHandle).start();
+				
+				idsToProcesses.put(procHandle.getProcess().getProcessID(), procHandle);
+				
+				newProcessReader.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
-	}
-
-	private String generateProcessFilename(ProcessThread procHandle) {
-		return "wow doge. So processID: "
-				+ procHandle.getProcess().getProcessID();
 	}
 
 	/**
