@@ -4,8 +4,8 @@ start worker.processmigration.processes.CountCharsProcess texts/shakespeare.txt 
 100 migrate 1
 start worker.processmigration.processes.CountCharsProcess texts/scrabble.txt texts/out3.txt
 start worker.processmigration.processes.CountCharsProcess texts/twitter_1k.txt texts/out4.txt
-100 migrate 0
-100 migrate 1
-100 migrate 2
 start worker.processmigration.processes.CountCharsProcess texts/fruits.txt texts/out5.txt
 list 1
+10000 list 1
+10000 list 1
+30000 list 1

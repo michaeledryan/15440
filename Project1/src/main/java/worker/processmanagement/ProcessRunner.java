@@ -126,30 +126,14 @@ public class ProcessRunner implements Runnable {
 		case RESTART:
 			try {
 				System.out.printf("@@@%s\n", pcm.getProcessLocation());
-				ObjectInputStream newProcessReader = new ObjectInputStream(
-						new TransactionalFileInputStream(
-								pcm.getProcessLocation()));
-
-				MigratableProcess newProcess = (MigratableProcess) newProcessReader
-						.readObject();
-
-				procHandle = new ProcessThread(newProcess);
-
+				procHandle = new ProcessThread(new File(
+						pcm.getProcessLocation()));
 				procHandle.restart();
 				new Thread(procHandle).start();
-
 				idsToProcesses.put(procHandle.getProcess().getProcessID(),
 						procHandle);
-
-				newProcessReader.close();
 				break;
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

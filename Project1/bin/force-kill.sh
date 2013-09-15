@@ -15,4 +15,4 @@ do
     ssh -oStrictHostKeyChecking=no ${host} "kill \`jps | grep \"Main\" | awk {'print \$1'}\`" &
 done
 
-#kill `jps | grep "Main" | awk {'print $1'}`
+kill `jps | grep "Main" | awk {'print $1'}`
