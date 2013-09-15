@@ -58,7 +58,8 @@ public class LoadBalancer implements Runnable {
 		this.workQueue = new ConcurrentLinkedQueue<ClientRequest>();
 		this.clients = new ConcurrentHashMap<Integer, ClientManager>();
 		this.pidsToWorkers = new ConcurrentHashMap<Integer, WorkerInfo>();
-
+		INSTANCE = this;
+		
 		String[] workerList = workers.split("\n");
 		this.workers = new WorkerInfo[workerList.length];
 		for (int i = 0; i < workerList.length; i++) {
@@ -89,7 +90,7 @@ public class LoadBalancer implements Runnable {
 	 */
 	@Override
 	public void run() {
-		L = new Listener(this.port, this.workQueue, this.clients);
+		L = new Listener(this.port);
 		this.listener = new Thread(L);
 		this.listener.start();
 

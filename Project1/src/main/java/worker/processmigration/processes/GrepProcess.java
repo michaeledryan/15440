@@ -71,5 +71,9 @@ public class GrepProcess extends AbstractMigratableProcess {
 		while (suspending)
 			;
 	}
+	
+	public void restart() {
+		suspending = false;
+	}
 
 }

@@ -112,13 +112,13 @@ public class ProcessRunner implements Runnable {
 			break;
 		// Suspend a process, then serialize it to a file and send the filename
 		// back.
-		case SUSPEND:
+		case MIGRATE:
 			try {
 				location = (procHandle.suspend());
 				this.outStream.writeObject(new WorkerResponse(procHandle
 						.getProcess().getProcessID(), location));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.err.println("Failure to serialize response.");
 				e.printStackTrace();
 			}
 			break;
@@ -134,6 +134,7 @@ public class ProcessRunner implements Runnable {
 
 				procHandle = new ProcessThread(newProcess);
 
+				procHandle.restart();
 				new Thread(procHandle).start();
 
 				idsToProcesses.put(procHandle.getProcess().getProcessID(),

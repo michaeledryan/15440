@@ -135,6 +135,8 @@ public class WorkerInfo implements Runnable {
 										ProcessControlCommand.RESTART, m
 												.getSerializedFile()
 												.getAbsolutePath()));
+						LoadBalancer.getInstance().getPidsToWorkers()
+								.put(m.getProcessID(), migrantWorker);
 						break;
 					}
 				}

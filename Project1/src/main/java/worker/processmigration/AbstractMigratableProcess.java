@@ -1,7 +1,5 @@
 package worker.processmigration;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 /**
  * Abstract base class for a migratable process.

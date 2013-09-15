@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import worker.processmanagement.ProcessControlMessage;
 import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
-
 import common.ClientRequest;
 import common.ClientRequestType;
 
@@ -26,6 +27,7 @@ public class ClientManager implements Runnable {
 	private OutputStream outStream;
 	private ObjectInputStream inStream;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
+	private List<Integer> pidList;
 
 	/**
 	 * Start the ClientManager.
@@ -38,8 +40,7 @@ public class ClientManager implements Runnable {
 	 *            Passed through from LoadBalancer.
 	 * @throws IOException
 	 */
-	public ClientManager(int uuid, Socket sock,
-			ConcurrentLinkedQueue<ClientRequest> workQueue) throws IOException {
+	public ClientManager(int uuid, Socket sock) throws IOException {
 		this.uuid = uuid;
 		this.sock = sock;
 
@@ -48,7 +49,11 @@ public class ClientManager implements Runnable {
 		this.inStream = new ObjectInputStream(this.sock.getInputStream());
 
 		// Shared among all ClientManager instances.
-		this.workQueue = workQueue;
+		this.workQueue = LoadBalancer.getInstance().getWorkQueue();
+
+		// List of the pids of processes started by this client.
+		this.pidList = new ArrayList<Integer>();
+
 	}
 
 	/**
@@ -81,9 +86,14 @@ public class ClientManager implements Runnable {
 							req.getProcessId(), req.getRequest());
 
 					req.setClientId(this.uuid);
-					// Branch here to handle migrate request.
-					if (req.getType() == ClientRequestType.MIGRATE) {
-						
+					System.out.printf("Received: %s\n", req.getRequest());
+
+					switch (req.getType()) {
+					case LIST:
+						sendResponse("Processes running on this process: "
+								+ pidList.toString());
+						break;
+					case MIGRATE:
 						LoadBalancer
 								.getInstance()
 								.getPidsToWorkers()
@@ -91,26 +101,26 @@ public class ClientManager implements Runnable {
 								.sendControlMessage(
 										new ProcessControlMessage(req
 												.getProcessId(),
-												ProcessControlCommand.SUSPEND,
-												""));
-					}
-					System.out.printf("Received: %s\n", req.getRequest());
-					if (req.getType() == ClientRequestType.START) {
-						System.out.println("got start request");
+												ProcessControlCommand.MIGRATE,
+												null));
+						break;
+					case START:
 						workQueue.add(req);
-					} else {
-						System.out.println("got non-start request");
+						pidList.add(req.getProcessId());
+						break;
 					}
 				}
 			} catch (EOFException e) {
-				System.out.println("Client disconnected.");
+				System.out.println("Client " + uuid + " disconnected.");
+				LoadBalancer.getInstance().getClients().remove(this.uuid);
 				break;
 			} catch (IOException e) {
-				System.err.println("Socket read failed. Aborting.");
-				e.printStackTrace();
+				System.err
+						.println("Socket read failed. Connection with client "
+								+ uuid + " lost.");
+				LoadBalancer.getInstance().getClients().remove(this.uuid);
 				break;
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
