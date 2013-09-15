@@ -11,15 +11,15 @@ i=0
 
 cat $1 | while read -r;
 do
-    arr=$(echo $REPLY | tr ":" " ")
+    echo $REPLY
     host=${REPLY%:*}
     port=`echo $REPLY | sed 's/.*\://g'`
-    ssh ${host} "cd ${PWD}; sh ${DIR}/worker" -p ${port} > worker${i}.log &
+    ssh -oStrictHostKeyChecking=no ${host} "cd ${PWD}; sh ${DIR}/worker -p ${port} > worker${i}.log" &
     i=$(($i+1))
 done
 
 sleep 2s
 
-ssh localhost "cd ${PWD}; sh ${DIR}/master -h $1 > master.log" &
+sh ${DIR}/master -h $1 > master.log &
 
 echo "Please start the client at your leisure."
