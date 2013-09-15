@@ -27,15 +27,13 @@ public class Main {
 	public static void main(String[] args) {
 
 		Options opt = new Options();
-		opt.addOption("h", "host-file", true,
-				"Host list file for worker nodes.");
-		opt.addOption("?", "help", false, "Display help.");
-		opt.addOption("p", "port", true, "Port to listen on.");
+		opt.addOption("h", "help", false, "Display help.");
+		opt.addOption("p", "port", true, "Port to listen on. Default: 9001");
 
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine cmd = parser.parse(opt, args);
-			if (cmd.hasOption("?")) {
+			if (cmd.hasOption("h")) {
 				HelpFormatter help = new HelpFormatter();
 				help.printHelp("worker", helpHeader, opt, helpFooter, true);
 				System.exit(1);

@@ -55,8 +55,8 @@ public class ProcessRunner implements Runnable {
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			System.err.println("Attempted to start server on port " + port
+					+ ". Port already in use.");
 		}
 
 		while (true) {
