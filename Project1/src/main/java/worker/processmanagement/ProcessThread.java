@@ -112,6 +112,7 @@ public class ProcessThread implements Runnable {
 		System.out
 				.printf("Deserializing from %s\n", savefile.getAbsolutePath());
 
+		
 		// Read the file.
 		FileInputStream infile = new FileInputStream(savefile);
 		ObjectInputStream ois = new ObjectInputStream(infile);

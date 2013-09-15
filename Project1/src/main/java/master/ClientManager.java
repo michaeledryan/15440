@@ -98,15 +98,21 @@ public class ClientManager implements Runnable {
 								+ pidList.toString());
 						break;
 					case MIGRATE:
-						LoadBalancer
-								.getInstance()
-								.getPidsToWorkers()
-								.get(req.getProcessId())
-								.sendControlMessage(
-										new ProcessControlMessage(req
-												.getProcessId(),
-												ProcessControlCommand.MIGRATE,
-												null));
+						if ((LoadBalancer.getInstance().getPidsToWorkers()
+								.get(req.getProcessId())) == null) {
+							sendResponse("No process exists with pid: "
+									+ req.getProcessId() + ".");
+						} else {
+							LoadBalancer
+									.getInstance()
+									.getPidsToWorkers()
+									.get(req.getProcessId())
+									.sendControlMessage(
+											new ProcessControlMessage(
+													req.getProcessId(),
+													ProcessControlCommand.MIGRATE,
+													null));
+						}
 						break;
 					case START:
 						workQueue.add(req);

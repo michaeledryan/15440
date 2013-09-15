@@ -1,0 +1,30 @@
+start worker.processmigration.processes.InterleaveLineProcess ../texts/fruits.txt ../texts/twitter_1k.txt interleave/out1.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/fruits.txt ../texts/shakespeare.txt interleave/out2.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/fruits.txt ../texts/scrabble.txt interleave/out3.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/fruits.txt ../texts/twitter_200k.txt interleave/out4.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/shakespeare.txt ../texts/twitter_1k.txt interleave/out5.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/shakespeare.txt ../texts/scrabble.txt interleave/out6.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/shakespeare.txt ../texts/twitter_200k.txt interleave/out7.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/twitter_1k.txt ../texts/scrabble.txt interleave/out8.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/twitter_1k.txt ../texts/twitter_200k.txt interleave/out9.txt
+start worker.processmigration.processes.InterleaveLineProcess ../texts/twitter_200k.txt ../texts/scrabble.txt interleave/out10.txt
+10000 migrate 0
+migrate 1
+migrate 2
+migrate 3
+migrate 4
+migrate 5
+migrate 6
+migrate 7
+migrate 8
+migrate 9
+migrate 0
+migrate 1
+migrate 2
+migrate 3
+migrate 4
+migrate 5
+migrate 6
+migrate 7
+migrate 8
+migrate 9

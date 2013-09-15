@@ -135,8 +135,9 @@ public class Main {
 			if (line[0].matches("\\d+(\\.\\d+)?")) {
 				// Contains a delay argument
 				if (line.length < 3
-						&& !(line.length > 1 && line[1]
-								.equalsIgnoreCase("killall"))) {
+						&& !(line.length > 1 && (line[1]
+								.equalsIgnoreCase("killall") || line[1]
+								.equalsIgnoreCase("list")))) {
 					System.err.println(format);
 					continue;
 				}
@@ -162,8 +163,9 @@ public class Main {
 
 				// No delay argument
 				if (line.length < 2
-						&& !(line.length > 0 && line[0]
-								.equalsIgnoreCase("killall"))) {
+						&& !(line.length > 0 && (line[0]
+								.equalsIgnoreCase("killall") || line[0]
+								.equalsIgnoreCase("list")))) {
 					System.err.println(format);
 					continue;
 				}

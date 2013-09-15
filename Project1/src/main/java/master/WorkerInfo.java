@@ -120,17 +120,17 @@ public class WorkerInfo implements Runnable {
 						ClientManager c = this.clients.get(m.getClientID());
 						System.out.printf("Completed: pid: %d\n",
 								m.getProcessID());
-						c.sendResponse(Integer.toString(m.getProcessID()));
+						c.sendResponse("Finished process with pid: " + m.getProcessID());
+
 						LoadBalancer.getInstance().getPidsToWorkers()
 								.remove(m.getProcessID());
 						LoadBalancer.getInstance().getClients()
 								.get(m.getClientID()).getPidList()
 								.remove(new Integer(m.getProcessID()));
+						
 						break;
 					case PROCESS_SERIALIZED: // TODO: Is this for suspension or
 												// migration?
-						System.out.println("SERIALIZED PROCESS:"
-								+ m.getProcessID());
 						WorkerInfo migrantWorker = LoadBalancer.getInstance()
 								.getNextWorker();
 						migrantWorker.outStream
@@ -141,6 +141,7 @@ public class WorkerInfo implements Runnable {
 												.getAbsolutePath()));
 						LoadBalancer.getInstance().getPidsToWorkers()
 								.put(m.getProcessID(), migrantWorker);
+						c.sendResponse("Migrated process with pid: " + m.getProcessID());
 						break;
 					}
 				}

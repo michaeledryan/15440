@@ -66,13 +66,6 @@ public class InterleaveLineProcess extends AbstractMigratableProcess {
 		
 		boolean finished = false;
 		while (!suspended && !finished) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			
 			try {
 				l1 = i1Reader.readLine();
 				l2 = i2Reader.readLine();

@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmigration.MigratableProcess;
@@ -28,6 +30,7 @@ public class ProcessRunner implements Runnable {
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
 	private int port;
+	private boolean disconnected = false;
 
 	private static ProcessRunner INSTANCE;
 
@@ -57,11 +60,13 @@ public class ProcessRunner implements Runnable {
 		} catch (IOException e1) {
 			System.err.println("Attempted to start server on port " + port
 					+ ". Port already in use.");
+			System.exit(0);
 		}
 
 		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
+				disconnected = false;
 				this.outStream = new ObjectOutputStream(
 						this.clientSocket.getOutputStream());
 				this.inStream = new ObjectInputStream(
@@ -87,7 +92,18 @@ public class ProcessRunner implements Runnable {
 				}
 
 			} catch (IOException e) {
-				System.err.println("Master disconnected.");
+				disconnected = true;
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					
+					@Override
+					public void run() {
+						if (disconnected) {
+							System.exit(0);
+						}
+						
+					}
+				}, 7000);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
