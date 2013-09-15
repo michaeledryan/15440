@@ -91,7 +91,7 @@ public class WorkerInfo implements Runnable {
 			try {
 				clients.get(req.getClientId()).sendResponse(
 						"Problem handling the given request: Received error: "
-								+ e.getLocalizedMessage());
+								+ e.getStackTrace());
 			} catch (IOException e1) {
 				e1.printStackTrace(); // Can't reach client.
 			}
@@ -121,6 +121,7 @@ public class WorkerInfo implements Runnable {
 						System.out.printf("Completed: pid: %d\n",
 								m.getProcessID());
 						c.sendResponse(Integer.toString(m.getProcessID()));
+						LoadBalancer.getInstance().getPidsToWorkers().remove(m.getProcessID());
 						break;
 					case PROCESS_SERIALIZED: // TODO: Is this for suspension or
 												// migration?
