@@ -90,7 +90,7 @@ public class ClientManager implements Runnable {
 
 					switch (req.getType()) {
 					case LIST:
-						sendResponse("Processes running on this process: "
+						sendResponse("Processes running from this client: "
 								+ pidList.toString());
 						break;
 					case MIGRATE:
@@ -107,6 +107,9 @@ public class ClientManager implements Runnable {
 					case START:
 						workQueue.add(req);
 						pidList.add(req.getProcessId());
+						break;
+					case KILLALL:
+						workQueue.add(req);
 						break;
 					}
 				}

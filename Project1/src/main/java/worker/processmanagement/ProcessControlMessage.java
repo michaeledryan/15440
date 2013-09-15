@@ -46,6 +46,6 @@ public class ProcessControlMessage implements Serializable {
 	 * 
 	 */
 	public enum ProcessControlCommand {
-		START, MIGRATE, RESTART;
+		START, MIGRATE, RESTART, KILLALL;
 	}
 }

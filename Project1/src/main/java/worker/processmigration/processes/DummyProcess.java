@@ -13,6 +13,7 @@ public class DummyProcess extends AbstractMigratableProcess {
 	private boolean suspended = false;
 	private int limit;
 	private int time;
+	private int i = 0;
 	
 	@Override
 	public void suspend() {
@@ -27,14 +28,15 @@ public class DummyProcess extends AbstractMigratableProcess {
 		}
 		limit = Integer.parseInt(args[0]);
 		time = Integer.parseInt(args[1]);
+		i = 0;
 	}
 	
 	
 	@Override
 	public void run() {
 		Random rand = new Random();
-		int i = 0;
 		while (i++ < time && !suspended) {
+			System.err.println("RUNNING: " + toString());
 			System.out.println(rand.nextInt(limit));
 			try {
 				Thread.sleep(1000);
@@ -48,6 +50,13 @@ public class DummyProcess extends AbstractMigratableProcess {
 	@Override
 	public void restart() {
 		suspended = false;
+		System.err.println("RESTARTING: " + toString());
+	}
+
+	@Override
+	public String toString() {
+		return "DummyProcess [suspended=" + suspended + ", limit=" + limit
+				+ ", time=" + time + ", i= " + i + "]";
 	}
 
 	

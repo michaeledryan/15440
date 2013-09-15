@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import worker.processmanagement.ProcessControlMessage;
+import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
 import common.ClientRequest;
 import common.ClientRequestType;
 
@@ -107,6 +109,18 @@ public class LoadBalancer implements Runnable {
 			if (req.getType() == ClientRequestType.START) {
 				this.workers[this.nextWorker.getAndIncrement()].sendToWorker(req);
 				this.nextWorker.set( this.nextWorker.get() % this.workers.length);
+			} else if(req.getType() == ClientRequestType.KILLALL) {
+				for(WorkerInfo wi : workers) {
+					try {
+						wi.sendControlMessage(new ProcessControlMessage(0, ProcessControlCommand.KILLALL, ""));
+						System.out.println("Killed one");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+				}
+				
+				System.exit(0);
 			} else {
 				pidsToWorkers.get(req.getProcessId()).sendToWorker(req);
 			}
