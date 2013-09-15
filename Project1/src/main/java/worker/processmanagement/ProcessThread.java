@@ -56,7 +56,9 @@ public class ProcessThread implements Runnable {
 	public void run() {
 		process.run();
 		System.out.println("SHIT'S DONE!");
-		runner.ackDone(process);
+		if (ps == ProcessState.RUNNING){
+			runner.ackDone(process);
+		}
 	}
 
 	/**
