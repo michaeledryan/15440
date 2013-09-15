@@ -124,8 +124,10 @@ public class Main {
 
 			if (line[0].matches("\\d+(\\.\\d+)?")) {
 				// Contains a delay argument
-				
-				if (line.length < 2) {
+
+				if (line.length < 3
+						&& !(line.length > 1 && line[1]
+								.equalsIgnoreCase("killall"))) {
 					System.err
 							.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
 					continue;
@@ -147,32 +149,42 @@ public class Main {
 				if (line.length == 3) {
 					args = line[2];
 				}
-				
-			} else { 
+
+			} else {
 				line = lines[i].trim().split(" ", 2);
-				
+
 				// No delay argument
-				if (line.length < 2) {
+				if (line.length < 2
+						&& !(line.length > 0 && line[0]
+								.equalsIgnoreCase("killall"))) {
 					System.err
 							.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
 					continue;
 				}
-				
+
 				cmd = line[0];
 				if (line.length == 2) {
 					args = line[1];
 				}
 			}
 
-			ClientRequestType type = ClientRequestType.fromString(cmd);
+			ClientRequestType type = null;
 
-			if (type == null) {
+			try {
+				type = ClientRequestType.valueOf(cmd.toUpperCase());
+			} catch (IllegalArgumentException e) {
 				System.err
 						.println("Bad input. Try again. Format: [delay] <START | MIGRATE | LIST> <arguments>");
 				continue;
 			}
 
 			sendRequest(args, type);
+
+			if (type == ClientRequestType.KILLALL) {
+				System.out.println("Sending kill messages.");
+				System.out.println("Exiting...");
+				System.exit(0);
+			}
 
 		}
 	}

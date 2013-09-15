@@ -141,6 +141,7 @@ public class ProcessRunner implements Runnable {
 						procHandle);
 
 				newProcessReader.close();
+				break;
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -151,6 +152,11 @@ public class ProcessRunner implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		case KILLALL:
+			System.exit(0);
+			break;
+		default:
+			break;
 
 		}
 	}
