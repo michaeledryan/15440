@@ -44,14 +44,13 @@ public class ProcessThread implements Runnable {
 	 *            File to serialized output.
 	 * @throws Exception
 	 */
-	public ProcessThread(File serializedPath)
-			throws Exception {
+	public ProcessThread(File serializedPath) throws Exception {
 		this.runner = ProcessRunner.getInstance();
 		this.restore(serializedPath);
 	}
 
 	/**
-	 * 
+	 * Run message. Runs the process and reports back to the master when done.
 	 */
 	@Override
 	public void run() {
@@ -131,7 +130,8 @@ public class ProcessThread implements Runnable {
 		}
 	}
 
-	public void unSuspend() {
+	public void restart() {
+		process.restart();
 	}
 
 }

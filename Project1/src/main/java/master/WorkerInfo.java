@@ -16,6 +16,13 @@ import worker.processmanagement.WorkerResponse;
 import worker.processmigration.MigratableProcess;
 import common.ClientRequest;
 
+/**
+ * Master server's representation of a worker server. Handles all messages to
+ * and from a given worker.
+ * 
+ * @author michaelryan
+ * 
+ */
 public class WorkerInfo implements Runnable {
 
 	private String hostname;
@@ -26,12 +33,20 @@ public class WorkerInfo implements Runnable {
 	private Thread t;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 
-	public WorkerInfo(String hostname, int port,
-			ConcurrentHashMap<Integer, ClientManager> clients)
-			throws UnknownHostException, IOException {
+	/**
+	 * 
+	 * @param hostname
+	 *            hostname of remote worker
+	 * @param port
+	 *            port for remote worker
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public WorkerInfo(String hostname, int port) throws UnknownHostException,
+			IOException {
 		this.setHostname(hostname);
 		this.setPort(port);
-		this.clients = clients;
+		this.clients = LoadBalancer.getInstance().getClients();
 		this.sock = new Socket(hostname, port);
 		this.outStream = new ObjectOutputStream(this.sock.getOutputStream());
 		this.inStream = new ObjectInputStream(this.sock.getInputStream());
@@ -49,7 +64,7 @@ public class WorkerInfo implements Runnable {
 	 */
 	public void sendToWorker(ClientRequest req) {
 		try {
-			
+
 			System.out.println("GOT REQUEST: " + req.getRequest());
 			String[] requestArray = req.getRequest().split(" ", 2);
 
@@ -61,12 +76,10 @@ public class WorkerInfo implements Runnable {
 					.split(" "));
 
 			if (object instanceof MigratableProcess) {
-				
-				LoadBalancer.getInstance().getPidsToWorkers().put(req.getProcessId(), this);
-				if (LoadBalancer.getInstance().getPidsToWorkers().get(req.getProcessId()) == null){
-					System.out.println("fuck this shit");
-				}
-				
+
+				LoadBalancer.getInstance().getPidsToWorkers()
+						.put(req.getProcessId(), this);
+
 				MigratableProcess dp = (MigratableProcess) object;
 				dp.setProcessID(req.getProcessId());
 				dp.setClientID(req.getClientId());
@@ -90,6 +103,11 @@ public class WorkerInfo implements Runnable {
 		}
 	}
 
+	/**
+	 * Main loop for a WorkerInfo. Listens for messages back from remote workers
+	 * and either sends information back to the client or migrates the process
+	 * to another worker.
+	 */
 	@Override
 	public void run() {
 
@@ -105,7 +123,8 @@ public class WorkerInfo implements Runnable {
 								m.getProcessID());
 						c.sendResponse(Integer.toString(m.getProcessID()));
 						break;
-					case PROCESS_SERIALIZED:
+					case PROCESS_SERIALIZED: // TODO: Is this for suspension or
+												// migration?
 						System.out.println("SERIALIZED PROCESS:"
 								+ m.getProcessID());
 						WorkerInfo migrantWorker = LoadBalancer.getInstance()
@@ -150,7 +169,8 @@ public class WorkerInfo implements Runnable {
 		this.port = port;
 	}
 
-	public void sendControlMessage(ProcessControlMessage msg) throws IOException {
+	public void sendControlMessage(ProcessControlMessage msg)
+			throws IOException {
 		outStream.writeObject(msg);
 	}
 }

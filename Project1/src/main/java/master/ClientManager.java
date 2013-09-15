@@ -84,7 +84,6 @@ public class ClientManager implements Runnable {
 					// Branch here to handle migrate request.
 					if (req.getType() == ClientRequestType.MIGRATE) {
 						
-						System.out.println(LoadBalancer.getInstance().getPidsToWorkers().get(req.getProcessId()) == null);
 						LoadBalancer
 								.getInstance()
 								.getPidsToWorkers()
@@ -92,7 +91,7 @@ public class ClientManager implements Runnable {
 								.sendControlMessage(
 										new ProcessControlMessage(req
 												.getProcessId(),
-												ProcessControlCommand.MIGRATE,
+												ProcessControlCommand.SUSPEND,
 												""));
 					}
 					System.out.printf("Received: %s\n", req.getRequest());

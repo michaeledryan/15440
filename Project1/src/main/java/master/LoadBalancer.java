@@ -64,11 +64,10 @@ public class LoadBalancer implements Runnable {
 		for (int i = 0; i < workerList.length; i++) {
 			String[] worker = workerList[i].split(":");
 			if (worker.length < 2) {
-				this.workers[i] = new WorkerInfo(worker[0], 8001, this.clients);
+				this.workers[i] = new WorkerInfo(worker[0], 8001);
 			} else {
 				int workerPort = Integer.parseInt(worker[1]);
-				this.workers[i] = new WorkerInfo(worker[0], workerPort,
-						this.clients);
+				this.workers[i] = new WorkerInfo(worker[0], workerPort);
 			}
 		}
 	}
@@ -113,6 +112,10 @@ public class LoadBalancer implements Runnable {
 		}
 	}
 	
+	/**
+	 * TODO: Make it smart!
+	 * @return the next worker in line.
+	 */
 	public WorkerInfo getNextWorker() {
 		WorkerInfo worker = this.workers[this.nextWorker.getAndIncrement()];
 		this.nextWorker.set( this.nextWorker.get() % this.workers.length);

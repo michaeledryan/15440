@@ -46,6 +46,10 @@ public class ProcessRunner implements Runnable {
 		this.port = port;
 	}
 
+	/**
+	 * Main loop for the ProcessRunner. Listens for new processes or control
+	 * requests, then handles them appropriately.
+	 */
 	@Override
 	public void run() {
 		try {
@@ -62,8 +66,6 @@ public class ProcessRunner implements Runnable {
 						this.clientSocket.getOutputStream());
 				this.inStream = new ObjectInputStream(
 						this.clientSocket.getInputStream());
-
-				// TODO: Establish protocol for sending data back to Master
 
 				Object obj;
 				while (true) {
@@ -93,13 +95,23 @@ public class ProcessRunner implements Runnable {
 		}
 	}
 
+	/**
+	 * Takes a ProcessControlMessage and suspends or restarts the specified
+	 * process.
+	 * 
+	 * @param pcm
+	 *            the ProcessControlMessage to be handled.
+	 */
 	private void handleControlMessage(ProcessControlMessage pcm) {
 		ProcessThread procHandle = idsToProcesses.get(pcm.getProcessID());
 		File location;
 		switch (pcm.getCommand()) {
+		// TODO: Do we ever suspend a process without serializing it?
 		case START:
-			procHandle.unSuspend();
+			procHandle.restart();
 			break;
+		// Suspend a process, then serialize it to a file and send the filename
+		// back.
 		case SUSPEND:
 			try {
 				location = (procHandle.suspend());
@@ -110,6 +122,7 @@ public class ProcessRunner implements Runnable {
 				e.printStackTrace();
 			}
 			break;
+		// Resume a process that has been serialized to the given file location.
 		case RESTART:
 			try {
 				ObjectInputStream newProcessReader = new ObjectInputStream(
@@ -149,8 +162,8 @@ public class ProcessRunner implements Runnable {
 	 */
 	public void ackDone(MigratableProcess process) {
 		try {
-			this.outStream.writeObject(new WorkerResponse(process.getProcessID(),
-					process.getClientID()));
+			this.outStream.writeObject(new WorkerResponse(process
+					.getProcessID(), process.getClientID()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

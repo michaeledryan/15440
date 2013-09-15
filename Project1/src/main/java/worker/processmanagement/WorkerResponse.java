@@ -2,12 +2,14 @@ package worker.processmanagement;
 
 import java.io.File;
 import java.io.Serializable;
-
+/**
+ * Object wrapping messages back from workers to the master.
+ * 
+ * @author michaelryan
+ *
+ */
 public class WorkerResponse implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5602519190517510697L;
 	private int processID;
 	private int clientID;
