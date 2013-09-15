@@ -132,7 +132,7 @@ public class ProcessRunner implements Runnable {
 			try {
 				location = (procHandle.suspend());
 				this.outStream.writeObject(new WorkerResponse(procHandle
-						.getProcess().getProcessID(), location));
+						.getProcess().getProcessID(), procHandle.getProcess().getClientID(), location));
 			} catch (IOException e) {
 				System.err.println("Failure to serialize response.");
 				e.printStackTrace();

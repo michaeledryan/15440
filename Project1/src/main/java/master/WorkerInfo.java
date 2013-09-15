@@ -14,6 +14,7 @@ import worker.processmanagement.ProcessControlMessage;
 import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
 import worker.processmanagement.WorkerResponse;
 import worker.processmigration.MigratableProcess;
+
 import common.ClientRequest;
 
 /**
@@ -115,9 +116,9 @@ public class WorkerInfo implements Runnable {
 				Object obj = this.inStream.readObject();
 				if (obj != null && obj instanceof WorkerResponse) {
 					WorkerResponse m = (WorkerResponse) obj;
+					ClientManager c = this.clients.get(m.getClientID());
 					switch (m.getType()) {
 					case PROCESS_FINISHED:
-						ClientManager c = this.clients.get(m.getClientID());
 						System.out.printf("Completed: pid: %d\n",
 								m.getProcessID());
 						c.sendResponse("Finished process with pid: " + m.getProcessID());
@@ -129,8 +130,7 @@ public class WorkerInfo implements Runnable {
 								.remove(new Integer(m.getProcessID()));
 						
 						break;
-					case PROCESS_SERIALIZED: // TODO: Is this for suspension or
-												// migration?
+					case PROCESS_SERIALIZED:
 						WorkerInfo migrantWorker = LoadBalancer.getInstance()
 								.getNextWorker();
 						migrantWorker.outStream

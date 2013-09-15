@@ -58,9 +58,10 @@ public class WorkerResponse implements Serializable {
 		this.type = WorkerResponseType.PROCESS_FINISHED;
 	}
 
-	public WorkerResponse(int pid, File serializedFile) {
+	public WorkerResponse(int pid, int cid, File serializedFile) {
 		this.processID = pid;
 		this.serializedFile = serializedFile;
+		this.clientID = cid;
 		this.type = WorkerResponseType.PROCESS_SERIALIZED;
 	}
 }
