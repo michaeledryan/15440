@@ -9,4 +9,9 @@ else
     GRADLE=gradle
 fi
 
-$GRADLE assemble
+if [ 0 -ne $# ]
+then
+    $GRADLE $@
+else
+    $GRADLE assemble
+fi
