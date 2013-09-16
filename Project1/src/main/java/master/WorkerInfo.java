@@ -14,7 +14,6 @@ import worker.processmanagement.ProcessControlMessage;
 import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
 import worker.processmanagement.WorkerResponse;
 import worker.processmigration.MigratableProcess;
-
 import common.ClientRequest;
 
 /**
@@ -48,7 +47,25 @@ public class WorkerInfo implements Runnable {
 		this.setHostname(hostname);
 		this.setPort(port);
 		this.clients = LoadBalancer.getInstance().getClients();
-		this.sock = new Socket(hostname, port);
+		this.sock = null;
+
+		int i = 0;
+		while (i++ < 5 && sock == null) {
+			try {
+				this.sock = new Socket(hostname, port);
+			} catch (Exception e) {
+			}
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+			}
+		}
+		if (sock == null) {
+			System.out.println("Could not connect to worker at " + hostname
+					+ ":" + port + ".");
+			System.exit(1);
+		}
+
 		this.outStream = new ObjectOutputStream(this.sock.getOutputStream());
 		this.inStream = new ObjectInputStream(this.sock.getInputStream());
 		System.out.printf("Connected to worker: %s on port: %d\n", hostname,
@@ -76,7 +93,6 @@ public class WorkerInfo implements Runnable {
 					.split(" "));
 
 			if (object instanceof MigratableProcess) {
-
 				LoadBalancer.getInstance().getPidsToWorkers()
 						.put(req.getProcessId(), this);
 
@@ -129,7 +145,6 @@ public class WorkerInfo implements Runnable {
 						LoadBalancer.getInstance().getClients()
 								.get(m.getClientID()).getPidList()
 								.remove(new Integer(m.getProcessID()));
-
 						break;
 					case PROCESS_SERIALIZED:
 						WorkerInfo migrantWorker = LoadBalancer.getInstance()

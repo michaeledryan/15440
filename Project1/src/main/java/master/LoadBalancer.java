@@ -25,19 +25,21 @@ public class LoadBalancer implements Runnable {
 	private Thread listener;
 	private int port;
 	private WorkerInfo[] workers;
-	private AtomicInteger nextWorker;
+	private int nextWorker;
 	private ConcurrentLinkedQueue<ClientRequest> workQueue;
 	private ConcurrentHashMap<Integer, ClientManager> clients;
 	private ConcurrentHashMap<Integer, WorkerInfo> pidsToWorkers;
-	
+
+	private Object nextWorkerLock = new Object();
+
 	private static LoadBalancer INSTANCE = null;
-	
-	
+
 	public static LoadBalancer getInstance() {
 		return INSTANCE;
 	}
-	
-	public static LoadBalancer initLoadBalancer(int port, String workers) throws UnknownHostException, IOException {
+
+	public static LoadBalancer initLoadBalancer(int port, String workers)
+			throws UnknownHostException, IOException {
 		INSTANCE = new LoadBalancer(port, workers);
 		return getInstance();
 	}
@@ -48,20 +50,20 @@ public class LoadBalancer implements Runnable {
 	 * @param port
 	 *            From command line (or default).
 	 * @param workers
-	 *            Newline-delimited list of workers.
-	 *            Format is hostname:port or ip:port.
+	 *            Newline-delimited list of workers. Format is hostname:port or
+	 *            ip:port.
 	 * @throws UnknownHostException
 	 * @throws IOException
 	 */
 	private LoadBalancer(int port, String workers) throws UnknownHostException,
 			IOException {
 		this.port = port;
-		this.nextWorker = new AtomicInteger();
+		this.nextWorker = 0;
 		this.workQueue = new ConcurrentLinkedQueue<ClientRequest>();
 		this.clients = new ConcurrentHashMap<Integer, ClientManager>();
 		this.pidsToWorkers = new ConcurrentHashMap<Integer, WorkerInfo>();
 		INSTANCE = this;
-		
+
 		String[] workerList = workers.split("\n");
 		this.workers = new WorkerInfo[workerList.length];
 		for (int i = 0; i < workerList.length; i++) {
@@ -107,34 +109,41 @@ public class LoadBalancer implements Runnable {
 			}
 			ClientRequest req = this.workQueue.poll();
 			if (req.getType() == ClientRequestType.START) {
-				this.workers[this.nextWorker.getAndIncrement()].sendToWorker(req);
-				this.nextWorker.set( this.nextWorker.get() % this.workers.length);
-			} else if(req.getType() == ClientRequestType.KILLALL) {
-				for(WorkerInfo wi : workers) {
+				synchronized (nextWorkerLock) {
+					this.workers[this.nextWorker++].sendToWorker(req);
+					this.nextWorker %= this.workers.length;
+				}
+			} else if (req.getType() == ClientRequestType.KILLALL) {
+				for (WorkerInfo wi : workers) {
 					try {
-						wi.sendControlMessage(new ProcessControlMessage(0, ProcessControlCommand.KILLALL, ""));
+						wi.sendControlMessage(new ProcessControlMessage(0,
+								ProcessControlCommand.KILLALL, ""));
 						System.out.println("Killed one");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
+
 				}
-				
+
 				System.exit(0);
 			} else {
 				pidsToWorkers.get(req.getProcessId()).sendToWorker(req);
 			}
 		}
 	}
-	
+
 	/**
 	 * TODO: Make it smart!
+	 * 
 	 * @return the next worker in line.
 	 */
 	public WorkerInfo getNextWorker() {
-		WorkerInfo worker = this.workers[this.nextWorker.getAndIncrement()];
-		this.nextWorker.set( this.nextWorker.get() % this.workers.length);
-		return worker;
+		synchronized (nextWorkerLock) {
+			WorkerInfo worker = this.workers[this.nextWorker++];
+			this.nextWorker %= this.workers.length;
+			return worker;
+		}
+		
 	}
 
 }
