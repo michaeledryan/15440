@@ -5,7 +5,7 @@ JAR=ProcessMigration.jar
 EXECUTABLE=$DIR/../build/libs/$JAR
 
 if [ -f $EXECUTABLE ]; then
-    java -cp $EXECUTABLE client.Main $@
+    rlwrap java -cp $EXECUTABLE client.Main $@
     exit 0
 else
     echo "JAR not found: " $EXECUTABLE

@@ -86,8 +86,10 @@ public class ClientManager implements Runnable {
 				Object obj = this.inStream.readObject();
 				if (obj != null && obj instanceof ClientRequest) {
 					ClientRequest req = (ClientRequest) obj;
-					System.out.printf("Received: pid: %d, command: %s\n",
-							req.getProcessId(), req.getRequest());
+					System.out.printf(
+							"Received: type: %s, pid: %d, command: %s\n", req
+									.getType().toString(), req.getProcessId(),
+							req.getRequest());
 
 					req.setClientId(this.uuid);
 					System.out.printf("Received: %s\n", req.getRequest());

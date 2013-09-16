@@ -1,0 +1,12 @@
+start worker.processmigration.processes.CountCharsProcess ../texts/twitter_100k.txt count/out1.txt
+start worker.processmigration.processes.CountCharsProcess ../texts/shakespeare.txt count/out2.txt
+100 migrate 0
+100 migrate 1
+start worker.processmigration.processes.CountCharsProcess ../texts/scrabble.txt count/out3.txt
+1000 migrate 0
+100 migrate 2
+start worker.processmigration.processes.CountCharsProcess ../texts/twitter_1k.txt count/out4.txt
+start worker.processmigration.processes.CountCharsProcess ../texts/fruits.txt count/out5.txt
+list
+10000 list
+10000 list

@@ -45,7 +45,7 @@ public class Main {
 			CommandLine cmd = parser.parse(opt, args);
 			if (cmd.hasOption("?")) {
 				HelpFormatter help = new HelpFormatter();
-				help.printHelp("java -jar master.jar", helpHeader, opt,
+				help.printHelp("master", helpHeader, opt,
 						helpFooter, true);
 				System.exit(1);
 			}

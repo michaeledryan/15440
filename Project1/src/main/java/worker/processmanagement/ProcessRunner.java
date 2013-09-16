@@ -140,7 +140,6 @@ public class ProcessRunner implements Runnable {
 		// Resume a process that has been serialized to the given file location.
 		case RESTART:
 			try {
-				System.out.printf("@@@%s\n", pcm.getProcessLocation());
 				procHandle = new ProcessThread(new File(
 						pcm.getProcessLocation()));
 				procHandle.restart();

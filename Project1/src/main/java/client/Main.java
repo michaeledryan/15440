@@ -79,6 +79,8 @@ public class Main {
 	 */
 	private static void cleanup() throws IOException, InterruptedException {
 		System.out.println("Waiting for outstanding jobs to complete...");
+		responses.setPrompt("");
+		sendRequest("list", ClientRequestType.LIST);
 		while (waitingCount.get() > 0) {
 			Thread.sleep(100);
 		}
@@ -99,14 +101,12 @@ public class Main {
 			int pid;
 			if (type == ClientRequestType.START) {
 				pid = nextPid++;
+			} else if (type == ClientRequestType.MIGRATE) {
+				pid = basePid + Integer.parseInt(message);
 			} else {
 				pid = 0;
 			}
-			System.out.printf("Sending: pid: %d, command: %s\n", pid, message);
-
-			if (type == ClientRequestType.MIGRATE) {
-				pid = basePid + Integer.parseInt(message);
-			}
+			System.out.printf("Sending: type: %s, pid: %d, command: %s\n", type.toString(), pid, message);
 
 			ClientRequest req = new ClientRequest(pid, message, type);
 
@@ -218,9 +218,9 @@ public class Main {
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine cmd = parser.parse(opt, args);
-			if (cmd.hasOption("?")) {
+			if (cmd.hasOption("h")) {
 				HelpFormatter help = new HelpFormatter();
-				help.printHelp("java -jar client.jar", helpHeader, opt,
+				help.printHelp("client", helpHeader, opt,
 						helpFooter, true);
 				System.exit(1);
 			}
@@ -235,29 +235,27 @@ public class Main {
 			init();
 			if (cmd.hasOption("t")) {
 				System.out.println("Running trace file...");
-				prompt = "";
-				responses.setPrompt(prompt);
+				responses.setPrompt("");
 				try {
 					String in = Util.readFile(cmd.getOptionValue("t"));
 					runtrace(in);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			} else {
-				System.out.println("Entered interactive client mode:");
-				Scanner stdin = new Scanner(System.in);
-				responses.setPrompt(prompt);
-
-				System.out.print(prompt);
-
-				while (stdin.hasNextLine()) {
-					String line = stdin.nextLine();
-					runtrace(line);
-					System.out.print(prompt);
-				}
-				stdin.close();
-				System.out.println("Exiting...");
 			}
+			System.out.println("Entered interactive client mode:");
+			Scanner stdin = new Scanner(System.in);
+			responses.setPrompt(prompt);
+
+			System.out.print(prompt);
+
+			while (stdin.hasNextLine()) {
+				String line = stdin.nextLine();
+				runtrace(line);
+				System.out.print(prompt);
+			}
+			stdin.close();
+			System.out.println("Exiting...");
 			cleanup();
 		} catch (ParseException e) {
 			e.printStackTrace();
