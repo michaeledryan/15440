@@ -3,23 +3,26 @@
 Alex Cappiello (acappiel)
 Michael Ryan (mer1)
 
-I. 
+I.
 
   Migratable Process Framework
 
-  This project is a framework for running migratable processes on a distributed network.
-  Each process is represented by an object that meets the MigratableProcess interface by
-  extending the abstract class AbstractMigratableProcess. MigratableProcesses are expected
-  to use the included transactional file I/O streams. 
+  This project is a framework for running migratable processes on a distributed
+  network. Each process is represented by an object that meets the
+  MigratableProcess interface by extending the abstract class
+  AbstractMigratableProcess. MigratableProcesses are expected to use the
+  included transactional file I/O streams.
 
   The process has three main components: a Master, Workers, and Clients.
 
+
   Worker:
 
-  Workers handle the task of running and serializing processes. They are sent MigratableProcesses
-  and ProcessControlMessages from the Master and send back WorkerResponses after completing a given task.
-  Workers can start any task sent to them, serialize a task that they are currently running,
-  and restart a serialized task given the location of its serialized form on disk.
+  Workers handle the task of running and serializing processes. They are sent
+  MigratableProcesses and ProcessControlMessages from the Master and send back
+  WorkerResponses after completing a given task. Workers can start any task
+  sent to them, serialize a task that they are currently running, and restart a
+  serialized task given the location of its serialized form on disk.
 
   Main arguments:
     -h,--help         Display help.
@@ -28,33 +31,50 @@ I.
 
   Master:
 
-  The Master receives requests from a client and executes them. It keeps track of processes running
-  on each worker and processes that each client has started. This is a single point of failure for the framework.
-    
+  The Master receives requests from a client and executes them. It keeps track
+  of processes running on each worker and processes that each client has
+  started. All workers must be started before the master.
+
     -?,--help              Display help.
     -h,--host-file <arg>   Host list file for worker nodes.
     -p,--port <arg>        Port to listen on. Default: 8000.
 
 
   Client:
-  The client connects to a running Master, then parses input from the user in a command line interface.
+
+  The client connects to a running Master, then parses input from the user in a
+  command line interface. Multiple clients can connect to the same master to run
+  tasks simultaneously.
+
+  The client has two modes: playing a trace file, or an interactive repl.
+  After completing a trace file, the client switches to interactive mode.
+  Sample traces are provided in the traces/ directory.
+
   Commands include:
     START <fully qualified class name> <command args>
           Starts a process on a remote worker with the given arguments.
           Returns the PID of the process.
     MIGRATE <process ID>
-          Moves a process from its current worker to the next available one.
+          Moves a process from its current worker to the next available one. In
+          order to provide a reasonable guarantee of nonoverlapping PIDs, a
+          client is given a base PID of the form abcd0000. From here, PIDs are
+          assigned in order. This command only needs the offset from the base
+          PID. For example, `migrate 2' instead of `migrate abcd0002'.
     LIST
-      Returns a list of the PIDs of processes started from this client that are still running.
+      Returns a list of the PIDs of processes started from this client that are
+      still running.
     KILLALL
-      Shuts down the entire framework. Kills every worker and the master. Use sparingly.
+      Shuts down the entire framework. Kills every worker and the master.
 
-    Multiple clients can connect to the same master to run tasks simultaneously.
+    Commands are all optionally proceeded by a timed delay before running, in
+      milliseconds. So, input to traces and the repl are of the form:
+      [delay] <START | MIGRATE | LIST | KILLALL> <arguments>
 
 
     Main arguments:
       -h,--help               Display help.
-      -a,--address <arg>      Address of master node (ip or url). Default: localhost.
+      -a,--address <arg>      Address of master node (ip or url).
+                              Default: localhost.
       -p,--port <arg>         Port to connect to master. Default: 8000.
       -t,--trace-file <arg>   Trace file.
 
@@ -65,45 +85,83 @@ I.
   worker.processmigration.AbstractMigratableProcess
 
 TransactionalFileInputStream
-
 TransactionalFileOutputStream
+  The transactional IO streams extend the InputStream and OutputStream abstract
+  classes. They take the naive approach of opening the file, reading/writing a
+  single character, and closing the file, maintaining a position index.
 
 
 II.
-  All parts of the spec were implemented. Here are points that were confusing and rationale for what
-  we decided to do.
 
-  Users have no direct control over where a process is executed. The user should not have to worry
-  about what nodes are under heavy load, and a shared filesystem means that files should be accessible
-  from anywhere.
+  All parts of the spec were implemented. Here are points that were confusing
+  and rationale for what we decided to do.
 
-  We had considered load balancing, but deprioritized it. As a result, load balancing is currently
-  done with a round-robin method that rotates between workers.
+  Users have no direct control over where a process is executed. The user should
+  not have to worry about what nodes are under heavy load, and a shared
+  filesystem means that files should be accessible from anywhere.
+
+  We had considered load balancing, but deprioritized it. As a result, load
+  balancing is currently done with a round-robin method that rotates between
+  workers. This load balancer would not only assign processes to the node with
+  the least work, but also trigger migration automatically.
+
+  Our implementation is not especially robust. If unexpected events occur at
+  runtime, they are generally not handled gracefully and require everything to
+  be killed and restarted.
+
+  Some extra improvements that we did not have time to implement:
+  - More robust transactional file IO. They're clearly not too efficient as is,
+    given that processes don't migrate often.
+  - Limit concurrently running processes on worker nodes. We've been working
+    with few, long-running processes, which is why this wasn't a priority.
 
 III.
-  We built this project using the gradle build system. from the top-level dir, run "gradle assemble"
-  to compile the source. Gradle should handle all dependencies.
 
-  A startup script has been included for convenience. It assumes that public key auth will work for 
-  sshing into remote boxes specified in a hosts.txt file or similar. The script will start a worker 
-  for each hostname and port in the specified file, then start a master listening for each one.
-  After the script runs, start the client separately (rlwrap is recommended). STDOUT for each worker
-  and the master is redirected to a file in the /logs subdirectory.
+  We built this project using the gradle build system. From the top-level dir,
+  run "gradle assemble" to compile the source. Gradle should handle all
+  dependencies. Since gradle isn't naively available on unix.andrew.cmu.edu,
+  build with
+  $ ./build.sh
+  If this script doesn't find gradle in the local path, it will use an install
+  from a publicly accessible directory on afs.
 
-  Running the client with a tracefile will execute each command in the trace, then wait for user input.
+  A startup script (start.sh) has been included for convenience. It assumes that
+  public key auth will work for sshing into remote boxes specified in a
+  hosts.txt file or similar. The script will start a worker for each hostname
+  and port in the specified file, then start a master listening for each one.
+  After the script runs, start the client separately. STDOUT for each worker and
+  the master is redirected to a file in the bin/logs subdirectory. Two hostfiles
+  have been included in bin/
+  - localhost.txt: starts two workers on localhost.
+  - unixhosts.txt: starts 1 worker on each of 4 unix.andrew.cmu.edu machines.
+
+  An example is shown in section V.
 
 
 IV.
-  Apache Commons CLI
-  Gradle - found 
+  Apache Commons CLI (automatically grabbed by gradle during compilation.)
+  Gradle (If on afs, just use build.sh. Otherwise, you're on your own.)
+  rlwrap (to run the client).
 
 
 V.
-  InterleaveLineProcess
-  After building, run the startup script, then
-  > ./client -t interleave.trace
+  Sample usage:
+  $ cd bin
+  $ ./start.sh localhost.txt
+  $ ./client -t ../traces/countchar.txt
 
-  This trace starts several InterLeaveLineProcesses, then migrates them to different workers.
-  Input and output files can be seen in /interleave/input and /interleave/output
+  Normally, terminate all process by running
+  --> killall
+  in the client repl.
 
+  If something goes horribly wrong, run
+  $ ./force-kill.sh
+  to kill everything.
 
+  We have implemented two sample processes, heavily relying on file I/O.
+  - InterleaveProcess: Takes in a pair of text files and outputs a file
+      interleaving their lines.
+      The provided trace file is ../traces/countchar.trace.
+  - CountCharsProcess: Takes in a text file and outputs a file with counts
+      for the occurences of each ascii character.
+      The provided trace file is ../traces/shortinterleave.trace.
