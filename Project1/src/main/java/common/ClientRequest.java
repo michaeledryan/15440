@@ -1,7 +1,6 @@
 package common;
 
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * Request originates in a client and is sent to the master.
@@ -34,6 +33,7 @@ public class ClientRequest implements Serializable {
 		this.setRequest(request);
 		this.setType(type);
 	}
+
 	public ClientRequest(int pid, String request, ClientRequestType type) {
 		this.setProcessId(pid);
 		this.setRequest(request);
@@ -64,13 +64,12 @@ public class ClientRequest implements Serializable {
 		this.type = type;
 	}
 
-	
 	public int getClientId() {
 		return clientId;
 	}
-	
+
 	public void setClientId(int uuid) {
-		clientId = uuid;		
+		clientId = uuid;
 	}
 
 }

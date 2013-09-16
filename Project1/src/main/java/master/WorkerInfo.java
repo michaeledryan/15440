@@ -121,14 +121,15 @@ public class WorkerInfo implements Runnable {
 					case PROCESS_FINISHED:
 						System.out.printf("Completed: pid: %d\n",
 								m.getProcessID());
-						c.sendResponse("Finished process with pid: " + m.getProcessID());
+						c.sendResponse("Finished process with pid: "
+								+ m.getProcessID());
 
 						LoadBalancer.getInstance().getPidsToWorkers()
 								.remove(m.getProcessID());
 						LoadBalancer.getInstance().getClients()
 								.get(m.getClientID()).getPidList()
 								.remove(new Integer(m.getProcessID()));
-						
+
 						break;
 					case PROCESS_SERIALIZED:
 						WorkerInfo migrantWorker = LoadBalancer.getInstance()
@@ -141,7 +142,8 @@ public class WorkerInfo implements Runnable {
 												.getAbsolutePath()));
 						LoadBalancer.getInstance().getPidsToWorkers()
 								.put(m.getProcessID(), migrantWorker);
-						c.sendResponse("Migrated process with pid: " + m.getProcessID());
+						c.sendResponse("Migrated process with pid: "
+								+ m.getProcessID());
 						break;
 					}
 				}
@@ -153,7 +155,6 @@ public class WorkerInfo implements Runnable {
 				e.printStackTrace();
 				break;
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

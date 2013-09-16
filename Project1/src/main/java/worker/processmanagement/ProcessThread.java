@@ -56,7 +56,7 @@ public class ProcessThread implements Runnable {
 	public void run() {
 		process.run();
 		System.out.println("SHIT'S DONE!");
-		if (ps == ProcessState.RUNNING){
+		if (ps == ProcessState.RUNNING) {
 			runner.ackDone(process);
 		}
 	}
@@ -114,7 +114,6 @@ public class ProcessThread implements Runnable {
 		System.out
 				.printf("Deserializing from %s\n", savefile.getAbsolutePath());
 
-		
 		// Read the file.
 		FileInputStream infile = new FileInputStream(savefile);
 		ObjectInputStream ois = new ObjectInputStream(infile);

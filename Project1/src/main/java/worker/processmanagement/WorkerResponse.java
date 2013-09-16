@@ -2,11 +2,12 @@ package worker.processmanagement;
 
 import java.io.File;
 import java.io.Serializable;
+
 /**
  * Object wrapping messages back from workers to the master.
  * 
  * @author michaelryan
- *
+ * 
  */
 public class WorkerResponse implements Serializable {
 

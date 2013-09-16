@@ -37,7 +37,7 @@ public class ResponseManager implements Runnable {
 		this.setSock(sock);
 		this.inStream = this.sock.getInputStream();
 		this.waitingCount = waitingCount;
-		
+
 		// Just to keep things looking nice in interactive mode.
 		this.setPrompt("");
 	}
@@ -70,7 +70,7 @@ public class ResponseManager implements Runnable {
 				break;
 			}
 		}
-		
+
 	}
 
 	public Socket getSock() {

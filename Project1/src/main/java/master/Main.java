@@ -15,19 +15,20 @@ import common.Util;
  * Main class for master node.
  * 
  * @author acappiel
- *
+ * 
  */
 public class Main {
 
 	static private String helpHeader = "Project 1: Process Migration. 15-440, Fall 2013.";
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
-	
+
 	private static LoadBalancer bal;
 
 	private static int port;
 
 	/**
 	 * Parse cli and start LoadBalancer.
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */

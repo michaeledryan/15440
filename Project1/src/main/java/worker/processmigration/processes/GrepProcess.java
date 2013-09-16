@@ -10,8 +10,7 @@ import worker.processmigration.io.TransactionalFileInputStream;
 import worker.processmigration.io.TransactionalFileOutputStream;
 
 public class GrepProcess extends AbstractMigratableProcess {
-	
-	
+
 	/**
 	 * 
 	 */
@@ -71,7 +70,7 @@ public class GrepProcess extends AbstractMigratableProcess {
 		while (suspending)
 			;
 	}
-	
+
 	public void restart() {
 		suspending = false;
 	}

@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import worker.processmanagement.ProcessControlMessage;
 import worker.processmanagement.ProcessControlMessage.ProcessControlCommand;
+
 import common.ClientRequest;
-import common.ClientRequestType;
 
 /**
  * IO between master and client for the duration of the connection.

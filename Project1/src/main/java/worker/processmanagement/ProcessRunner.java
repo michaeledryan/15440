@@ -1,7 +1,6 @@
 package worker.processmanagement;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -13,7 +12,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import worker.processmigration.MigratableProcess;
-import worker.processmigration.io.TransactionalFileInputStream;
 
 /**
  * Object that handles process execution, suspension, and serialization. Uses
@@ -95,13 +93,13 @@ public class ProcessRunner implements Runnable {
 				disconnected = true;
 				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
-					
+
 					@Override
 					public void run() {
 						if (disconnected) {
 							System.exit(0);
 						}
-						
+
 					}
 				}, 7000);
 			} catch (ClassNotFoundException e) {
@@ -132,7 +130,8 @@ public class ProcessRunner implements Runnable {
 			try {
 				location = (procHandle.suspend());
 				this.outStream.writeObject(new WorkerResponse(procHandle
-						.getProcess().getProcessID(), procHandle.getProcess().getClientID(), location));
+						.getProcess().getProcessID(), procHandle.getProcess()
+						.getClientID(), location));
 			} catch (IOException e) {
 				System.err.println("Failure to serialize response.");
 				e.printStackTrace();
