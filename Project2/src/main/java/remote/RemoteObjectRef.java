@@ -1,6 +1,6 @@
-package util;
+package remote;
 
-public class RemoteObjectRef {
+public class RemoteObjectRef implements MyRemote {
 
     private String name;
     private String host;

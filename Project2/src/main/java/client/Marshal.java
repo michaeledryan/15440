@@ -1,7 +1,7 @@
 package client;
 
 import messages.RemoteMessage;
-import util.RemoteObjectRef;
+import remote.RemoteObjectRef;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

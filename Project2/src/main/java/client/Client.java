@@ -1,10 +1,6 @@
 package client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,7 +9,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import util.RemoteObjectRef;
+import remote.RemoteObjectRef;
 
 /**
  */
@@ -62,11 +58,11 @@ public class Client {
 			RemoteObjectRef ror = new RemoteObjectRef("", registry, port);
 
 			Marshal mars = new Marshal(ror);
-			
+
 			Class<?>[] clazzes = { String.class };
 
 			Object[] objs = { "FUCK" };
-			
+
 			Object res = null;
 			try {
 				res = mars.run("printMessage", objs, clazzes);
@@ -78,9 +74,9 @@ public class Client {
 			/* END STUB CODE */
 			System.out.println(res);
 			System.out.println("WE DID IT!");
-			
-			
-			
+
+
+
 
 		} catch (ParseException e) {
 			e.printStackTrace();
