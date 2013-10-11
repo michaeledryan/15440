@@ -1,43 +1,17 @@
 package registry;
 
-import org.apache.commons.cli.*;
+import java.rmi.RemoteException;
+import java.util.List;
 
-public class Registry {
+import remote.MyRemote;
 
-    static private String helpHeader =
-            "Project 2: RMI. 15-440, Fall 2013.";
-    static private String helpFooter =
-            "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+public interface Registry {
 
-    private static int port;
+	public void bind(String name, MyRemote obj) throws RemoteException;
 
-    public static void main(String[] args) {
+	public void rebind(String name, MyRemote obj) throws RemoteException;
 
-        Options opt = new Options();
-        opt.addOption("p", "port", true, "Port to listen on. Default: 8000.");
-        opt.addOption("h", "help", false, "Display help.");
+	public void unbind(String name) throws RemoteException;
 
-        CommandLineParser parser = new GnuParser();
-        try {
-            CommandLine cmd = parser.parse(opt, args);
-            if (cmd.hasOption("h")) {
-                HelpFormatter help = new HelpFormatter();
-                help.printHelp("registry", helpHeader, opt, helpFooter, true);
-                System.exit(1);
-            }
-            System.out.println("Starting registry...");
-            String portString = cmd.getOptionValue("p", "8000");
-            try {
-                port = Integer.parseInt(portString);
-            } catch (NumberFormatException e) {
-                System.err.printf("Invalid port number: %s\n", portString);
-                System.exit(1);
-            }
-            // Actually start things.
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+	public List<String> list() throws RemoteException;
 }
