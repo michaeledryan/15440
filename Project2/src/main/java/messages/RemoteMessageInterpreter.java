@@ -7,11 +7,11 @@ import java.util.concurrent.Callable;
 
 import toys.ToyClass;
 
-public class MessageInterpreter implements Callable<Object> {
+public class RemoteMessageInterpreter implements Callable<Object> {
 
-	private Message message;
+	private RemoteMessage message;
 
-	public MessageInterpreter(Message message) {
+	public RemoteMessageInterpreter(RemoteMessage message) {
 		this.message = message;
 	}
 
@@ -51,7 +51,7 @@ public class MessageInterpreter implements Callable<Object> {
 					+ "on object " + message.getName(), e);
 		}
 
-		return Message.newReply(result);
+		return RemoteMessage.newReply(result);
 
 	}
 }

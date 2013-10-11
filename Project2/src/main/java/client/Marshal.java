@@ -1,12 +1,13 @@
 package client;
 
-import messages.Message;
+import messages.RemoteMessage;
 import util.RemoteObjectRef;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.rmi.RemoteException;
 
 /**
  * Backend behind the stubs that initializes the RMI and receives the result.
@@ -26,23 +27,23 @@ public class Marshal {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private Message receiveReply() throws IOException, ClassNotFoundException {
+    private RemoteMessage receiveReply() throws IOException, ClassNotFoundException {
         ObjectInputStream inStream = new ObjectInputStream(this.sock
                 .getInputStream());
         Object obj = inStream.readObject();
         // TODO: Handle Exception.
-        if (!(obj instanceof Message)) {
-            throw new IOException("Received object that is not a Message.");
+        if (!(obj instanceof RemoteMessage)) {
+            throw new IOException("Received object that is not a RemoteMessage.");
         }
-        return (Message) obj;
+        return (RemoteMessage) obj;
     }
 
     /**
      * Send the message to the server.
-     * @param m Message of type REQUEST.
+     * @param m RemoteMessage of type REQUEST.
      * @throws IOException
      */
-    private void sendMessage(Message m) throws IOException {
+    private void sendMessage(RemoteMessage m) throws IOException {
         ObjectOutputStream outStream = new ObjectOutputStream(this.sock
                 .getOutputStream());
         outStream.writeObject(m);
@@ -62,18 +63,21 @@ public class Marshal {
         Object retVal = null;
         try {
             this.sock = new Socket(r.getHost(), r.getPort());
-            Message m = Message.newRequest(r.getHost(), r.getPort(), meth,
-                    r.getName(), args, classes);
+            RemoteMessage m = RemoteMessage.newRequest(r.getHost(), r.getPort(),
+                    meth, r.getName(), args, classes);
             this.sendMessage(m);
-            Message resp = this.receiveReply();
+            RemoteMessage resp = this.receiveReply();
             retVal = resp.getReturnVal();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            retVal = new IOException("Failed to receive reply.");
         } finally {
             sock.close();
         }
-        if (retVal == null) {
-            throw new IOException("retVal is null.");
+        if (retVal instanceof RemoteException) {
+            throw (RemoteException) retVal;
+        } else if (retVal instanceof IOException) {
+            throw (IOException) retVal;
         } else {
             return retVal;
         }

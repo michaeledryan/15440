@@ -1,7 +1,7 @@
 package server;
 
-import messages.Message;
-import messages.MessageInterpreter;
+import messages.RemoteMessage;
+import messages.RemoteMessageInterpreter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,7 +14,7 @@ import java.net.Socket;
 public class UnMarshal implements Runnable {
 
 	private Socket sock;
-	private Message m;
+	private RemoteMessage m;
 	private ObjectTracker objs;
 
 	public UnMarshal(Socket sock, ObjectTracker objs) {
@@ -24,7 +24,7 @@ public class UnMarshal implements Runnable {
 
 	/**
 	 * Wait for the message to show up, then read it.
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -32,17 +32,17 @@ public class UnMarshal implements Runnable {
 		ObjectInputStream inStream = new ObjectInputStream(
 				this.sock.getInputStream());
 		Object obj = inStream.readObject();
-		if (!(obj instanceof Message)) {
-			throw new IOException("Received object that is not a Message.");
+		if (!(obj instanceof RemoteMessage)) {
+			throw new IOException("Received object that is not a RemoteMessage.");
 		}
-		this.m = (Message) obj;
+		this.m = (RemoteMessage) obj;
 	}
 
 	/**
 	 * Send back the result.
-	 * 
+	 *
 	 * @param resp
-	 *            Message of type REPLY or Exception.
+	 *            RemoteMessage of type REPLY or Exception.
 	 */
 	private void sendReply(Object resp) {
 		try {
@@ -67,7 +67,7 @@ public class UnMarshal implements Runnable {
 		try {
 			this.receiveMessage();
 			Object obj = this.objs.lookup(this.m.getName()); // ??
-			MessageInterpreter mi = new MessageInterpreter(this.m);
+			RemoteMessageInterpreter mi = new RemoteMessageInterpreter(this.m);
 			Object res = mi.call();
 			this.sendReply(res);
 		} catch (IOException | ClassNotFoundException e) {
