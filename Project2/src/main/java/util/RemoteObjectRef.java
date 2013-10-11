@@ -1,8 +1,11 @@
 package util;
 
-public class RemoteObjectRef {
+import java.io.Serializable;
 
-    private String name;
+public class RemoteObjectRef implements Serializable {
+
+	private static final long serialVersionUID = 2360222867498946831L;
+	private String name;
     private String host;
     private int port;
 

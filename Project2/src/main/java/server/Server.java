@@ -35,9 +35,8 @@ public class Server {
                 System.err.printf("Invalid port number: %s\n", portString);
                 System.exit(1);
             }
-            ObjectTracker objs = new ObjectTracker();
-            Listener l = new Listener(port, objs);
-            objs.put("toy", new ToyClass());
+            Listener l = new Listener(port);
+            ObjectTracker.getInstance().put("toy", new ToyClassImpl());
             l.run();
         } catch (ParseException e) {
             e.printStackTrace();

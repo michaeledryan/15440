@@ -58,24 +58,13 @@ public class Client {
 
 			System.out.println("Actual work...");
 
+			
+			
 			/* STUB CODE?? */
 			RemoteObjectRef ror = new RemoteObjectRef("", registry, port);
 
-			Marshal mars = new Marshal(ror);
 			
-			Class<?>[] clazzes = { String.class };
-
-			Object[] objs = { "FUCK" };
 			
-			Object res = null;
-			try {
-				res = mars.run("printMessage", objs, clazzes);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			/* END STUB CODE */
 			System.out.println(res);
 			System.out.println("WE DID IT!");
 			

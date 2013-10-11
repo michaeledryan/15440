@@ -12,11 +12,11 @@ public class Listener implements Runnable {
     private ServerSocket socket;
     private ObjectTracker objs;
 
-    public Listener(int port, ObjectTracker objs) {
+    public Listener(int port) {
         this.port = port;
         try {
             socket = new ServerSocket(port);
-            this.objs = objs;
+            this.objs = ObjectTracker.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class Listener implements Runnable {
             try {
                 incoming = socket.accept();
                 System.out.println("Spinning Up Unmarshal");
-                UnMarshal handler = new UnMarshal(incoming, this.objs);
+                UnMarshal handler = new UnMarshal(incoming);
                 Thread t = new Thread(handler);
                 t.start();
             } catch (IOException e) {

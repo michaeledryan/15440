@@ -15,11 +15,9 @@ public class UnMarshal implements Runnable {
 
 	private Socket sock;
 	private RemoteMessage m;
-	private ObjectTracker objs;
 
-	public UnMarshal(Socket sock, ObjectTracker objs) {
+	public UnMarshal(Socket sock) {
 		this.sock = sock;
-		this.objs = objs;
 	}
 
 	/**
@@ -66,7 +64,6 @@ public class UnMarshal implements Runnable {
 	public void run() {
 		try {
 			this.receiveMessage();
-			Object obj = this.objs.lookup(this.m.getName()); // ??
 			RemoteMessageInterpreter mi = new RemoteMessageInterpreter(this.m);
 			Object res = mi.call();
 			this.sendReply(res);
