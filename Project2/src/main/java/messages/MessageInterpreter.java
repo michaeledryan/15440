@@ -51,7 +51,7 @@ public class MessageInterpreter implements Callable<Object> {
 					+ "on object " + message.getName(), e);
 		}
 
-		return Message.newReply(message.getHost(), message.getPort(), result);
+		return Message.newReply(result);
 
 	}
 }

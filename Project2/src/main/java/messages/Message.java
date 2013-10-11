@@ -29,11 +29,9 @@ public class Message implements Serializable {
 		this.args = args;
 		this.classes = classes;
 	}
-	
-	private Message(String host, int port, MessageType type, Object returnVal) {
+
+	private Message(MessageType type, Object returnVal) {
 		// Maybe here is where to switch up reference and value passing?
-		this.host = host;
-		this.port = port;
 		this.type = type;
 		this.returnVal = returnVal;
 	}
@@ -44,8 +42,8 @@ public class Message implements Serializable {
 	}
 
 	//TODO: Do we need a name here?
-	public static Message newReply(String host, int port, Object returnVal) {
-		return new Message(host, port, MessageType.REPLY, returnVal);
+	public static Message newReply(Object returnVal) {
+		return new Message(MessageType.REPLY, returnVal);
 	}
 
 	public String getHost() {
