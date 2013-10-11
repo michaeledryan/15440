@@ -1,5 +1,10 @@
 package client;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -8,9 +13,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import toys.Remote440Exception;
-import toys.ToyClass;
-import toys.ToyClassImpl;
 import util.RemoteObjectRef;
 
 /**
@@ -59,24 +61,15 @@ public class Client {
 			
 			
 			/* STUB CODE?? */
-			RemoteObjectRef ror = new RemoteObjectRef("toy0", registry, port,
-					ToyClassImpl.class.getCanonicalName());
-			
-			ToyClass toy = null;
-			
-			try {
-				toy = (ToyClass) ror.localize();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			RemoteObjectRef ror = new RemoteObjectRef("", registry, port);
 
-			try {
-				System.out.println(toy.printMessage("SHIT"));
-			} catch (Remote440Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			
+			System.out.println(res);
+			System.out.println("WE DID IT!");
+			
+			
+			
 
 		} catch (ParseException e) {
 			e.printStackTrace();
