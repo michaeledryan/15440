@@ -40,8 +40,14 @@ public class Server {
                 System.err.printf("Invalid port number: %s\n", portString);
                 System.exit(1);
             }
+<<<<<<< Updated upstream
             Listener l = new Listener(port);
-            ObjectTracker.getInstance().put("toy0", new ToyClassImpl());
+            ObjectTracker.getInstance().put("toy", new ToyClassImpl());
+=======
+            ObjectTracker objs = new ObjectTracker();
+            Listener l = new Listener(port, objs);
+            objs.put("toy", new ToyClassImpl());
+>>>>>>> Stashed changes
             l.run();
         } catch (ParseException e) {
             e.printStackTrace();

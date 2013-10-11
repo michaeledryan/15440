@@ -28,6 +28,13 @@ public class ToyMain {
 		interpreter = new RemoteMessageInterpreter(message);
 
 		response = parseResponse(interpreter.call());
+<<<<<<< Updated upstream
+
+		RemoteMessage testSerialization;
+
+=======
+		
+>>>>>>> Stashed changes
 		System.out.println(response.getReturnVal());
 
 	}

@@ -35,6 +35,7 @@ I.
   of processes running on each worker and processes that each client has
   started. All workers must be started before the master.
 
+  Main arguments:
     -?,--help              Display help.
     -h,--host-file <arg>   Host list file for worker nodes.
     -p,--port <arg>        Port to listen on. Default: 8000.

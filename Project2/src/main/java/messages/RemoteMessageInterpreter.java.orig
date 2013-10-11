@@ -5,9 +5,12 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.concurrent.Callable;
 
+<<<<<<< Updated upstream:Project2/src/main/java/messages/RemoteMessageInterpreter.java
 import server.ObjectTracker;
 import toys.ToyClass;
+=======
 import toys.ToyClassImpl;
+>>>>>>> Stashed changes:Project2/src/main/java/messages/MessageInterpreter.java
 
 public class RemoteMessageInterpreter implements Callable<Object> {
 
@@ -21,8 +24,14 @@ public class RemoteMessageInterpreter implements Callable<Object> {
 	public Object call() {
 		String meth = message.getMeth();
 		Class<?>[] clazzes = message.getClasses();
+<<<<<<< Updated upstream:Project2/src/main/java/messages/RemoteMessageInterpreter.java
 		// Object callee = Registry.getName();
 		Object callee = ObjectTracker.getInstance().lookup(message.getName());
+=======
+		// Object callee = message.getName();
+		
+		Object callee = new ToyClassImpl();
+>>>>>>> Stashed changes:Project2/src/main/java/messages/MessageInterpreter.java
 
 		Method calling = null;
 

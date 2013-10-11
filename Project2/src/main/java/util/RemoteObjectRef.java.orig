@@ -2,13 +2,19 @@ package util;
 
 import java.io.Serializable;
 
+<<<<<<< Updated upstream
 public class RemoteObjectRef implements Serializable {
 
 	private static final long serialVersionUID = 2360222867498946831L;
 	private String name;
+    private String host;
+    private int port;
+=======
+	private String name;
 	private String host;
 	private int port;
 	private String interfaceName;
+>>>>>>> Stashed changes
 
 	public RemoteObjectRef(String name, String host, int port,
 			String interfaceName) {
