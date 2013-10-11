@@ -1,5 +1,10 @@
 package toys;
 
+/**
+ * Exception thrown whenever something RMI-related goes wrong.
+ * 
+ * @author Michael Ryan and Alex Capiello 
+ */
 public class Remote440Exception extends Exception {
 
 	public Remote440Exception(String string) {
