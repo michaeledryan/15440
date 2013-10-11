@@ -1,39 +1,21 @@
 package toys;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import util.Message;
+import util.MessageInterpreter;
 
 public class ToyMain {
 
-	
 	public static void main(String[] args) {
-		Method meth = null;
+		Class<?>[] clazzes = { String.class };
+
+		Object[] objs = { "FUCK" };
+
+		Message message = Message.newRequest("", 1099, "printMessage",
+				"test toy", objs, clazzes);
+
+		MessageInterpreter interpreter = new MessageInterpreter(message);
 		
-		
-		Class[] clazzes = {String.class};
-		
-		try {
-			meth = ToyClass.class.getMethod("printMessage", clazzes);
-		} catch (NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Object[] objs = {"FUCK"};
-		
-		Method[] methods = ToyClass.class.getMethods();
-		
-		for (Method m : methods)
-			System.out.println(m.getName());
-		
-		
-		try {
-			System.out.println(meth.invoke(new ToyClass(), objs ));
-		} catch (IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		System.out.println(interpreter.call());
+
 	}
 }

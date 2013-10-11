@@ -18,25 +18,31 @@ public class MessageInterpreter implements Callable<Object> {
 	@Override
 	public Object call() {
 		String meth = message.getMeth();
+		Class<?>[] clazzes =  message.getClasses();
 		//Object callee = Registry.getName();
 		Object callee = new ToyClass();
 		
 		Method calling = null;
+		
 		try {
-			calling = callee.getClass().getMethod(meth, null);
+			calling = callee.getClass().getMethod(meth, clazzes);
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
+			// TODO: Return a RemoteException??
 		}
 		
+	
+		Object result = null;
+		
 		try {
-			calling.invoke(callee, message.getArgs());
+			result = calling.invoke(callee, message.getArgs());
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			//TODO: Also RemoteException?? 
 			e.printStackTrace();
 		}
 		
-		return null;
+		return result;
 		
 	}
 }

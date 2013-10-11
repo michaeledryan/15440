@@ -6,8 +6,8 @@ public class ToyClass {
 	}
 	
 	public String printMessage(String message) {
-		System.out.print("Hi! Im a toy!");
-		System.out.print("Your message was: " + message);
+		System.out.println("Hi! Im a toy!");
+		System.out.println("Your message was: " + message);
 		return "MURDER ME: " + message;
 	}
 	

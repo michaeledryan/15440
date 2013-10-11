@@ -14,9 +14,10 @@ public class Message implements Serializable {
 	private String meth;
 	private String name;
 	private Object[] args;
+	private Class<?>[] classes;
 
 	private Message(String host, int port, MessageType type, String meth,
-			String name, Object[] args) {
+			String name, Object[] args, Class<?>[] classes) {
 		super();
 		this.host = host;
 		this.port = port;
@@ -24,16 +25,17 @@ public class Message implements Serializable {
 		this.meth = meth;
 		this.name = name;
 		this.args = args;
+		this.classes = classes;
 	}
 
 	public static Message newRequest(String host, int port, String meth,
-			String name, Object[] args) {
-		return new Message(host, port, MessageType.REQUEST, meth, name, args);
+			String name, Object[] args, Class<?>[] classes) {
+		return new Message(host, port, MessageType.REQUEST, meth, name, args, classes);
 	}
 
 	public static Message newReply(String host, int port, String meth,
-			String name, Object[] args) {
-		return new Message(host, port, MessageType.REPLY, meth, name, args);
+			String name, Object[] args, Class<?>[] classes) {
+		return new Message(host, port, MessageType.REPLY, meth, name, args, classes);
 	}
 
 	public String getHost() {
@@ -78,6 +80,14 @@ public class Message implements Serializable {
 
 	public void setArgs(Object[] args) {
 		this.args = args;
+	}
+
+	public Class<?>[] getClasses() {
+		return classes;
+	}
+
+	public void setClasses(Class<?>[] classes) {
+		this.classes = classes;
 	}
 
 }
