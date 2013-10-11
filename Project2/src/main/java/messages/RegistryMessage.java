@@ -1,6 +1,6 @@
 package messages;
 
-import remote.MyRemote;
+import remote.Remote440;
 
 import java.io.Serializable;
 
@@ -12,7 +12,7 @@ public class RegistryMessage implements Serializable {
     private int port;
     private MessageType type;
     private String name;
-    private MyRemote rref;
+    private Remote440 rref;
 
     private RegistryMessage(String host, int port, MessageType type,
                             String name) {
@@ -22,7 +22,7 @@ public class RegistryMessage implements Serializable {
         this.name = name;
     }
 
-    private RegistryMessage(MyRemote rref, MessageType type) {
+    private RegistryMessage(Remote440 rref, MessageType type) {
         this.rref = rref;
         this.type = type;
     }
@@ -32,7 +32,7 @@ public class RegistryMessage implements Serializable {
         return new RegistryMessage(host, port, MessageType.REQUEST, name);
     }
 
-    public static RegistryMessage newReply(MyRemote rref) {
+    public static RegistryMessage newReply(Remote440 rref) {
         return new RegistryMessage(rref, MessageType.REPLY);
     }
 
@@ -40,7 +40,7 @@ public class RegistryMessage implements Serializable {
         return name;
     }
 
-    public MyRemote getRref() {
+    public Remote440 getRref() {
         return rref;
     }
 

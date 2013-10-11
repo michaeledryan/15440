@@ -1,7 +1,7 @@
 package messages;
 
 import registry.RrefTracker;
-import remote.MyRemote;
+import remote.Remote440;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -51,7 +51,7 @@ public class RegistryMessageResponder implements Runnable {
     public void run() {
         try {
             this.receiveMessage();
-            MyRemote ref = this.refs.lookup(this.message.getName());
+            Remote440 ref = this.refs.lookup(this.message.getName());
             RegistryMessage resp = RegistryMessage.newReply(ref);
             this.sendReply(resp);
         } catch (IOException | ClassNotFoundException e) {

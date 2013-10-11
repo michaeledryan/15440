@@ -1,6 +1,6 @@
 package registry;
 
-import remote.MyRemote;
+import remote.Remote440;
 
 import java.rmi.RemoteException;
 import java.util.Set;
@@ -10,22 +10,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RrefTracker implements Registry {
 
-    private ConcurrentHashMap<String, MyRemote> refs;
+    private ConcurrentHashMap<String, Remote440> refs;
 
     public RrefTracker() {
         this.refs = new ConcurrentHashMap<>();
     }
 
-    public MyRemote lookup(String key) {
+    public Remote440 lookup(String key) {
         return refs.get(key);
     }
 
-    private void put(String key, MyRemote ref) {
+    private void put(String key, Remote440 ref) {
         refs.put(key, ref);
     }
 
     @Override
-    public void bind(String name, MyRemote obj) throws RemoteException {
+    public void bind(String name, Remote440 obj) throws RemoteException {
         if (refs.containsKey(name)) {
             throw new RemoteException("Item already in registry: " + name);
         }
@@ -33,7 +33,7 @@ public class RrefTracker implements Registry {
     }
 
     @Override
-    public void rebind(String name, MyRemote obj) throws RemoteException {
+    public void rebind(String name, Remote440 obj) throws RemoteException {
         this.put(name, obj);
     }
 

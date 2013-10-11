@@ -1,4 +1,4 @@
-package client;
+package remote;
 
 import messages.RemoteMessage;
 import remote.RemoteObjectRef;

@@ -1,8 +1,13 @@
 package server;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
-import toys.ToyClass;
+import toys.ToyClassImpl;
 
 public class Server {
 
@@ -35,9 +40,8 @@ public class Server {
                 System.err.printf("Invalid port number: %s\n", portString);
                 System.exit(1);
             }
-            ObjectTracker objs = new ObjectTracker();
-            Listener l = new Listener(port, objs);
-            objs.put("toy", new ToyClass());
+            Listener l = new Listener(port);
+            ObjectTracker.getInstance().put("toy0", new ToyClassImpl());
             l.run();
         } catch (ParseException e) {
             e.printStackTrace();
