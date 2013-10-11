@@ -15,5 +15,9 @@ public class ObjectTracker {
     public Object lookup(String key) {
         return objs.get(key);
     }
+    
+    public Object put(String key, Object obj) {
+    	return objs.put(key, obj);
+    }
 
 }

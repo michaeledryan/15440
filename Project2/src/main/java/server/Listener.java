@@ -27,6 +27,7 @@ public class Listener implements Runnable {
             Socket incoming;
             try {
                 incoming = socket.accept();
+                System.out.println("Spinning Up Unmarshal");
                 UnMarshal handler = new UnMarshal(incoming, this.objs);
                 Thread t = new Thread(handler);
                 t.start();

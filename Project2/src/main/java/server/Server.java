@@ -2,6 +2,8 @@ package server;
 
 import org.apache.commons.cli.*;
 
+import toys.ToyClass;
+
 public class Server {
 
     static private String helpHeader =
@@ -14,7 +16,7 @@ public class Server {
     public static void main(String[] args) {
 
         Options opt = new Options();
-        opt.addOption("p", "port", true, "Port to listen on. Default: 8001.");
+        opt.addOption("p", "port", true, "Port to listen on. Default: 1099.");
         opt.addOption("h", "help", false, "Display help.");
 
         CommandLineParser parser = new GnuParser();
@@ -26,7 +28,7 @@ public class Server {
                 System.exit(1);
             }
             System.out.println("Starting server...");
-            String portString = cmd.getOptionValue("p", "8001");
+            String portString = cmd.getOptionValue("p", "1099");
             try {
                 port = Integer.parseInt(portString);
             } catch (NumberFormatException e) {
@@ -35,6 +37,7 @@ public class Server {
             }
             ObjectTracker objs = new ObjectTracker();
             Listener l = new Listener(port, objs);
+            objs.put("toy", new ToyClass());
             l.run();
         } catch (ParseException e) {
             e.printStackTrace();

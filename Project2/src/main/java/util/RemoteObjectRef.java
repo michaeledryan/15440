@@ -6,7 +6,7 @@ public class RemoteObjectRef {
     private String host;
     private int port;
 
-    RemoteObjectRef(String name, String host, int port) {
+    public RemoteObjectRef(String name, String host, int port) {
         this.name = name;
         this.host = host;
         this.port = port;
