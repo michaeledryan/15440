@@ -28,9 +28,6 @@ public class ToyMain {
 		interpreter = new RemoteMessageInterpreter(message);
 
 		response = parseResponse(interpreter.call());
-
-		RemoteMessage testSerialization;
-
 		System.out.println(response.getReturnVal());
 
 	}
