@@ -1,4 +1,4 @@
-package util;
+package messages;
 
 public enum MessageType {
 	REQUEST, REPLY;
