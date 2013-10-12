@@ -9,95 +9,95 @@ import remote.Remote440;
  */
 public class RegistryMessage implements Serializable {
 
-    /**
+	/**
 	 *
 	 */
 	private static final long serialVersionUID = -5720381073680552393L;
-    private MessageType type;
-    private RegistryMessageType subtype;
-    private String name;
-    private Remote440 rref;
-    private Set<String> list;
+	private MessageType type;
+	private RegistryMessageType subtype;
+	private String name;
+	private Remote440 rref;
+	private Set<String> list;
 
-    private RegistryMessage(MessageType type, RegistryMessageType subtype,
-                            String name, Remote440 rref) {
-        this.type = type;
-        this.subtype = subtype;
-        this.name = name;
-        this.rref = rref;
-    }
+	private RegistryMessage(MessageType type, RegistryMessageType subtype,
+			String name, Remote440 rref) {
+		this.type = type;
+		this.subtype = subtype;
+		this.name = name;
+		this.rref = rref;
+	}
 
-    private RegistryMessage(MessageType type, RegistryMessageType subtype,
-                            String name) {
-        this.type = type;
-        this.subtype = subtype;
-        this.name = name;
-    }
+	private RegistryMessage(MessageType type, RegistryMessageType subtype,
+			String name) {
+		this.type = type;
+		this.subtype = subtype;
+		this.name = name;
+	}
 
-    private RegistryMessage(MessageType type, RegistryMessageType subtype) {
-        this.type = type;
-        this.subtype = subtype;
-    }
+	private RegistryMessage(MessageType type, RegistryMessageType subtype) {
+		this.type = type;
+		this.subtype = subtype;
+	}
 
-    private RegistryMessage(Remote440 rref, MessageType type) {
-        this.rref = rref;
-        this.type = type;
-    }
+	private RegistryMessage(Remote440 rref, MessageType type) {
+		this.rref = rref;
+		this.type = type;
+	}
 
-    private RegistryMessage(Set<String> list, MessageType type) {
-        this.list = list;
-        this.type = type;
-    }
+	private RegistryMessage(Set<String> list, MessageType type) {
+		this.list = list;
+		this.type = type;
+	}
 
-    private RegistryMessage() {
-        this.type = MessageType.REPLY;
-    }
+	private RegistryMessage() {
+		this.type = MessageType.REPLY;
+	}
 
-    public static RegistryMessage newBind(String name, Remote440 rref,
-                                          RegistryMessageType subtype) {
-        return new RegistryMessage(MessageType.REQUEST, subtype, name, rref);
-    }
+	public static RegistryMessage newBind(String name, Remote440 rref,
+			RegistryMessageType subtype) {
+		return new RegistryMessage(MessageType.REQUEST, subtype, name, rref);
+	}
 
-    public static RegistryMessage newUnBind(String name,
-                                            RegistryMessageType subtype) {
-        return new RegistryMessage(MessageType.REQUEST, subtype, name);
-    }
+	public static RegistryMessage newUnBind(String name) {
+		return new RegistryMessage(MessageType.REQUEST,
+				RegistryMessageType.UNBIND, name);
+	}
 
-    public static RegistryMessage newList() {
-        return new RegistryMessage(MessageType.REQUEST,
-                RegistryMessageType.LIST);
-    }
+	public static RegistryMessage newList() {
+		return new RegistryMessage(MessageType.REQUEST,
+				RegistryMessageType.LIST);
+	}
 
-    public static RegistryMessage sendList(Set<String> list) {
-        return new RegistryMessage(list, MessageType.REPLY);
-    }
+	public static RegistryMessage sendList(Set<String> list) {
+		return new RegistryMessage(list, MessageType.REPLY);
+	}
 
-    public static RegistryMessage newLookup(String name) {
-        return new RegistryMessage(MessageType.REQUEST,
-                RegistryMessageType.LOOKUP, name);
-    }
+	public static RegistryMessage newLookup(String name) {
+		return new RegistryMessage(MessageType.REQUEST,
+				RegistryMessageType.LOOKUP, name);
+	}
 
-    public static RegistryMessage newReply(Remote440 rref) {
-        return new RegistryMessage(rref, MessageType.REPLY);
-    }
+	public static RegistryMessage newReply(Remote440 rref) {
+		return new RegistryMessage(rref, MessageType.REPLY);
+	}
 
-    public static RegistryMessage newAck() {
-        return new RegistryMessage();
-    }
+	public static RegistryMessage newAck() {
+		return new RegistryMessage();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Remote440 getRref() {
-        return rref;
-    }
+	public Remote440 getRref() {
+		return rref;
+	}
 
-    public RegistryMessageType getSubtype() {
-        return subtype;
-    }
+	public RegistryMessageType getSubtype() {
+		return subtype;
+	}
 
-    public Set<String> getList() {
-        return list;
-    }
+	public Set<String> getList() {
+		return list;
+	}
 }

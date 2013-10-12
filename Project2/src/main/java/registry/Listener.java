@@ -27,6 +27,7 @@ public class Listener {
             Socket incoming;
             try {
                 incoming = socket.accept();
+                System.out.println("CONNECTION!!!");
                 RegistryMessageResponder handler =
                         new RegistryMessageResponder(incoming);
                 Thread t = new Thread(handler);

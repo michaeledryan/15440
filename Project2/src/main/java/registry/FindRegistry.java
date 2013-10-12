@@ -14,7 +14,7 @@ public class FindRegistry {
      * Connect to a specific registry.
      * @param host The host to connect to.
      * @param port The port.
-     * @return Teh registry.
+     * @return The registry.
      */
 	public static RegistryImpl find(String host, int port) {
 		//return new RegistryConnection(host, port);

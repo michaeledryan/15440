@@ -12,10 +12,14 @@ public class RMIServer {
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
 	private static int port;
+	private static int rport;
+	private static String registryHost;
 	
 	public void startServer(String[] args) {
 		Options opt = new Options();
 		opt.addOption("p", "port", true, "Port to listen on. Default: 1099.");
+		opt.addOption("rp", "registry port", true, "Port to look for the registry on. Default: 8000.");
+		opt.addOption("r", "registry host", true, "Host to look for the registry on. Default: localhost.");
 		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
@@ -28,8 +32,11 @@ public class RMIServer {
 			}
 			System.out.println("Starting server...");
 			String portString = cmd.getOptionValue("p", "1099");
+			String rportString = cmd.getOptionValue("rp", "8000");
+			registryHost = cmd.getOptionValue("r", "localhost");
 			try {
 				port = Integer.parseInt(portString);
+				rport = Integer.parseInt(rportString);
 			} catch (NumberFormatException e) {
 				System.err.printf("Invalid port number: %s\n", portString);
 				System.exit(1);
