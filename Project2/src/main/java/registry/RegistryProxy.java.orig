@@ -1,0 +1,83 @@
+package registry;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+<<<<<<< HEAD
+
+import messages.RegistryMessage;
+import messages.RegistryMessageType;
+import remote.Remote440;
+import remote.Remote440Exception;
+=======
+>>>>>>> 19055e13521e134d372e77bdeb83c9497d5911d7
+
+public class RegistryProxy implements Registry {
+
+	private String host;
+	private int port;
+
+	public RegistryProxy(String host, int port) {
+		super();
+		this.host = host;
+		this.port = port;
+	}
+
+    private RegistryMessage sendReceive(RegistryMessage m) throws Remote440Exception {
+        Object obj = null;
+        Socket sock;
+        try {
+            sock = new Socket(host, port);
+            ObjectOutputStream oos =
+                    new ObjectOutputStream(sock.getOutputStream());
+
+            oos.writeObject(m);
+
+            ObjectInputStream ois =
+                    new ObjectInputStream(sock.getInputStream());
+
+            obj = ois.readObject();
+
+            sock.close();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return (RegistryMessage) obj;
+    }
+
+	@Override
+	public void bind(String name, Remote440 obj) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newBind(name, obj,
+				RegistryMessageType.BIND);
+		sendReceive(m);
+	}
+
+	@Override
+	public void rebind(String name, Remote440 obj) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newBind(name, obj,
+				RegistryMessageType.REBIND);
+		sendReceive(m);
+	}
+
+	@Override
+	public void unbind(String name) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newUnBind(name);
+		sendReceive(m);
+	}
+
+	@Override
+	public String[] list() throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newList();
+		return sendReceive(m).getList();
+	}
+
+	@Override
+	public Remote440 lookup(String key) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newLookup(key);
+		return sendReceive(m).getRref();
+	}
+
+}

@@ -1,10 +1,11 @@
 package client;
 
 import org.apache.commons.cli.*;
+
 import registry.Registry;
 import registry.RegistryProxy;
 import remote.Remote440Exception;
-import toys.ToyClass;
+import tests.printer.RemotePrinter;
 
 /**
  * The client runs predefined test traces. The location of the registries are
@@ -110,7 +111,7 @@ public class Client {
         Registry proxy = registries[0];
         String item = "toy0";
         System.out.printf("Looking up: %s\n", item);
-        ToyClass toy = (ToyClass) proxy.lookup(item);
+        RemotePrinter toy = (RemotePrinter) proxy.lookup(item);
         if (toy != null) {
             toy.printMessage("SHIT");
             toy.printMessage("FOOBAR");

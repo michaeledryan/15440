@@ -1,11 +1,11 @@
-package toys;
+package tests.printer;
 
 import remote.Remote440Exception;
 
 
-public class ToyClassImpl implements ToyClass {
+public class RemotePrinterImpl implements RemotePrinter {
 
-    public ToyClassImpl() {
+    public RemotePrinterImpl() {
         super();
     }
 

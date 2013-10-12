@@ -1,4 +1,4 @@
-package toys;
+package tests;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,8 +8,10 @@ import remote.Remote440Exception;
 import remote.RemoteObjectRef;
 import server.ObjectTracker;
 import server.RMIServer;
+import tests.printer.RemotePrinter;
+import tests.printer.RemotePrinterImpl;
 
-public class ToyServer {
+public class TestServer {
 
     private static Registry registry;
     private static RMIServer server;
@@ -36,7 +38,7 @@ public class ToyServer {
             e.printStackTrace();
         }
 
-        ObjectTracker.getInstance().put("toy0", new ToyClassImpl());
+        ObjectTracker.getInstance().put("toy0", new RemotePrinterImpl());
 
     }
 
@@ -45,7 +47,7 @@ public class ToyServer {
         RemoteObjectRef ror;
         ror = new RemoteObjectRef("toy0",
                 InetAddress.getLocalHost().getHostAddress(),
-                server.getPort(), ToyClass.class.getName());
+                server.getPort(), RemotePrinter.class.getName());
         registry.bind("toy0", ror);
         registry.rebind("toy0", ror);
     }

@@ -1,4 +1,4 @@
-package toys;
+package tests.printer;
 
 import remote.Marshal;
 import remote.Remote440Exception;
@@ -7,7 +7,7 @@ import remote.RemoteStub;
 
 import java.io.IOException;
 
-public class ToyClassStub implements ToyClass, RemoteStub{
+public class RemotePrinterStub implements RemotePrinter, RemoteStub{
 
 	/**
 	 * 
@@ -15,7 +15,7 @@ public class ToyClassStub implements ToyClass, RemoteStub{
 	private static final long serialVersionUID = 7776014088896526651L;
 	private RemoteObjectRef remoteRef;
 
-	public ToyClassStub() {
+	public RemotePrinterStub() {
 		super();
 	}
 
