@@ -61,10 +61,8 @@ public class RemoteObjectRef implements Serializable, Remote440 {
             result = (RemoteStub) stubClass.newInstance();
             result.setRemoteRef(this);
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

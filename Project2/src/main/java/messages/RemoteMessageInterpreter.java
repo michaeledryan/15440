@@ -6,9 +6,14 @@ import java.rmi.RemoteException;
 import java.util.concurrent.Callable;
 
 import server.ObjectTracker;
-import toys.ToyClass;
-import toys.ToyClassImpl;
 
+/**
+ * Interpreter for RemoteMessages. After being given a message, an Interpreter
+ * 
+ * TODO: WHAT ABOUT REPLIES??? 
+ * @author michaelryan
+ * 
+ */
 public class RemoteMessageInterpreter implements Callable<Object> {
 
 	private RemoteMessage message;
@@ -54,6 +59,5 @@ public class RemoteMessageInterpreter implements Callable<Object> {
 		}
 
 		return RemoteMessage.newReply(result);
-
 	}
 }

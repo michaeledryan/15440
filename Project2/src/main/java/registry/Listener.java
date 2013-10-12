@@ -1,10 +1,10 @@
 package registry;
 
-import messages.RegistryMessageResponder;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import messages.RegistryMessageResponder;
 
 /**
  */

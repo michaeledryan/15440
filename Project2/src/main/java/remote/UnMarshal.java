@@ -6,7 +6,12 @@ import messages.RemoteMessageInterpreter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
+import java.rmi.RemoteException;
+
+import server.ObjectTracker;
 
 /**
  * Receives a RMI request, runs it, and sends back the result.
@@ -22,7 +27,7 @@ public class UnMarshal implements Runnable {
 
 	/**
 	 * Wait for the message to show up, then read it.
-	 *
+	 * 
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -31,15 +36,15 @@ public class UnMarshal implements Runnable {
 				this.sock.getInputStream());
 		Object obj = inStream.readObject();
 		if (!(obj instanceof RemoteMessage)) {
-			throw new IOException("Received object that is not a " +
-                    "RemoteMessage.");
+			throw new IOException("Received object that is not a "
+					+ "RemoteMessage.");
 		}
 		this.m = (RemoteMessage) obj;
 	}
 
 	/**
 	 * Send back the result.
-	 *
+	 * 
 	 * @param resp
 	 *            RemoteMessage of type REPLY or Exception.
 	 */
@@ -65,12 +70,50 @@ public class UnMarshal implements Runnable {
 	public void run() {
 		try {
 			this.receiveMessage();
-			RemoteMessageInterpreter mi = new RemoteMessageInterpreter(this.m);
-			Object res = mi.call();
+			Object res = interpretReply(this.m);
 			this.sendReply(res);
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private Object interpretReply(RemoteMessage message) {
+		String meth = message.getMeth();
+		Class<?>[] clazzes = message.getClasses();
+		
+		// TODO: How do we handle lookup for remote things? Are they always local / remote? 
+		Object callee = ObjectTracker.getInstance().lookup(message.getName());
+
+		Method calling = null;
+
+		try {
+			calling = callee.getClass().getMethod(meth, clazzes);
+		} catch (NoSuchMethodException e) {
+			return new RemoteException(
+					"NoSuchMethodException: could not find method " + meth
+							+ "with parameters " + clazzes, e);
+		} catch (SecurityException e) {
+			return new RemoteException("Security exception finding method "
+					+ meth + "with parameters " + clazzes, e);
+		}
+
+		Object result = null;
+
+		try {
+			result = calling.invoke(callee, message.getArgs());
+		} catch (IllegalAccessException e) {
+			return new RemoteException("IllegalAccessException finding method "
+					+ meth + "with parameters " + clazzes, e);
+		} catch (IllegalArgumentException e) {
+			return new RemoteException("Illegal Argument passed to method "
+					+ meth + "with parameters " + clazzes.toString()
+					+ "and arguments " + message.getArgs(), e);
+		} catch (InvocationTargetException e) {
+			return new RemoteException("Could not invoke method " + meth
+					+ "on object " + message.getName(), e);
+		}
+
+		return RemoteMessage.newReply(result);
 	}
 
 }

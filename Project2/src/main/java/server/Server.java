@@ -9,7 +9,7 @@ import org.apache.commons.cli.ParseException;
 
 import toys.ToyClassImpl;
 
-public class Server {
+public abstract class Server {
 
     static private String helpHeader =
             "Project 2: RMI. 15-440, Fall 2013.";
@@ -46,7 +46,6 @@ public class Server {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
     }
 
 }

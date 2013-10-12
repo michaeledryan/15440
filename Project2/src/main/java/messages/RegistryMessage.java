@@ -1,14 +1,18 @@
 package messages;
 
-import remote.Remote440;
-
 import java.io.Serializable;
+
+import remote.Remote440;
 
 /**
  */
 public class RegistryMessage implements Serializable {
 
-    private String host;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5720381073680552393L;
+	private String host;
     private int port;
     private MessageType type;
     private String name;
