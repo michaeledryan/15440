@@ -17,7 +17,7 @@ public class RegistryMessage implements Serializable {
 	private RegistryMessageType subtype;
 	private String name;
 	private Remote440 rref;
-	private Set<String> list;
+	private String[] list;
 
 	private RegistryMessage(MessageType type, RegistryMessageType subtype,
 			String name, Remote440 rref) {
@@ -44,7 +44,7 @@ public class RegistryMessage implements Serializable {
 		this.type = type;
 	}
 
-	private RegistryMessage(Set<String> list, MessageType type) {
+	private RegistryMessage(String[] list, MessageType type) {
 		this.list = list;
 		this.type = type;
 	}
@@ -68,7 +68,7 @@ public class RegistryMessage implements Serializable {
 				RegistryMessageType.LIST);
 	}
 
-	public static RegistryMessage sendList(Set<String> list) {
+	public static RegistryMessage sendList(String[] list) {
 		return new RegistryMessage(list, MessageType.REPLY);
 	}
 
@@ -97,7 +97,7 @@ public class RegistryMessage implements Serializable {
 		return subtype;
 	}
 
-	public Set<String> getList() {
+	public String[] getList() {
 		return list;
 	}
 }

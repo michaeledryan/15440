@@ -1,10 +1,17 @@
 package registry;
 
-import java.util.Arrays;
+<<<<<<< Updated upstream
+import remote.Remote440;
+import remote.Remote440Exception;
+
+=======
+import java.rmi.RemoteException;
+>>>>>>> Stashed changes
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import remote.Remote440;
-import remote.Remote440Exception;
+import toys.Remote440Exception;
 
 /**
  * The registry maps identifiers to remote object references.
@@ -85,10 +92,7 @@ public class RrefTracker implements Registry {
      * @throws Remote440Exception
      */
     @Override
-    public String[] list() throws Remote440Exception {
-    	Object[] keys = refs.keySet().toArray();
-    	String[] stringArray = Arrays.copyOf(keys, keys.length, String[].class);
-
-        return stringArray;
+    public Set<String> list() throws Remote440Exception {
+        return refs.keySet();
     }
 }

@@ -1,0 +1,200 @@
+package registry;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+<<<<<<< Updated upstream
+=======
+import java.net.UnknownHostException;
+>>>>>>> Stashed changes
+import java.util.Set;
+
+import messages.RegistryMessage;
+import messages.RegistryMessageType;
+import remote.Remote440;
+<<<<<<< Updated upstream
+import remote.Remote440Exception;
+=======
+import toys.Remote440Exception;
+>>>>>>> Stashed changes
+
+public class RegistryProxy implements Registry {
+
+	private String host;
+	private int port;
+
+	public RegistryProxy(String host, int port) {
+		super();
+		this.host = host;
+		this.port = port;
+	}
+
+    private Object sendReceive(RegistryMessage m) throws Remote440Exception {
+        Object obj = null;
+        Socket sock;
+        try {
+            sock = new Socket(host, port);
+            ObjectOutputStream oos =
+                    new ObjectOutputStream(sock.getOutputStream());
+            ObjectInputStream ois =
+                    new ObjectInputStream(sock.getInputStream());
+
+            oos.writeObject(m);
+
+            obj = ois.readObject();
+
+            sock.close();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+	@Override
+	public void bind(String name, Remote440 obj) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newBind(name, obj,
+				RegistryMessageType.BIND);
+<<<<<<< Updated upstream
+		sendReceive(m);
+=======
+		Socket sock;
+		try {
+			sock = new Socket(host, port);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					sock.getOutputStream());
+			
+
+			System.out.println("writing");
+			oos.writeObject(m);
+
+			ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
+			System.out.println("waiting");
+			Object obj1 = ois.readObject();
+			System.out.println("reading");
+			
+			//sock.close();
+
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+>>>>>>> Stashed changes
+	}
+
+	@Override
+	public void rebind(String name, Remote440 obj) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newBind(name, obj,
+				RegistryMessageType.REBIND);
+<<<<<<< Updated upstream
+		sendReceive(m);
+=======
+		Socket sock;
+		try {
+			sock = new Socket(host, port);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					sock.getOutputStream());
+
+			ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
+
+			oos.writeObject(m);
+
+			Object obj1 = ois.readObject();
+			
+			sock.close();
+
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+>>>>>>> Stashed changes
+	}
+
+	@Override
+	public void unbind(String name) throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newUnBind(name);
+<<<<<<< Updated upstream
+		sendReceive(m);
+=======
+		Socket sock;
+		try {
+			sock = new Socket(host, port);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					sock.getOutputStream());
+			ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
+
+			oos.writeObject(m);
+
+			Object obj = ois.readObject();
+			
+			sock.close();
+
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+>>>>>>> Stashed changes
+	}
+
+	@Override
+	public Set<String> list() throws Remote440Exception {
+		RegistryMessage m = RegistryMessage.newList();
+<<<<<<< Updated upstream
+		return (Set<String>) sendReceive(m);
+=======
+		Socket sock;
+		try {
+			sock = new Socket(host, port);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					sock.getOutputStream());
+
+			oos.writeObject(m);
+			ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
+
+			Object obj = ois.readObject();
+			
+			//sock.close();
+			return (Set<String>) obj;
+
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+>>>>>>> Stashed changes
+	}
+
+    @Override
+    public Remote440 lookup(String key) throws Remote440Exception {
+        RegistryMessage m = RegistryMessage.newLookup(key);
+        return (Remote440) sendReceive(m);
+    }
+
+}

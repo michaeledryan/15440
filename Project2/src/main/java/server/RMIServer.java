@@ -7,13 +7,26 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import registry.Registry;
+import registry.RegistryProxy;
+
 public class RMIServer {
 	static private String helpHeader = "Project 2: RMI. 15-440, Fall 2013.";
 	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
-	private static int port;
-	private static int rport;
-	private static String registryHost;
+	private int port;
+
+	private int rport = 8000;
+	private String registryHost = "";
+	private Registry registry;
+	
+	public int getPort() {
+		return port;
+	}
+	
+	public Registry getRegistry() {
+		return registry;
+	}
 	
 	public void startServer(String[] args) {
 		Options opt = new Options();
@@ -42,7 +55,9 @@ public class RMIServer {
 				System.exit(1);
 			}
 			Listener l = new Listener(port);
+			registry = new RegistryProxy(registryHost, rport);
 			new Thread(l).start();
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

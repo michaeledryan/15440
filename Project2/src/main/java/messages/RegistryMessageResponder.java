@@ -1,13 +1,12 @@
 package messages;
 
-import registry.RrefTracker;
-import remote.Remote440;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Set;
+
+import registry.RrefTracker;
+import remote.Remote440;
 
 /**
  */
@@ -69,7 +68,7 @@ public class RegistryMessageResponder implements Runnable {
                     sendReply(RegistryMessage.newReply(rref));
                 }
                 case LIST: {
-                    Set<String> data = refs.list();
+                    String[] data = refs.list();
                     sendReply(RegistryMessage.sendList(data));
                 }
             }
