@@ -9,6 +9,9 @@ import org.apache.commons.cli.ParseException;
 
 import toys.ToyClassImpl;
 
+/**
+ * Main class that starts the server. Parse CLI and run!
+ */
 public class Server {
 
     static private String helpHeader =

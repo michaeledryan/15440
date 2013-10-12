@@ -2,12 +2,8 @@ package registry;
 
 import org.apache.commons.cli.*;
 
-
 /**
- * TODO: Does this actually act like a registry?
- * 
- * @author michaelryan
- *
+ * Main class that starts the registry. Parse the CLI and run!
  */
 public class RegistryImpl {
 
@@ -40,14 +36,14 @@ public class RegistryImpl {
                 System.err.printf("Invalid port number: %s\n", portString);
                 System.exit(1);
             }
-            
+
             // Actually start things.
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
     }
-    
-    
+
+
 
 }
