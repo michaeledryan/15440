@@ -7,11 +7,15 @@ import remote.RemoteStub;
 
 import java.io.IOException;
 
-public class ToyClassImplStub implements ToyClass, RemoteStub{
+public class ToyClassStub implements ToyClass, RemoteStub{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7776014088896526651L;
 	private RemoteObjectRef remoteRef;
 
-	public ToyClassImplStub() {
+	public ToyClassStub() {
 		super();
 	}
 

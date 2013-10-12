@@ -63,6 +63,7 @@ public class Marshal {
             this.sock = new Socket(r.getHost(), r.getPort());
             RemoteMessage m = RemoteMessage.newRequest(r.getHost(), r.getPort(),
                     meth, r.getName(), args, classes);
+            System.out.println(m.getName());
             this.sendMessage(m);
             RemoteMessage resp = this.receiveReply();
             retVal = resp.getReturnVal();

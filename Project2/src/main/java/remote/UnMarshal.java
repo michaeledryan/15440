@@ -32,6 +32,7 @@ public class UnMarshal implements Runnable {
 		ObjectInputStream inStream = new ObjectInputStream(
 				this.sock.getInputStream());
 		Object obj = inStream.readObject();
+		System.out.println(obj.getClass().getInterfaces()[0]);
 		if (!(obj instanceof RemoteMessage)) {
 			throw new IOException("Received object that is not a "
 					+ "RemoteMessage.");

@@ -1,10 +1,18 @@
 package client;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import registry.Registry;
+import registry.RegistryProxy;
 import remote.Remote440Exception;
+import remote.RemoteObjectRef;
 import toys.ToyClass;
 import toys.ToyClassImpl;
-import remote.RemoteObjectRef;
 
 /**
  */
@@ -21,7 +29,7 @@ public class Client {
 		Options opt = new Options();
 		opt.addOption("r", "registry", true,
 				"Hostname of registry. Default: localhost.");
-		opt.addOption("p", "port", true, "Port to connect to. Default: 1099.");
+		opt.addOption("p", "port", true, "Port to connect to. Default: 8000.");
 		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
@@ -33,7 +41,7 @@ public class Client {
 				System.exit(1);
 			}
 			System.out.println("Starting client...");
-			String portString = cmd.getOptionValue("p", "1099");
+			String portString = cmd.getOptionValue("p", "8000");
 			try {
 				port = Integer.parseInt(portString);
 			} catch (NumberFormatException e) {
@@ -48,21 +56,15 @@ public class Client {
 			// later - seems easy enough.
 
 			System.out.println("Actual work...");
-
-			// This is where we talk to the registry...
-			RemoteObjectRef ror = new RemoteObjectRef("toy0", registry, port,
-					ToyClassImpl.class.getCanonicalName());
-
-			ToyClass toy = null;
+			
+			Registry proxy = new RegistryProxy(registry, port);
+			
+			
 
 			try {
-				toy = (ToyClass) ror.localize();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
+				System.out.println(" LOOKING UP");
+				ToyClass toy = (ToyClass) proxy.lookup("toy0");
+				System.out.println(" fuck this");
 				System.out.println(toy.printMessage("SHIT"));
 			} catch (Remote440Exception e) {
 				// TODO Auto-generated catch block

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RrefTracker implements Registry {
 
-    private ConcurrentHashMap<String, Remote440> refs;
+    private ConcurrentHashMap<String, RemoteObjectRef> refs;
     private static RrefTracker instance = null;
 
     public RrefTracker() {
@@ -28,7 +28,7 @@ public class RrefTracker implements Registry {
     /**
      * Lookup a remote object.
      */
-    public Remote440 lookup(String key) {
+    public RemoteObjectRef lookup(String key) {
         return refs.get(key);
     }
 
@@ -37,7 +37,7 @@ public class RrefTracker implements Registry {
      * @param key Identifier.
      * @param ref Remote object reference.
      */
-    private void put(String key, Remote440 ref) {
+    private void put(String key, RemoteObjectRef ref) {
         refs.put(key, ref);
     }
 
@@ -48,7 +48,7 @@ public class RrefTracker implements Registry {
      * @throws Remote440Exception
      */
     @Override
-    public void bind(String name, Remote440 obj) throws Remote440Exception {
+    public void bind(String name, RemoteObjectRef obj) throws Remote440Exception {
         if (refs.containsKey(name)) {
             throw new Remote440Exception("Item already in registry: " + name);
         }
@@ -62,7 +62,7 @@ public class RrefTracker implements Registry {
      * @throws Remote440Exception
      */
     @Override
-    public void rebind(String name, Remote440 obj) throws Remote440Exception {
+    public void rebind(String name, RemoteObjectRef obj) throws Remote440Exception {
         this.put(name, obj);
     }
 
@@ -86,8 +86,8 @@ public class RrefTracker implements Registry {
      */
     @Override
     public String[] list() throws Remote440Exception {
-    	Object[] keys = refs.keySet().toArray();
-    	String[] stringArray = Arrays.copyOf(keys, keys.length, String[].class);
+        Object[] keys = refs.keySet().toArray();
+        String[] stringArray = Arrays.copyOf(keys, keys.length, String[].class);
 
         return stringArray;
     }
