@@ -1,9 +1,8 @@
 package messages;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import remote.Remote440;
+import remote.RemoteObjectRef;
 
 /**
  */
@@ -16,11 +15,11 @@ public class RegistryMessage implements Serializable {
 	private MessageType type;
 	private RegistryMessageType subtype;
 	private String name;
-	private Remote440 rref;
+	private RemoteObjectRef rref;
 	private String[] list;
 
 	private RegistryMessage(MessageType type, RegistryMessageType subtype,
-			String name, Remote440 rref) {
+			String name, RemoteObjectRef rref) {
 		this.type = type;
 		this.subtype = subtype;
 		this.name = name;
@@ -39,7 +38,7 @@ public class RegistryMessage implements Serializable {
 		this.subtype = subtype;
 	}
 
-	private RegistryMessage(Remote440 rref, MessageType type) {
+	private RegistryMessage(RemoteObjectRef rref, MessageType type) {
 		this.rref = rref;
 		this.type = type;
 	}
@@ -53,7 +52,7 @@ public class RegistryMessage implements Serializable {
 		this.type = MessageType.REPLY;
 	}
 
-	public static RegistryMessage newBind(String name, Remote440 rref,
+	public static RegistryMessage newBind(String name, RemoteObjectRef rref,
 			RegistryMessageType subtype) {
 		return new RegistryMessage(MessageType.REQUEST, subtype, name, rref);
 	}
@@ -77,7 +76,7 @@ public class RegistryMessage implements Serializable {
 				RegistryMessageType.LOOKUP, name);
 	}
 
-	public static RegistryMessage newReply(Remote440 rref) {
+	public static RegistryMessage newReply(RemoteObjectRef rref) {
 		return new RegistryMessage(rref, MessageType.REPLY);
 	}
 
@@ -89,7 +88,7 @@ public class RegistryMessage implements Serializable {
 		return name;
 	}
 
-	public Remote440 getRref() {
+	public RemoteObjectRef getRref() {
 		return rref;
 	}
 

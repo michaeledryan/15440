@@ -9,6 +9,8 @@ import messages.RegistryMessage;
 import messages.RegistryMessageType;
 import remote.Remote440;
 import remote.Remote440Exception;
+import remote.RemoteObjectRef;
+import server.ObjectTracker;
 
 public class RegistryProxy implements Registry {
 
@@ -46,14 +48,15 @@ public class RegistryProxy implements Registry {
     }
 
 	@Override
-	public void bind(String name, Remote440 obj) throws Remote440Exception {
+	public void bind(String name, RemoteObjectRef obj) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newBind(name, obj,
 				RegistryMessageType.BIND);
+		ObjectTracker.getInstance().put(name, obj);
 		sendReceive(m);
 	}
 
 	@Override
-	public void rebind(String name, Remote440 obj) throws Remote440Exception {
+	public void rebind(String name, RemoteObjectRef obj) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newBind(name, obj,
 				RegistryMessageType.REBIND);
 		sendReceive(m);
@@ -74,7 +77,13 @@ public class RegistryProxy implements Registry {
 	@Override
 	public Remote440 lookup(String key) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newLookup(key);
-		return sendReceive(m).getRref();
+		
+		RemoteObjectRef ror = sendReceive(m).getRref(); 
+		try {
+			return (Remote440) ror.localize();
+		} catch (ClassNotFoundException e) {
+			throw new Remote440Exception("Class not found.", e);
+		}
 	}
 
 }
