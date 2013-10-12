@@ -20,6 +20,7 @@ public class RegistryMessageResponder implements Runnable {
     }
 
     private void receiveMessage() throws IOException, ClassNotFoundException {
+        System.out.println("Start receive.");
         ObjectInputStream inStream = new ObjectInputStream(this.sock
                 .getInputStream());
         Object obj = inStream.readObject();
@@ -28,9 +29,11 @@ public class RegistryMessageResponder implements Runnable {
                     "RegistryMessage.");
         }
         this.message = (RegistryMessage) obj;
+        System.out.println("Finish receive.");
     }
 
     private void sendReply(RegistryMessage ref) {
+        System.out.println("Start send.");
         try {
             ObjectOutputStream outStream = new ObjectOutputStream(this.sock
                     .getOutputStream());
@@ -44,6 +47,7 @@ public class RegistryMessageResponder implements Runnable {
                 e.printStackTrace();
             }
         }
+        System.out.println("Finish send.");
     }
 
     public void run() {
@@ -54,22 +58,27 @@ public class RegistryMessageResponder implements Runnable {
                 case BIND: {
                     refs.bind(message.getName(), message.getRref());
                     sendReply(RegistryMessage.newAck());
+                    break;
                 }
                 case REBIND: {
                     refs.rebind(message.getName(), message.getRref());
                     sendReply(RegistryMessage.newAck());
+                    break;
                 }
                 case UNBIND: {
                     refs.unbind(message.getName());
                     sendReply(RegistryMessage.newAck());
+                    break;
                 }
                 case LOOKUP: {
                     Remote440 rref = refs.lookup(message.getName());
                     sendReply(RegistryMessage.newReply(rref));
+                    break;
                 }
                 case LIST: {
                     String[] data = refs.list();
                     sendReply(RegistryMessage.sendList(data));
+                    break;
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
