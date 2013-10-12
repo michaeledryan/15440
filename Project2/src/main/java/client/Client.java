@@ -1,28 +1,20 @@
 package client;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
+import org.apache.commons.cli.*;
 import registry.Registry;
 import registry.RegistryProxy;
 import remote.Remote440Exception;
-import remote.RemoteObjectRef;
 import toys.ToyClass;
-import toys.ToyClassImpl;
 
 /**
  */
 public class Client {
 
 	static private String helpHeader = "Project 2: RMI. 15-440, Fall 2013.";
-	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+	static private String helpFooter =
+            "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
-	private static String registry;
-	private static int port;
+    static private RegistryProxy[] registries;
 
 	public static void main(String[] args) {
 
@@ -30,6 +22,7 @@ public class Client {
 		opt.addOption("r", "registry", true,
 				"Hostname of registry. Default: localhost.");
 		opt.addOption("p", "port", true, "Port to connect to. Default: 8000.");
+        opt.addOption("t", "trace", true, "Trace to run internally.");
 		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
@@ -41,14 +34,41 @@ public class Client {
 				System.exit(1);
 			}
 			System.out.println("Starting client...");
-			String portString = cmd.getOptionValue("p", "8000");
-			try {
-				port = Integer.parseInt(portString);
-			} catch (NumberFormatException e) {
-				System.err.printf("Invalid port number: %s\n", portString);
-				System.exit(1);
-			}
-			registry = cmd.getOptionValue("r", "localhost");
+            String[] regs = cmd.getOptionValues("r");
+            String[] ports = cmd.getOptionValues("p");
+            String trace = cmd.getOptionValue("t", "test1");
+            if (regs == null) {
+                regs = new String[1];
+                regs[0] = "localhost";
+            }
+            if (ports != null && regs.length != ports.length) {
+                System.err.println("Error: Must either specify ports for all " +
+                        "registries or none (if all are default).");
+                System.exit(1);
+            }
+
+            registries = new RegistryProxy[regs.length];
+
+            for (int i = 0; i < regs.length; i++) {
+                String reg = regs[i];
+                int port = 8000;
+                if (ports != null) {
+                    String portString = ports[i];
+                    try {
+                        port = Integer.parseInt(portString);
+                    } catch (NumberFormatException e) {
+                        System.err.printf("Invalid port number: %s\n",
+                                portString);
+                        System.exit(1);
+                    }
+                }
+                registries[i] = new RegistryProxy(reg, port);
+            }
+
+            String word = registries.length > 1 ? "Registries" : "Registry";
+            System.out.printf("Connected to %d %s\n",
+                    registries.length, word);
+
 			// DO SOMETHING.
 
 			// Let's try getting a ToyObject called Toy. We can hardcode
@@ -56,18 +76,20 @@ public class Client {
 			// later - seems easy enough.
 
 			System.out.println("Actual work...");
-			
-			Registry proxy = new RegistryProxy(registry, port);
-			
-			
+            System.out.printf("Running trace: %s\n", trace);
 
 			try {
-				System.out.println(" LOOKING UP");
-				ToyClass toy = (ToyClass) proxy.lookup("toy0");
-				System.out.println(" fuck this");
-				System.out.println(toy.printMessage("SHIT"));
+                switch (trace) {
+                    case "test1": {
+                        test1();
+                        break;
+                    }
+                    default: {
+                        System.err.printf("Unknown trace: %s\n", trace);
+                        System.exit(1);
+                    }
+                }
 			} catch (Remote440Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -76,4 +98,12 @@ public class Client {
 		}
 
 	}
+
+    private static void test1() throws Remote440Exception {
+        Registry proxy = registries[0];
+        System.out.println(" LOOKING UP");
+        ToyClass toy = (ToyClass) proxy.lookup("toy0");
+        System.out.println(" fuck this");
+        System.out.println(toy.printMessage("SHIT"));
+    }
 }

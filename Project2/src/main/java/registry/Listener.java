@@ -17,6 +17,7 @@ public class Listener {
         this.port = port;
         try {
             socket = new ServerSocket(port);
+            System.out.printf("Listening on port: %s\n", port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,7 +28,6 @@ public class Listener {
             Socket incoming;
             try {
                 incoming = socket.accept();
-                System.out.println("CONNECTION!!!");
                 RegistryMessageResponder handler =
                         new RegistryMessageResponder(incoming);
                 Thread t = new Thread(handler);

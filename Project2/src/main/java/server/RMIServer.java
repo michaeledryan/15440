@@ -20,6 +20,7 @@ public class RMIServer {
 	private int rport = 8000;
 	private String registryHost = "";
 	private Registry registry;
+    private String trace;
 
 	public int getPort() {
 		return port;
@@ -36,6 +37,7 @@ public class RMIServer {
                 "Port to look for the registry on. Default: 8000.");
 		opt.addOption("r", "registry host", true,
                 "Host to look for the registry on. Default: localhost.");
+        opt.addOption("t", "trace", true, "Trace to run internally.");
 		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
@@ -49,6 +51,7 @@ public class RMIServer {
 			System.out.println("Starting server...");
 			String portString = cmd.getOptionValue("p", "1099");
 			String rportString = cmd.getOptionValue("rp", "8000");
+            trace = cmd.getOptionValue("t", "test1");
 			registryHost = cmd.getOptionValue("r", "localhost");
 			try {
 				port = Integer.parseInt(portString);
@@ -66,4 +69,7 @@ public class RMIServer {
 		}
 	}
 
+    public String getTrace() {
+        return trace;
+    }
 }

@@ -11,32 +11,42 @@ import server.RMIServer;
 
 public class ToyServer {
 
-	public static void main(String[] args) {
-		RMIServer server = new RMIServer();
-		server.startServer(args);
-		Registry registry = server.getRegistry();
+    private static Registry registry;
+    private static RMIServer server;
 
-		RemoteObjectRef ror = null;
-		try {
-			ror = new RemoteObjectRef("toy0",
-                    InetAddress.getLocalHost().getHostAddress(),
-                    server.getPort(), ToyClass.class.getName());
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		}
+    public static void main(String[] args) {
+        server = new RMIServer();
+        server.startServer(args);
+        registry = server.getRegistry();
+        String trace = server.getTrace();
 
-		try {
-			System.out.println("before");
-			registry.bind("toy0", ror);
-            registry.rebind("toy0", ror);
-			System.out.println("after");
-			System.out.println(registry.list()[0]);
-		} catch (Remote440Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        System.out.printf("Running trace: %s\n", trace);
+        try {
+            switch (trace) {
+                case "test1": {
+                    test1();
+                    break;
+                }
+                default: {
+                    System.err.printf("Unknown trace: %s\n", trace);
+                    System.exit(1);
+                }
+            }
+        } catch (Remote440Exception | UnknownHostException e) {
+            e.printStackTrace();
+        }
 
-		ObjectTracker.getInstance().put("toy0", new ToyClassImpl());
+        ObjectTracker.getInstance().put("toy0", new ToyClassImpl());
 
-	}
+    }
+
+    private static void test1() throws UnknownHostException,
+            Remote440Exception {
+        RemoteObjectRef ror;
+        ror = new RemoteObjectRef("toy0",
+                InetAddress.getLocalHost().getHostAddress(),
+                server.getPort(), ToyClass.class.getName());
+        registry.bind("toy0", ror);
+        registry.rebind("toy0", ror);
+    }
 }

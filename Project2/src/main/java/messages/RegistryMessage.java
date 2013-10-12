@@ -1,7 +1,7 @@
 package messages;
 
-import remote.Remote440;
 import remote.Remote440Exception;
+import remote.RemoteObjectRef;
 
 import java.io.Serializable;
 
@@ -60,7 +60,7 @@ public class RegistryMessage implements Serializable {
         this.exn = exn;
     }
 
-    public static RegistryMessage newBind(String name, Remote440 rref,
+    public static RegistryMessage newBind(String name, RemoteObjectRef rref,
             RegistryMessageType subtype) {
         return new RegistryMessage(MessageType.REQUEST, subtype, name, rref);
     }

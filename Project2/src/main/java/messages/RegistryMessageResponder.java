@@ -8,6 +8,7 @@ import java.net.Socket;
 import registry.RrefTracker;
 import remote.Remote440;
 import remote.Remote440Exception;
+import remote.RemoteObjectRef;
 
 /**
  */
@@ -21,7 +22,6 @@ public class RegistryMessageResponder implements Runnable {
     }
 
     private void receiveMessage() throws IOException, ClassNotFoundException {
-        System.out.println("Start receive.");
         ObjectInputStream inStream = new ObjectInputStream(this.sock
                 .getInputStream());
         Object obj = inStream.readObject();
@@ -30,11 +30,9 @@ public class RegistryMessageResponder implements Runnable {
                     "RegistryMessage.");
         }
         this.message = (RegistryMessage) obj;
-        System.out.println("Finish receive.");
     }
 
     private void sendReply(RegistryMessage ref) {
-        System.out.println("Start send.");
         try {
             ObjectOutputStream outStream = new ObjectOutputStream(this.sock
                     .getOutputStream());
@@ -48,13 +46,14 @@ public class RegistryMessageResponder implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println("Finish send.");
     }
 
     public void run() {
         try {
             RrefTracker refs = RrefTracker.getInstance();
             this.receiveMessage();
+            System.out.printf("Received request of type: %s\n",
+                    message.getSubtype().toString());
             switch (message.getSubtype()) {
                 case BIND: {
                     refs.bind(message.getName(), message.getRref());
@@ -72,7 +71,7 @@ public class RegistryMessageResponder implements Runnable {
                     break;
                 }
                 case LOOKUP: {
-                    Remote440 rref = refs.lookup(message.getName());
+                    RemoteObjectRef rref = refs.lookup(message.getName());
                     sendReply(RegistryMessage.newReply(rref));
                     break;
                 }
@@ -82,6 +81,7 @@ public class RegistryMessageResponder implements Runnable {
                     break;
                 }
             }
+            System.out.println("Request complete.");
         } catch (Remote440Exception e) {
             sendReply(RegistryMessage.newExn(e));
         } catch (IOException | ClassNotFoundException e) {

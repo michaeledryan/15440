@@ -32,7 +32,6 @@ public class UnMarshal implements Runnable {
 		ObjectInputStream inStream = new ObjectInputStream(
 				this.sock.getInputStream());
 		Object obj = inStream.readObject();
-		System.out.println(obj.getClass().getInterfaces()[0]);
 		if (!(obj instanceof RemoteMessage)) {
 			throw new IOException("Received object that is not a "
 					+ "RemoteMessage.");
@@ -68,6 +67,8 @@ public class UnMarshal implements Runnable {
 	public void run() {
 		try {
 			this.receiveMessage();
+            System.out.printf("Received request to invoke method %s on " +
+                    "object %s.\n", m.getMeth(), m.getName());
 			Object res = interpretReply(this.m);
 			this.sendReply(res);
 		} catch (IOException | ClassNotFoundException e) {
@@ -82,7 +83,7 @@ public class UnMarshal implements Runnable {
 		// TODO: How do we handle lookup for remote things? Are they always local / remote?
 		Object callee = ObjectTracker.getInstance().lookup(message.getName());
 
-		Method calling = null;
+		Method calling;
 
 		try {
 			calling = callee.getClass().getMethod(meth, clazzes);
@@ -95,7 +96,7 @@ public class UnMarshal implements Runnable {
 					+ meth + "with parameters " + clazzes, e);
 		}
 
-		Object result = null;
+		Object result;
 
 		try {
 			result = calling.invoke(callee, message.getArgs());
