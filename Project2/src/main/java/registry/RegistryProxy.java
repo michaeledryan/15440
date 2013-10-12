@@ -9,12 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Set;
-
-import messages.RegistryMessage;
-import messages.RegistryMessageType;
-import remote.Remote440;
-import remote.Remote440Exception;
 
 public class RegistryProxy implements Registry {
 
@@ -27,17 +21,18 @@ public class RegistryProxy implements Registry {
 		this.port = port;
 	}
 
-    private Object sendReceive(RegistryMessage m) throws Remote440Exception {
+    private RegistryMessage sendReceive(RegistryMessage m) throws Remote440Exception {
         Object obj = null;
         Socket sock;
         try {
             sock = new Socket(host, port);
             ObjectOutputStream oos =
                     new ObjectOutputStream(sock.getOutputStream());
-            ObjectInputStream ois =
-                    new ObjectInputStream(sock.getInputStream());
 
             oos.writeObject(m);
+
+            ObjectInputStream ois =
+                    new ObjectInputStream(sock.getInputStream());
 
             obj = ois.readObject();
 
@@ -47,7 +42,7 @@ public class RegistryProxy implements Registry {
             e.printStackTrace();
         }
 
-        return obj;
+        return (RegistryMessage) obj;
     }
 
 	@Override
@@ -73,19 +68,13 @@ public class RegistryProxy implements Registry {
 	@Override
 	public String[] list() throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newList();
-		return (String[]) sendReceive(m);
+		return sendReceive(m).getList();
 	}
 
 	@Override
 	public Remote440 lookup(String key) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newLookup(key);
-		return (Remote440) sendReceive(m);
+		return sendReceive(m).getRref();
 	}
-
-    @Override
-    public Remote440 lookup(String key) throws Remote440Exception {
-        RegistryMessage m = RegistryMessage.newLookup(key);
-        return (Remote440) sendReceive(m);
-    }
 
 }
