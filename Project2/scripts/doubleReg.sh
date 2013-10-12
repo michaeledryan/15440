@@ -28,12 +28,12 @@ fi
 rm $LOGS/*.log
 
 echo "Starting registry. Logs are in logs/."
-java -cp $EXECUTABLE registry.RegistryImpl > $LOGS/registry_stdout.log 2> registry_stderr.log &
-java -cp $EXECUTABLE registry.RegistryImpl -p 8001 > $LOGS/registry_stdout.log 2> registry_stderr.log &
+java -cp $EXECUTABLE registry.RegistryImpl > $LOGS/registry1_stdout.log 2> registry1_stderr.log &
+java -cp $EXECUTABLE registry.RegistryImpl -p 8001 > $LOGS/registry2_stdout.log 2> registry2_stderr.log &
 sleep 1
 echo "Starting server. Logs are in logs/."
-java -cp $EXECUTABLE tests/TestServer -t $1 > $LOGS/server_stdout.log 2> server_stderr.log &
-java -cp $EXECUTABLE tests/TestServer -p 1100 -rp 8001 -t $1 > $LOGS/server_stdout.log 2> server_stderr.log &
+java -cp $EXECUTABLE tests/TestServer -t $1 > $LOGS/server1_stdout.log 2> server1_stderr.log &
+java -cp $EXECUTABLE tests/TestServer -p 1100 -rp 8001 -t $1 > $LOGS/server2_stdout.log 2> server2_stderr.log &
 sleep 1
 echo "Starting client. Output to stdout/stderr."
 $DIR/../bin/client -r localhost -p 8000 -r localhost -p 8001 -t $1
