@@ -137,4 +137,4 @@ V. Example usage and tests
     $ ./singleReg <test1 | test2 | test3> (For single registry tests)
     $ ./doubleRed test3 (For double registry test)
 
-    Manual startup can also be done with the client.sh, registry.sh, and server.sh scripts in /build.
+    Manual startup can also be done with the client.sh, registry.sh, and server.sh scripts in /bin.
