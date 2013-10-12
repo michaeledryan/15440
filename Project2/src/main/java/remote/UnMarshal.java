@@ -88,16 +88,6 @@ public class UnMarshal implements Runnable {
         Object callee = ObjectTracker.getInstance().lookup(message.getName());
 
         Method calling;
-        Object[] args = message.getArgs();
-        for (int i = 0; i < clazzes.length; i++) {
-        	System.out.println(args[i]);
-        	System.out.println(clazzes[i]);
-        	System.out.println(RemoteInteger.class);
-        	System.out.println(RemoteInteger[].class);
-        	args[i] = (clazzes[i].cast(args[i]));
-        }
-        
-        
         
         try {
             calling = callee.getClass().getMethod(meth, clazzes);

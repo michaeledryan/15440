@@ -8,6 +8,8 @@ import java.net.Socket;
 
 /**
  * Listen for requests from clients.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class Listener implements Runnable {
 

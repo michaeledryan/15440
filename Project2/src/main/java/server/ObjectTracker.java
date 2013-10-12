@@ -4,6 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Maps object identifiers to the local objects.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class ObjectTracker {
 
@@ -23,6 +25,7 @@ public class ObjectTracker {
 
     /**
      * Do a lookup in the hash map. Exciting.
+     *
      * @param key Object identifier.
      * @return Reference to the object.
      */
@@ -32,11 +35,22 @@ public class ObjectTracker {
 
     /**
      * Add a new object to the map.
+     *
      * @param key Object identifier.
      * @param obj Unspecified object.
      */
     public void put(String key, Object obj) {
         objs.put(key, obj);
+    }
+
+    /**
+     * Delete an object from the local map.
+     *
+     * @param key Object identifier.
+     * @return The deleted object.
+     */
+    public Object delete(String key) {
+        return objs.remove(key);
     }
 
 }
