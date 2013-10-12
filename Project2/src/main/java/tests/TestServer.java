@@ -6,19 +6,26 @@ import java.net.UnknownHostException;
 import registry.Registry;
 import remote.Remote440Exception;
 import remote.RemoteObjectRef;
-import server.ObjectTracker;
 import server.RMIServer;
 import tests.ints.RemoteInteger;
 import tests.ints.RemoteIntegerImpl;
 import tests.printer.RemotePrinter;
 import tests.printer.RemotePrinterImpl;
 
+/**
+ * Example implementation of a server used to showcase tests. Like the client,
+ * simply switches on the trace passed in.
+ * 
+ * @author Alex Cappiello and Michael Ryan
+ * 
+ */
 public class TestServer {
 
 	private static Registry registry;
 	private static RMIServer server;
 
 	public static void main(String[] args) {
+		// Plug in to the framework.
 		server = new RMIServer();
 		server.startServer(args);
 		registry = server.getRegistry();
@@ -28,7 +35,7 @@ public class TestServer {
 		try {
 			switch (trace) {
 			case "test1": {
-				test2();
+				test1();
 				break;
 			}
 			case "test2": {
@@ -46,6 +53,12 @@ public class TestServer {
 
 	}
 
+	/**
+	 * Very simple case. Generate one reference, bind, and unbind.
+	 * 
+	 * @throws UnknownHostException
+	 * @throws Remote440Exception
+	 */
 	private static void test1() throws UnknownHostException, Remote440Exception {
 		RemoteObjectRef ror;
 		ror = new RemoteObjectRef("toy0", InetAddress.getLocalHost()
@@ -55,34 +68,38 @@ public class TestServer {
 		registry.rebind("toy0", ror, new RemotePrinterImpl());
 	}
 
+	/**
+	 * More interesting case. 
+	 * @throws UnknownHostException
+	 * @throws Remote440Exception
+	 */
 	private static void test2() throws UnknownHostException, Remote440Exception {
 		RemoteObjectRef ror1 = new RemoteObjectRef("int1", InetAddress
 				.getLocalHost().getHostAddress(), server.getPort(),
 				RemoteInteger.class.getName());
-		
-		
+
 		RemoteObjectRef ror2 = new RemoteObjectRef("int1", InetAddress
 				.getLocalHost().getHostAddress(), server.getPort(),
 				RemoteInteger.class.getName());
-		
+
 		RemoteObjectRef ror3 = new RemoteObjectRef("int1", InetAddress
 				.getLocalHost().getHostAddress(), server.getPort(),
 				RemoteInteger.class.getName());
-		
+
 		RemoteObjectRef ror4 = new RemoteObjectRef("int1", InetAddress
 				.getLocalHost().getHostAddress(), server.getPort(),
 				RemoteInteger.class.getName());
-		
+
 		RemoteObjectRef ror5 = new RemoteObjectRef("int1", InetAddress
 				.getLocalHost().getHostAddress(), server.getPort(),
 				RemoteInteger.class.getName());
 
- 		registry.bind("int1", ror1, new RemoteIntegerImpl(1));
+		registry.bind("int1", ror1, new RemoteIntegerImpl(1));
 		registry.bind("int2", ror2, new RemoteIntegerImpl(2));
 		registry.bind("int3", ror3, new RemoteIntegerImpl(3));
 		registry.bind("int4", ror4, new RemoteIntegerImpl(4));
 		registry.bind("int5", ror5, new RemoteIntegerImpl(5));
-		
+
 	}
 
 }

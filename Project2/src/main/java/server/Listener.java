@@ -13,16 +13,12 @@ import java.net.Socket;
  */
 public class Listener implements Runnable {
 
-    private int port;
     private ServerSocket socket;
-    private ObjectTracker objs;
 
     public Listener(int port) {
-        this.port = port;
         try {
             socket = new ServerSocket(port);
             System.out.printf("Listening on port: %d\n", port);
-            this.objs = ObjectTracker.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }

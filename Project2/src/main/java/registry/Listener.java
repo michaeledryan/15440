@@ -13,11 +13,9 @@ import java.net.Socket;
  */
 public class Listener {
 
-    private int port;
     private ServerSocket socket;
 
     public Listener(int port) {
-        this.port = port;
         try {
             socket = new ServerSocket(port);
             System.out.printf("Listening on port: %s\n", port);

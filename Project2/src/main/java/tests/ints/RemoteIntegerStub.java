@@ -7,11 +7,15 @@ import remote.Remote440Exception;
 import remote.RemoteObjectRef;
 import remote.RemoteStub;
 
+/**
+ * Stub class for RemoteInteger. Handwritten. Each stub method prepares a
+ * message to be sent, Marshals it, and waits for a return value.
+ * 
+ * @author michaelryan
+ * 
+ */
 public class RemoteIntegerStub implements RemoteInteger, RemoteStub {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8372536048460270233L;
 	private RemoteObjectRef remoteRef;
 
@@ -39,8 +43,7 @@ public class RemoteIntegerStub implements RemoteInteger, RemoteStub {
 		try {
 			mars.run("destructiveAdd", objs, clazzes);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Remote440Exception(e);
 		}
 
 		return;
@@ -60,12 +63,11 @@ public class RemoteIntegerStub implements RemoteInteger, RemoteStub {
 		Class<?>[] clazzes = { RemoteInteger[].class };
 
 		Object[] args = { addends };
-		
+
 		try {
 			mars.run("destructiveSum", args, clazzes);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Remote440Exception(e);
 		}
 
 		return;
@@ -87,8 +89,7 @@ public class RemoteIntegerStub implements RemoteInteger, RemoteStub {
 		try {
 			res = mars.run("getValue", objs, clazzes);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Remote440Exception(e);
 		}
 
 		return (Integer) res;

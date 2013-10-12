@@ -7,11 +7,15 @@ import remote.RemoteStub;
 
 import java.io.IOException;
 
-public class RemotePrinterStub implements RemotePrinter, RemoteStub{
+/**
+ * Stub class for RemotePrinters. Handwritten. Marshals invocations, sends them,
+ * then waits for the return.
+ * 
+ * @author michaelryan
+ * 
+ */
+public class RemotePrinterStub implements RemotePrinter, RemoteStub {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7776014088896526651L;
 	private RemoteObjectRef remoteRef;
 
@@ -42,7 +46,6 @@ public class RemotePrinterStub implements RemotePrinter, RemoteStub{
 		return (String) res;
 
 	}
-
 
 	public RemoteObjectRef getRemoteRef() {
 		return remoteRef;

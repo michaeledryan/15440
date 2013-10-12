@@ -16,6 +16,10 @@ public class Remote440Exception extends IOException {
     public Remote440Exception(String string, Throwable t) {
         super(string, t);
     }
+    
+    public Remote440Exception(Throwable t) {
+    	super(t);
+    }
 
     private static final long serialVersionUID = -3347871942185605138L;
 

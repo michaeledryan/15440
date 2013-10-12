@@ -2,6 +2,12 @@ package tests.ints;
 
 import remote.Remote440Exception;
 
+/**
+ * Implementation of a RemoteIntger for the server side. Fairly straightforward.
+ * 
+ * @author Michael Ryan and Alex Cappiello
+ * 
+ */
 public class RemoteIntegerImpl implements RemoteInteger {
 
 	private int actualInt;
@@ -18,10 +24,8 @@ public class RemoteIntegerImpl implements RemoteInteger {
 	@Override
 	public void destructiveSum(RemoteInteger[] addends)
 			throws Remote440Exception {
-		System.out.println("DOING SUM...");
-		System.out.println(addends.length);
-		for(RemoteInteger ri : addends) {
-			this.actualInt+= ri.getValue();
+		for (RemoteInteger ri : addends) {
+			this.actualInt += ri.getValue();
 		}
 	}
 
