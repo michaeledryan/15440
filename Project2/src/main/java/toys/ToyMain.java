@@ -1,13 +1,12 @@
 package toys;
 
-import java.rmi.RemoteException;
-
 import messages.RemoteMessage;
 import messages.RemoteMessageInterpreter;
+import remote.Remote440Exception;
 
 public class ToyMain {
 
-	public static void main(String[] args) throws RemoteException {
+	public static void main(String[] args) throws Remote440Exception {
 		Class<?>[] clazzes = { String.class };
 
 		Object[] objs = { "FUCK" };
@@ -32,7 +31,8 @@ public class ToyMain {
 
 	}
 
-	static public RemoteMessage parseResponse(Object obj) throws RemoteException {
+	static public RemoteMessage parseResponse(Object obj)
+            throws Remote440Exception {
 		RemoteMessage response = null;
 		if (obj instanceof Exception) {
 			try {

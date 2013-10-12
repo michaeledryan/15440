@@ -1,18 +1,18 @@
 package messages;
 
+import remote.Remote440Exception;
+import server.ObjectTracker;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.concurrent.Callable;
-
-import server.ObjectTracker;
 
 /**
  * Interpreter for RemoteMessages. After being given a message, an Interpreter
- * 
- * TODO: WHAT ABOUT REPLIES??? 
+ *
+ * TODO: WHAT ABOUT REPLIES???
  * @author michaelryan
- * 
+ *
  */
 public class RemoteMessageInterpreter implements Callable<Object> {
 
@@ -34,11 +34,11 @@ public class RemoteMessageInterpreter implements Callable<Object> {
 		try {
 			calling = callee.getClass().getMethod(meth, clazzes);
 		} catch (NoSuchMethodException e) {
-			return new RemoteException(
+			return new Remote440Exception(
 					"NoSuchMethodException: could not find method " + meth
 							+ "with parameters " + clazzes, e);
 		} catch (SecurityException e) {
-			return new RemoteException("Security exception finding method "
+			return new Remote440Exception("Security exception finding method "
 					+ meth + "with parameters " + clazzes, e);
 		}
 
@@ -47,14 +47,15 @@ public class RemoteMessageInterpreter implements Callable<Object> {
 		try {
 			result = calling.invoke(callee, message.getArgs());
 		} catch (IllegalAccessException e) {
-			return new RemoteException("IllegalAccessException finding method "
+			return new Remote440Exception("IllegalAccessException finding " +
+                    "method "
 					+ meth + "with parameters " + clazzes, e);
 		} catch (IllegalArgumentException e) {
-			return new RemoteException("Illegal Argument passed to method "
+			return new Remote440Exception("Illegal Argument passed to method "
 					+ meth + "with parameters " + clazzes.toString()
 					+ "and arguments " + message.getArgs(), e);
 		} catch (InvocationTargetException e) {
-			return new RemoteException("Could not invoke method " + meth
+			return new Remote440Exception("Could not invoke method " + meth
 					+ "on object " + message.getName(), e);
 		}
 
