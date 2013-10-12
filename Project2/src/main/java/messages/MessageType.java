@@ -7,5 +7,5 @@ package messages;
  * @author Michael Ryan and Alex Cappiello
  */
 public enum MessageType {
-	REQUEST, REPLY;
+	REQUEST, REPLY
 }

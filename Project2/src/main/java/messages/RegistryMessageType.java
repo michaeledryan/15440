@@ -3,5 +3,5 @@ package messages;
 /**
  */
 public enum RegistryMessageType {
-    BIND, REBIND, UNBIND, LOOKUP, LIST, EXN;
+    BIND, REBIND, UNBIND, LOOKUP, LIST, EXN
 }

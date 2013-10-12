@@ -46,7 +46,9 @@ public class RegistryProxy implements Registry {
 
         RegistryMessage res = (RegistryMessage) obj;
 
-        if (res.getSubtype() == RegistryMessageType.EXN) {
+        if (res == null) {
+            throw new Remote440Exception("Message is null.");
+        } else if (res.getSubtype() == RegistryMessageType.EXN) {
             throw res.getExn();
         }
 

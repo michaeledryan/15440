@@ -4,10 +4,6 @@ apply plugin: 'eclipse'
 sourceCompatibility = 1.7
 version = '1.0'
 
-def components = [
-    [name: "registry"]
-]
-
 jar {
     manifest {
         attributes 'Implementation-Title': 'RMI', 'Implementation-Version': version

@@ -87,8 +87,6 @@ public class RrefTracker implements Registry {
     @Override
     public String[] list() throws Remote440Exception {
         Object[] keys = refs.keySet().toArray();
-        String[] stringArray = Arrays.copyOf(keys, keys.length, String[].class);
-
-        return stringArray;
+        return Arrays.copyOf(keys, keys.length, String[].class);
     }
 }

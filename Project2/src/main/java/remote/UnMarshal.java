@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Receives a RMI request, runs it, and sends back the result.
@@ -68,7 +69,7 @@ public class UnMarshal implements Runnable {
 		try {
 			this.receiveMessage();
             System.out.printf("Received request to invoke method %s(%s) on " +
-                    "object %s.\n", m.getMeth(), m.argsToString(),
+                    "object %s.\n", m.getMeth(), Arrays.toString(m.getArgs()),
                     m.getName());
 			Object res = interpretReply(this.m);
             System.out.println("Request complete.");
@@ -92,10 +93,10 @@ public class UnMarshal implements Runnable {
 		} catch (NoSuchMethodException e) {
 			return new Remote440Exception(
 					"NoSuchMethodException: could not find method " + meth
-							+ "with parameters " + clazzes, e);
+							+ "with parameters " + Arrays.toString(clazzes), e);
 		} catch (SecurityException e) {
 			return new Remote440Exception("Security exception finding method "
-					+ meth + "with parameters " + clazzes, e);
+					+ meth + "with parameters " + Arrays.toString(clazzes), e);
 		}
 
 		Object result;
@@ -105,11 +106,11 @@ public class UnMarshal implements Runnable {
 		} catch (IllegalAccessException e) {
 			return new Remote440Exception("IllegalAccessException finding " +
                     "method "
-					+ meth + "with parameters " + clazzes, e);
+					+ meth + "with parameters " + Arrays.toString(clazzes), e);
 		} catch (IllegalArgumentException e) {
 			return new Remote440Exception("Illegal Argument passed to method "
-					+ meth + "with parameters " + clazzes.toString()
-					+ "and arguments " + message.getArgs(), e);
+					+ meth + "with parameters " + Arrays.toString(clazzes)
+					+ "and arguments " + Arrays.toString(message.getArgs()), e);
 		} catch (InvocationTargetException e) {
 			return new Remote440Exception("Could not invoke method " + meth
 					+ "on object " + message.getName(), e);

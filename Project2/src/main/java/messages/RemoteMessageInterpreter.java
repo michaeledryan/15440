@@ -5,6 +5,7 @@ import server.ObjectTracker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
@@ -29,31 +30,31 @@ public class RemoteMessageInterpreter implements Callable<Object> {
 		// Object callee = Registry.getName();
 		Object callee = ObjectTracker.getInstance().lookup(message.getName());
 
-		Method calling = null;
+		Method calling;
 
 		try {
 			calling = callee.getClass().getMethod(meth, clazzes);
 		} catch (NoSuchMethodException e) {
 			return new Remote440Exception(
 					"NoSuchMethodException: could not find method " + meth
-							+ "with parameters " + clazzes, e);
+							+ "with parameters " + Arrays.toString(clazzes), e);
 		} catch (SecurityException e) {
 			return new Remote440Exception("Security exception finding method "
-					+ meth + "with parameters " + clazzes, e);
+					+ meth + "with parameters " + Arrays.toString(clazzes), e);
 		}
 
-		Object result = null;
+		Object result;
 
 		try {
 			result = calling.invoke(callee, message.getArgs());
 		} catch (IllegalAccessException e) {
 			return new Remote440Exception("IllegalAccessException finding " +
                     "method "
-					+ meth + "with parameters " + clazzes, e);
+					+ meth + "with parameters " + Arrays.toString(clazzes), e);
 		} catch (IllegalArgumentException e) {
 			return new Remote440Exception("Illegal Argument passed to method "
-					+ meth + "with parameters " + clazzes.toString()
-					+ "and arguments " + message.getArgs(), e);
+					+ meth + "with parameters " + Arrays.toString(clazzes)
+					+ "and arguments " + Arrays.toString(message.getArgs()), e);
 		} catch (InvocationTargetException e) {
 			return new Remote440Exception("Could not invoke method " + meth
 					+ "on object " + message.getName(), e);

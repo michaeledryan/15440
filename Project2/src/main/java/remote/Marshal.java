@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Backend behind the stubs that initializes the RMI and receives the result.
@@ -61,10 +62,10 @@ public class Marshal {
         Object retVal = null;
         try {
             this.sock = new Socket(r.getHost(), r.getPort());
-            RemoteMessage m = RemoteMessage.newRequest(r.getHost(), r.getPort(),
-                    meth, r.getName(), args, classes);
+            RemoteMessage m = RemoteMessage.newRequest(meth, r.getName(), args,
+                    classes);
             System.out.printf("Sending request to invoke %s(%s) on object " +
-                    "%s.\n", meth, m.argsToString(), r.getName());
+                    "%s.\n", meth, Arrays.toString(m.getArgs()), r.getName());
             this.sendMessage(m);
             RemoteMessage resp = this.receiveReply();
             retVal = resp.getReturnVal();

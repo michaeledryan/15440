@@ -11,7 +11,7 @@ public class ToyMain {
 
 		Object[] objs = { "FUCK" };
 
-		RemoteMessage message = RemoteMessage.newRequest("", 1099, "printMessage",
+		RemoteMessage message = RemoteMessage.newRequest("printMessage",
                 "test toy", objs, clazzes);
 
 		RemoteMessageInterpreter interpreter = new RemoteMessageInterpreter(message);
@@ -21,7 +21,7 @@ public class ToyMain {
 
 		System.out.println("TRYING FOR EXCEPTION...");
 
-		message = RemoteMessage.newRequest("", 1099, "printMessage", "test toy",
+		message = RemoteMessage.newRequest("printMessage", "test toy",
                 objs, null);
 
 		interpreter = new RemoteMessageInterpreter(message);
