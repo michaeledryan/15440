@@ -1,10 +1,11 @@
 package registry;
 
-import remote.Remote440Exception;
-import remote.RemoteObjectRef;
-
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+
+import remote.Remote440;
+import remote.Remote440Exception;
+import remote.RemoteObjectRef;
 
 /**
  * Implements the Registry interface, complying with the descriptions of each
@@ -51,15 +52,15 @@ public class RrefTracker implements Registry {
      * Add a new Object. Does not accept rebinds.
      *
      * @param name Identifier.
-     * @param obj  Remote object reference.
+     * @param ref  Remote object reference.
      * @throws Remote440Exception
      */
     @Override
-    public void bind(String name, RemoteObjectRef obj) throws Remote440Exception {
+    public void bind(String name, RemoteObjectRef ref, Remote440 obj) throws Remote440Exception {
         if (refs.containsKey(name)) {
             throw new Remote440Exception("Item already in registry: " + name);
         }
-        this.put(name, obj);
+        this.put(name, ref);
     }
 
     /**
@@ -70,8 +71,8 @@ public class RrefTracker implements Registry {
      * @throws Remote440Exception
      */
     @Override
-    public void rebind(String name, RemoteObjectRef obj) throws Remote440Exception {
-        this.put(name, obj);
+    public void rebind(String name, RemoteObjectRef ref, Remote440 obj) throws Remote440Exception {
+        this.put(name, ref);
     }
 
     /**

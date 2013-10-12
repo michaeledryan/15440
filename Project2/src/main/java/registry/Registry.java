@@ -18,7 +18,7 @@ public interface Registry {
      * @param obj  Remote object reference.
      * @throws Remote440Exception
      */
-    public void bind(String name, RemoteObjectRef obj)
+    public void bind(String name, RemoteObjectRef ref, Remote440 obj)
             throws Remote440Exception;
 
     /**
@@ -36,7 +36,7 @@ public interface Registry {
      * @param obj  Remote object reference.
      * @throws Remote440Exception
      */
-    public void rebind(String name, RemoteObjectRef obj)
+    public void rebind(String name, RemoteObjectRef ref, Remote440 obj)
             throws Remote440Exception;
 
     /**

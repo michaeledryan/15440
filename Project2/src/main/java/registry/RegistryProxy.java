@@ -71,16 +71,16 @@ public class RegistryProxy implements Registry {
     }
 
     @Override
-    public void bind(String name, RemoteObjectRef obj) throws Remote440Exception {
-        RegistryMessage m = RegistryMessage.newBind(name, obj,
+    public void bind(String name, RemoteObjectRef ref, Remote440 obj) throws Remote440Exception {
+        RegistryMessage m = RegistryMessage.newBind(name, ref,
                 RegistryMessageType.BIND);
         ObjectTracker.getInstance().put(name, obj);
         sendReceive(m);
     }
 
     @Override
-    public void rebind(String name, RemoteObjectRef obj) throws Remote440Exception {
-        RegistryMessage m = RegistryMessage.newBind(name, obj,
+    public void rebind(String name, RemoteObjectRef ref, Remote440 obj) throws Remote440Exception {
+        RegistryMessage m = RegistryMessage.newBind(name, ref,
                 RegistryMessageType.REBIND);
         sendReceive(m);
     }

@@ -10,90 +10,97 @@ import java.util.Arrays;
 
 /**
  * Backend behind the stubs that initializes the RMI and receives the result.
- *
+ * 
  * @author Michael Ryan and Alex Cappiello
  */
 public class Marshal {
 
-    private Socket sock;
-    private RemoteObjectRef r;
+	private Socket sock;
+	private RemoteObjectRef r;
 
-    public Marshal(RemoteObjectRef r) {
-        this.r = r;
-    }
+	public Marshal(RemoteObjectRef r) {
+		this.r = r;
+	}
 
-    /**
-     * Sit around and wait for a reply.
-     *
-     * @return Object representing the return value.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private RemoteMessage receiveReply() throws IOException,
-            ClassNotFoundException {
-        ObjectInputStream inStream = new ObjectInputStream(this.sock
-                .getInputStream());
-        Object obj = inStream.readObject();
-        // TODO: Handle Exception.
-        if (!(obj instanceof RemoteMessage)) {
-            throw new IOException("Received object that is not a RemoteMessage.");
-        }
-        return (RemoteMessage) obj;
-    }
+	/**
+	 * Sit around and wait for a reply.
+	 * 
+	 * @return Object representing the return value.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private RemoteMessage receiveReply() throws IOException,
+			ClassNotFoundException {
+		ObjectInputStream inStream = new ObjectInputStream(
+				this.sock.getInputStream());
+		Object obj = inStream.readObject();
+		// TODO: Handle Exception.
+		if (obj instanceof Remote440Exception) {
+			throw (Remote440Exception) obj;
+		} else if (!(obj instanceof RemoteMessage)) {
+			throw new IOException(
+					"Received object that is not a RemoteMessage.");
+		}
+		return (RemoteMessage) obj;
+	}
 
-    /**
-     * Send the message to the server.
-     *
-     * @param m RemoteMessage of type REQUEST.
-     * @throws IOException
-     */
-    private void sendMessage(RemoteMessage m) throws IOException {
-        ObjectOutputStream outStream = new ObjectOutputStream(this.sock
-                .getOutputStream());
-        outStream.writeObject(m);
-    }
+	/**
+	 * Send the message to the server.
+	 * 
+	 * @param m
+	 *            RemoteMessage of type REQUEST.
+	 * @throws IOException
+	 */
+	private void sendMessage(RemoteMessage m) throws IOException {
+		ObjectOutputStream outStream = new ObjectOutputStream(
+				this.sock.getOutputStream());
+		outStream.writeObject(m);
+	}
 
-    /**
-     * Establish a connection to the server, send the message, and wait
-     * for the response.
-     *
-     * @param meth    Name of the method to invoke.
-     * @param args    Array of argument objects.
-     * @param classes Classes of the arguments.
-     * @return Returned object.
-     * @throws IOException
-     */
-    public Object run(String meth, Object[] args, Class<?>[] classes)
-            throws IOException {
-        Object retVal = null;
+	/**
+	 * Establish a connection to the server, send the message, and wait for the
+	 * response.
+	 * 
+	 * @param meth
+	 *            Name of the method to invoke.
+	 * @param args
+	 *            Array of argument objects.
+	 * @param classes
+	 *            Classes of the arguments.
+	 * @return Returned object.
+	 * @throws IOException
+	 */
+	public Object run(String meth, Object[] args, Class<?>[] classes)
+			throws IOException {
+		Object retVal = null;
 
-        try {
-            this.sock = new Socket(r.getHost(), r.getPort());
-            RemoteMessage m = RemoteMessage.newRequest(meth, r.getName(), args,
-                    classes);
+		try {
+			this.sock = new Socket(r.getHost(), r.getPort());
+			RemoteMessage m = RemoteMessage.newRequest(meth, r.getName(), args,
+					classes);
 
-            System.out.printf("Sending request to invoke %s(%s) on object " +
-                    "%s.\n", meth, Arrays.toString(m.getArgs()), r.getName());
+			System.out.printf("Sending request to invoke %s(%s) on object "
+					+ "%s.\n", meth, Arrays.toString(m.getArgs()), r.getName());
 
-            this.sendMessage(m);
-            RemoteMessage resp = this.receiveReply();
-            retVal = resp.getReturnVal();
+			this.sendMessage(m);
+			RemoteMessage resp = this.receiveReply();
+			retVal = resp.getReturnVal();
 
-            System.out.printf("Got result: %s\n", retVal.toString());
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            retVal = new IOException("Failed to receive reply.");
-        } finally {
-            sock.close();
-        }
+			//System.out.printf("Got result: %s\n", retVal.toString());
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			retVal = new IOException("Failed to receive reply.");
+		} finally {
+			sock.close();
+		}
 
-        if (retVal instanceof Remote440Exception) {
-            throw (Remote440Exception) retVal;
-        } else if (retVal instanceof IOException) {
-            throw (IOException) retVal;
-        } else {
-            return retVal;
-        }
-    }
+		if (retVal instanceof Remote440Exception) {
+			throw (Remote440Exception) retVal;
+		} else if (retVal instanceof IOException) {
+			throw (IOException) retVal;
+		} else {
+			return retVal;
+		}
+	}
 
 }

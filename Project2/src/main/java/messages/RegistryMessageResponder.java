@@ -74,12 +74,12 @@ public class RegistryMessageResponder implements Runnable {
 
             switch (message.getSubtype()) {
                 case BIND: {
-                    refs.bind(message.getName(), message.getRref());
+                    refs.bind(message.getName(), message.getRref(), null);
                     sendReply(RegistryMessage.newAck());
                     break;
                 }
                 case REBIND: {
-                    refs.rebind(message.getName(), message.getRref());
+                    refs.rebind(message.getName(), message.getRref(), null);
                     sendReply(RegistryMessage.newAck());
                     break;
                 }
