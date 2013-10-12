@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 /**
  * Backend behind the stubs that initializes the RMI and receives the result.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class Marshal {
 
@@ -22,11 +24,13 @@ public class Marshal {
 
     /**
      * Sit around and wait for a reply.
+     *
      * @return Object representing the return value.
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private RemoteMessage receiveReply() throws IOException, ClassNotFoundException {
+    private RemoteMessage receiveReply() throws IOException,
+            ClassNotFoundException {
         ObjectInputStream inStream = new ObjectInputStream(this.sock
                 .getInputStream());
         Object obj = inStream.readObject();
@@ -39,6 +43,7 @@ public class Marshal {
 
     /**
      * Send the message to the server.
+     *
      * @param m RemoteMessage of type REQUEST.
      * @throws IOException
      */
@@ -51,8 +56,9 @@ public class Marshal {
     /**
      * Establish a connection to the server, send the message, and wait
      * for the response.
-     * @param meth Name of the method to invoke.
-     * @param args Array of argument objects.
+     *
+     * @param meth    Name of the method to invoke.
+     * @param args    Array of argument objects.
      * @param classes Classes of the arguments.
      * @return Returned object.
      * @throws IOException
@@ -60,15 +66,19 @@ public class Marshal {
     public Object run(String meth, Object[] args, Class<?>[] classes)
             throws IOException {
         Object retVal = null;
+
         try {
             this.sock = new Socket(r.getHost(), r.getPort());
             RemoteMessage m = RemoteMessage.newRequest(meth, r.getName(), args,
                     classes);
+
             System.out.printf("Sending request to invoke %s(%s) on object " +
                     "%s.\n", meth, Arrays.toString(m.getArgs()), r.getName());
+
             this.sendMessage(m);
             RemoteMessage resp = this.receiveReply();
             retVal = resp.getReturnVal();
+
             System.out.printf("Got result: %s\n", retVal.toString());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -76,6 +86,7 @@ public class Marshal {
         } finally {
             sock.close();
         }
+
         if (retVal instanceof Remote440Exception) {
             throw (Remote440Exception) retVal;
         } else if (retVal instanceof IOException) {

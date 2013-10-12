@@ -1,13 +1,13 @@
 package remote;
 
 import java.io.Serializable;
+
 /**
  * Reference to an object stored in a remote RMI registry.
  * This is stored in each stub class for communication with the
  * actual object.
  *
  * @author Michael Ryan and Alex Capiello
- *
  */
 public class RemoteObjectRef implements Serializable, Remote440 {
 
@@ -18,7 +18,7 @@ public class RemoteObjectRef implements Serializable, Remote440 {
     private String interfaceName;
 
     public RemoteObjectRef(String name, String host, int port,
-            String interfaceName) {
+                           String interfaceName) {
         this.name = name;
         this.host = host;
         this.port = port;
@@ -37,17 +37,10 @@ public class RemoteObjectRef implements Serializable, Remote440 {
         return this.port;
     }
 
-    public String getInterfaceName() {
-        return interfaceName;
-    }
-
-    public void setInterfaceName(String interfaceName) {
-        this.interfaceName = interfaceName;
-    }
-
     /**
-     * Returns a stub of the class specified in interfaceName, then adds itself to the stub
-     * so that we can use the data in the reference to access the remote object.
+     * Returns a stub of the class specified in interfaceName, then adds itself
+     * to the stub so that we can use the data in the reference to access the
+     * remote object.
      */
     public Object localize() throws ClassNotFoundException {
         String stubClassName = interfaceName + "Stub";
