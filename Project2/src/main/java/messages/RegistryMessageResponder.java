@@ -7,18 +7,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Set;
 
 /**
  */
 public class RegistryMessageResponder implements Runnable {
 
     private Socket sock;
-    private RrefTracker refs;
     private RegistryMessage message;
 
-    public RegistryMessageResponder(Socket sock, RrefTracker refs) {
+    public RegistryMessageResponder(Socket sock) {
         this.sock = sock;
-        this.refs = refs;
     }
 
     private void receiveMessage() throws IOException, ClassNotFoundException {
@@ -50,10 +49,30 @@ public class RegistryMessageResponder implements Runnable {
 
     public void run() {
         try {
+            RrefTracker refs = RrefTracker.getInstance();
             this.receiveMessage();
-            Remote440 ref = this.refs.lookup(this.message.getName());
-            RegistryMessage resp = RegistryMessage.newReply(ref);
-            this.sendReply(resp);
+            switch (message.getSubtype()) {
+                case BIND: {
+                    refs.bind(message.getName(), message.getRref());
+                    sendReply(RegistryMessage.newAck());
+                }
+                case REBIND: {
+                    refs.rebind(message.getName(), message.getRref());
+                    sendReply(RegistryMessage.newAck());
+                }
+                case UNBIND: {
+                    refs.unbind(message.getName());
+                    sendReply(RegistryMessage.newAck());
+                }
+                case LOOKUP: {
+                    Remote440 rref = refs.lookup(message.getName());
+                    sendReply(RegistryMessage.newReply(rref));
+                }
+                case LIST: {
+                    Set<String> data = refs.list();
+                    sendReply(RegistryMessage.sendList(data));
+                }
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

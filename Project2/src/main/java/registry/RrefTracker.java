@@ -18,7 +18,7 @@ public class RrefTracker implements Registry {
         this.refs = new ConcurrentHashMap<>();
     }
 
-    public RrefTracker getInstance() {
+    public static RrefTracker getInstance() {
         if (instance == null) {
             instance = new RrefTracker();
         }

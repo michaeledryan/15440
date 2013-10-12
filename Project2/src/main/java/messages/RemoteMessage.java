@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 /**
  * Class for sending messages to invoke remote methods and return their results.
- * 
+ *
  * A request is detailed - contains a method name and an array of classes to
  * identify the method being called, an array of arguments for that method, and
  * information about where the message must be sent.
- * 
+ *
  * A reply is less detailed - it only contains the return value, represented as
  * an Object for purposes of generality.
- * 
+ *
  * @author michaelryan
- * 
+ *
  */
 public class RemoteMessage implements Serializable {
 

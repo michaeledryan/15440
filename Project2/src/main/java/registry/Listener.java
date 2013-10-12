@@ -1,22 +1,20 @@
 package registry;
 
+import messages.RegistryMessageResponder;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import messages.RegistryMessageResponder;
 
 /**
  */
 public class Listener {
 
     private int port;
-    private RrefTracker refs;
     private ServerSocket socket;
 
-    public Listener(int port, RrefTracker refs) {
+    public Listener(int port) {
         this.port = port;
-        this.refs = refs;
         try {
             socket = new ServerSocket(port);
         } catch (IOException e) {
@@ -29,9 +27,9 @@ public class Listener {
             Socket incoming;
             try {
                 incoming = socket.accept();
-                RegistryMessageResponder interp = new
-                        RegistryMessageResponder(incoming, refs);
-                Thread t = new Thread(interp);
+                RegistryMessageResponder handler =
+                        new RegistryMessageResponder(incoming);
+                Thread t = new Thread(handler);
                 t.start();
             } catch (IOException e) {
                 e.printStackTrace();
