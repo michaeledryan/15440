@@ -10,7 +10,6 @@ import org.apache.commons.cli.ParseException;
 import toys.ToyClassImpl;
 
 public abstract class Server {
-
     static private String helpHeader =
             "Project 2: RMI. 15-440, Fall 2013.";
     static private String helpFooter =

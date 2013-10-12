@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
+ * Listen for requests from clients.
  */
 public class Listener implements Runnable {
 
@@ -18,12 +19,16 @@ public class Listener implements Runnable {
         this.port = port;
         try {
             socket = new ServerSocket(port);
+            System.out.printf("Listening on port: %d\n", port);
             this.objs = ObjectTracker.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Listen on the socket. Handle requests by UnMarshaling in a new Thread.
+     */
     public void run() {
         while (true) {
             Socket incoming;

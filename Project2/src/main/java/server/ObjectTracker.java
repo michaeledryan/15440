@@ -3,6 +3,7 @@ package server;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Maps object identifiers to the local objects.
  */
 public class ObjectTracker {
 
@@ -10,7 +11,7 @@ public class ObjectTracker {
     private static ObjectTracker instance = null;
 
     private ObjectTracker() {
-        this.objs = new ConcurrentHashMap<String, Object>();
+        this.objs = new ConcurrentHashMap<>();
     }
 
     public static ObjectTracker getInstance() {
@@ -20,12 +21,22 @@ public class ObjectTracker {
         return instance;
     }
 
+    /**
+     * Do a lookup in the hash map. Exciting.
+     * @param key Object identifier.
+     * @return Reference to the object.
+     */
     public Object lookup(String key) {
         return objs.get(key);
     }
 
-    public Object put(String key, Object obj) {
-        return objs.put(key, obj);
+    /**
+     * Add a new object to the map.
+     * @param key Object identifier.
+     * @param obj Unspecified object.
+     */
+    public void put(String key, Object obj) {
+        objs.put(key, obj);
     }
 
 }
