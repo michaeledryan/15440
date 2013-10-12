@@ -34,7 +34,7 @@ public class Marshal {
 		ObjectInputStream inStream = new ObjectInputStream(
 				this.sock.getInputStream());
 		Object obj = inStream.readObject();
-		// TODO: Handle Exception.
+
 		if (obj instanceof Remote440Exception) {
 			throw (Remote440Exception) obj;
 		} else if (!(obj instanceof RemoteMessage)) {
@@ -86,7 +86,6 @@ public class Marshal {
 			RemoteMessage resp = this.receiveReply();
 			retVal = resp.getReturnVal();
 
-			//System.out.printf("Got result: %s\n", retVal.toString());
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			retVal = new IOException("Failed to receive reply.");

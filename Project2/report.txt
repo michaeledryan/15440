@@ -56,18 +56,22 @@ I. Definition of System Components
 
     The UnMarshal class mirrors the Marshal class on the server side. It receives a message indicating a remote invocation, then executes the request and returns the result.
 
-  RegistryMessage
-
+    RegistryMessages are almost an RMI framework in microcosm. They allow for registry operations from the client and server.
 
 II. Points of Extension
   
   This project is an RMI framework to be extended and used by applications that can leverage RMI to their needs. Points of extension include:
 
-  Server
-    Any server should create an RMIServer object and call its startServer method. This starts off the Listener, which waits for RMI requests and acts on then, invoking methods on local objects. Here, one would typicaly populate the registry and local storage with objects that are intended to be accessed remotely.
+  RMIServer
+    See TestServer.java for an example.
+    An RMIServer spins up a Listener, which waits for RMI messages after connecting to a Registry. Our TestServer code calls starts a server, then begins to populate the registry.
 
   Client
-    The client needs to know where to find 
+    See TestClient.java for an example
+    A Client attempts to connect to specified registries, then makes that information avaiable to end programmer code. After obtaining connections to registries, clients can begin to act on remote objects.
+
+  Remote440 Objects
+    As mentioned above, end users should implement 
 
 III. Discussion of specification
   
@@ -85,9 +89,7 @@ III. Discussion of specification
 
     As noted above, the Registry maps unique identifiers (Strings) to RemoteObjectRefs. Each Registry maintains its own communications suite for communication with any servers, which register objects using a bind, rebind, and unbind interface, and clients, which can look up specific objects or request a list.
 
-
-
-III.
+III. Build Information
 
   We built this project using the gradle build system. From the top-level dir,
   run "gradle assemble" to compile the source. Gradle should handle all
@@ -110,13 +112,29 @@ III.
   An example is shown in section V.
 
 
-IV.
+IV. External libraries Used
   Apache Commons CLI (automatically grabbed by gradle during compilation.)
   Gradle (If on afs, just use build.sh. Otherwise, you're on your own.)
-  rlwrap (to run the client).
 
 
-V.
-  Sample usage:
-  $ cd bin
+V. Example usage and tests
   
+  The expected workflow for using this framework is as follows:
+    1. Start any registries
+    2. Start any servers and point each one at a registry
+    3. Start clients and point them at any registries.
+
+  We have included startup scripts and tests. There are 4 tests, 1 of which uses multiple registries. Client output will be seen in the terminal, and registry and server output is redirected to a log directory.
+
+  Test 1: Very basic. Grab one remote object and invoke two methods on it.
+  Test 2: Use Registry.list() to get a list of registered objects. Act on each of those.
+  Test 3: 2 Registries. Look up objects on each and call methods that act on objects stored in multiple registries.
+  Test 4: Uses multiple types of objects that implement Remote440.
+
+  Usage (from top level directory):
+    $ gradle assemble
+    $ cd scripts
+    $ ./singleReg <test1 | test2 | test3> (For single registry tests)
+    $ ./doubleRed test3 (For double registry test)
+
+    Manual startup can also be done with the client.sh, registry.sh, and server.sh scripts in /build.

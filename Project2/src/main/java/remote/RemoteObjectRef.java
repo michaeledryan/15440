@@ -45,7 +45,6 @@ public class RemoteObjectRef implements Serializable, Remote440 {
     public Object localize() throws ClassNotFoundException {
         String stubClassName = interfaceName + "Stub";
 
-        System.out.println(stubClassName);
         Class<?> stubClass = Class.forName(stubClassName);
 
         RemoteStub result = null;
