@@ -37,7 +37,8 @@ public class RegistryImpl {
                 System.exit(1);
             }
 
-            // Actually start things.
+            Listener l = new Listener(port);
+            l.run();
         } catch (ParseException e) {
             e.printStackTrace();
         }
