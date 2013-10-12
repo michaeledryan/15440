@@ -1,15 +1,9 @@
 package registry;
 
-import messages.RegistryMessage;
-import messages.RegistryMessageType;
-import remote.Remote440;
-import remote.Remote440Exception;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Set;
 
 import messages.RegistryMessage;
 import messages.RegistryMessageType;
@@ -81,11 +75,5 @@ public class RegistryProxy implements Registry {
 		RegistryMessage m = RegistryMessage.newLookup(key);
 		return (Remote440) sendReceive(m);
 	}
-
-    @Override
-    public Remote440 lookup(String key) throws Remote440Exception {
-        RegistryMessage m = RegistryMessage.newLookup(key);
-        return (Remote440) sendReceive(m);
-    }
 
 }
