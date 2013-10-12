@@ -7,7 +7,12 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Implements the Registry interface, complying with the descriptions of each
+ * function in the interface. This implementation actually runs the registry
+ * process.
  * The registry maps identifiers to remote object references.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class RrefTracker implements Registry {
 
@@ -34,6 +39,7 @@ public class RrefTracker implements Registry {
 
     /**
      * Internal add new object.
+     *
      * @param key Identifier.
      * @param ref Remote object reference.
      */
@@ -43,8 +49,9 @@ public class RrefTracker implements Registry {
 
     /**
      * Add a new Object. Does not accept rebinds.
+     *
      * @param name Identifier.
-     * @param obj Remote object reference.
+     * @param obj  Remote object reference.
      * @throws Remote440Exception
      */
     @Override
@@ -57,8 +64,9 @@ public class RrefTracker implements Registry {
 
     /**
      * Add a new Object, possibly overwriting an old one.
+     *
      * @param name Identifier.
-     * @param obj Remote object reference.
+     * @param obj  Remote object reference.
      * @throws Remote440Exception
      */
     @Override
@@ -68,6 +76,7 @@ public class RrefTracker implements Registry {
 
     /**
      * Unregister an Object.
+     *
      * @param name Identifier.
      * @throws Remote440Exception
      */
@@ -81,6 +90,7 @@ public class RrefTracker implements Registry {
 
     /**
      * Retrieve a Set of everything in the registry.
+     *
      * @return Set of keys in the registry.
      * @throws Remote440Exception
      */

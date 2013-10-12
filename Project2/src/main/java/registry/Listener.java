@@ -1,12 +1,15 @@
 package registry;
 
+import messages.RegistryMessageResponder;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import messages.RegistryMessageResponder;
-
 /**
+ * Sit and wait for incoming requests.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class Listener {
 
@@ -23,6 +26,9 @@ public class Listener {
         }
     }
 
+    /**
+     * Sit and run for eternity. Each request is handled in a new Thread.
+     */
     public void run() {
         while (true) {
             Socket incoming;
