@@ -5,7 +5,7 @@ JAR=RMI.jar
 EXECUTABLE=$DIR/../build/libs/$JAR
 
 if [ -f $EXECUTABLE ]; then
-    java -cp $EXECUTABLE client.Client $@
+    java -cp $EXECUTABLE tests/TestClient $@
     exit 0
 else
     echo "JAR not found: " $EXECUTABLE
