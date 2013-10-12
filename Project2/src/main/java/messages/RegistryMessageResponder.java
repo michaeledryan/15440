@@ -10,6 +10,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
+ * Handles an incoming message to the registry, then sends the response.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class RegistryMessageResponder implements Runnable {
 
@@ -20,6 +23,12 @@ public class RegistryMessageResponder implements Runnable {
         this.sock = sock;
     }
 
+    /**
+     * Receive a message from the socket and ensure it is the correct class.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void receiveMessage() throws IOException, ClassNotFoundException {
         ObjectInputStream inStream = new ObjectInputStream(this.sock
                 .getInputStream());
@@ -31,6 +40,11 @@ public class RegistryMessageResponder implements Runnable {
         this.message = (RegistryMessage) obj;
     }
 
+    /**
+     * Send a new message as the response and close the socket.
+     *
+     * @param ref REPLY message.
+     */
     private void sendReply(RegistryMessage ref) {
         try {
             ObjectOutputStream outStream = new ObjectOutputStream(this.sock
@@ -47,12 +61,17 @@ public class RegistryMessageResponder implements Runnable {
         }
     }
 
+    /**
+     * Receive a message, process it, and send a reply. Each type of message
+     * is handled differently.
+     */
     public void run() {
         try {
             RrefTracker refs = RrefTracker.getInstance();
             this.receiveMessage();
             System.out.printf("Received request of type: %s\n",
                     message.getSubtype().toString());
+
             switch (message.getSubtype()) {
                 case BIND: {
                     refs.bind(message.getName(), message.getRref());
