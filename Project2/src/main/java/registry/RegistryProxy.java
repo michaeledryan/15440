@@ -83,8 +83,11 @@ public class RegistryProxy implements Registry {
 	@Override
 	public Remote440 lookup(String key) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newLookup(key);
-		
-		RemoteObjectRef ror = sendReceive(m).getRref(); 
+
+		RemoteObjectRef ror = sendReceive(m).getRref();
+        if (ror == null) {
+            return null;
+        }
 		try {
 			return (Remote440) ror.localize();
 		} catch (ClassNotFoundException e) {

@@ -69,13 +69,6 @@ public class Client {
             System.out.printf("Connected to %d %s\n",
                     registries.length, word);
 
-			// DO SOMETHING.
-
-			// Let's try getting a ToyObject called Toy. We can hardcode
-			// the server to return something dumb for now. Registry can be
-			// later - seems easy enough.
-
-			System.out.println("Actual work...");
             System.out.printf("Running trace: %s\n", trace);
 
 			try {
@@ -101,9 +94,13 @@ public class Client {
 
     private static void test1() throws Remote440Exception {
         Registry proxy = registries[0];
-        System.out.println(" LOOKING UP");
-        ToyClass toy = (ToyClass) proxy.lookup("toy0");
-        System.out.println(" fuck this");
-        System.out.println(toy.printMessage("SHIT"));
+        String item = "toy0";
+        System.out.printf("Looking up: %s\n", item);
+        ToyClass toy = (ToyClass) proxy.lookup(item);
+        if (toy != null) {
+            toy.printMessage("SHIT");
+            toy.printMessage("FOOBAR");
+        }
+
     }
 }

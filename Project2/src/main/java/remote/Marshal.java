@@ -63,10 +63,12 @@ public class Marshal {
             this.sock = new Socket(r.getHost(), r.getPort());
             RemoteMessage m = RemoteMessage.newRequest(r.getHost(), r.getPort(),
                     meth, r.getName(), args, classes);
-            System.out.println(m.getName());
+            System.out.printf("Sending request to invoke %s(%s) on object " +
+                    "%s.\n", meth, m.argsToString(), r.getName());
             this.sendMessage(m);
             RemoteMessage resp = this.receiveReply();
             retVal = resp.getReturnVal();
+            System.out.printf("Got result: %s\n", retVal.toString());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             retVal = new IOException("Failed to receive reply.");

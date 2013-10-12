@@ -59,6 +59,20 @@ public class RemoteMessage implements Serializable {
 		return new RemoteMessage(MessageType.REPLY, returnVal);
 	}
 
+    public String argsToString() {
+        if (args == null) {
+            return "(null)";
+        }
+        String res = "";
+        for (int i = 0; i < args.length; i++) {
+            res += args[i].toString();
+            if (i != args.length - 1) {
+                res += ", ";
+            }
+        }
+        return res;
+    }
+
 	public String getHost() {
 		return host;
 	}

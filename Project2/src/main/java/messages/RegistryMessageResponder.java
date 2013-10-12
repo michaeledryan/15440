@@ -1,14 +1,13 @@
 package messages;
 
+import registry.RrefTracker;
+import remote.Remote440Exception;
+import remote.RemoteObjectRef;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
-import registry.RrefTracker;
-import remote.Remote440;
-import remote.Remote440Exception;
-import remote.RemoteObjectRef;
 
 /**
  */

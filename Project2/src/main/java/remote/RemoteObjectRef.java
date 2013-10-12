@@ -3,11 +3,11 @@ package remote;
 import java.io.Serializable;
 /**
  * Reference to an object stored in a remote RMI registry.
- * This is stored in each stub class for communication with the 
+ * This is stored in each stub class for communication with the
  * actual object.
- * 
+ *
  * @author Michael Ryan and Alex Capiello
- * 
+ *
  */
 public class RemoteObjectRef implements Serializable, Remote440 {
 
@@ -60,9 +60,7 @@ public class RemoteObjectRef implements Serializable, Remote440 {
         try {
             result = (RemoteStub) stubClass.newInstance();
             result.setRemoteRef(this);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 

@@ -67,9 +67,11 @@ public class UnMarshal implements Runnable {
 	public void run() {
 		try {
 			this.receiveMessage();
-            System.out.printf("Received request to invoke method %s on " +
-                    "object %s.\n", m.getMeth(), m.getName());
+            System.out.printf("Received request to invoke method %s(%s) on " +
+                    "object %s.\n", m.getMeth(), m.argsToString(),
+                    m.getName());
 			Object res = interpretReply(this.m);
+            System.out.println("Request complete.");
 			this.sendReply(res);
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
