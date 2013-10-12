@@ -12,27 +12,30 @@ import registry.RegistryProxy;
 
 public class RMIServer {
 	static private String helpHeader = "Project 2: RMI. 15-440, Fall 2013.";
-	static private String helpFooter = "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
+	static private String helpFooter =
+            "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
 	private int port;
 
 	private int rport = 8000;
 	private String registryHost = "";
 	private Registry registry;
-	
+
 	public int getPort() {
 		return port;
 	}
-	
+
 	public Registry getRegistry() {
 		return registry;
 	}
-	
+
 	public void startServer(String[] args) {
 		Options opt = new Options();
 		opt.addOption("p", "port", true, "Port to listen on. Default: 1099.");
-		opt.addOption("rp", "registry port", true, "Port to look for the registry on. Default: 8000.");
-		opt.addOption("r", "registry host", true, "Host to look for the registry on. Default: localhost.");
+		opt.addOption("rp", "registry port", true,
+                "Port to look for the registry on. Default: 8000.");
+		opt.addOption("r", "registry host", true,
+                "Host to look for the registry on. Default: localhost.");
 		opt.addOption("h", "help", false, "Display help.");
 
 		CommandLineParser parser = new GnuParser();
@@ -57,10 +60,10 @@ public class RMIServer {
 			Listener l = new Listener(port);
 			registry = new RegistryProxy(registryHost, rport);
 			new Thread(l).start();
-			
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

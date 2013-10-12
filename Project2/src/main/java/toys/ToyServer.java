@@ -18,7 +18,9 @@ public class ToyServer {
 
 		RemoteObjectRef ror = null;
 		try {
-			ror = new RemoteObjectRef("toy0", InetAddress.getLocalHost().getHostAddress(), server.getPort(), ToyClass.class.getName());
+			ror = new RemoteObjectRef("toy0",
+                    InetAddress.getLocalHost().getHostAddress(),
+                    server.getPort(), ToyClass.class.getName());
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
 		}
@@ -26,6 +28,7 @@ public class ToyServer {
 		try {
 			System.out.println("before");
 			registry.bind("toy0", ror);
+            registry.rebind("toy0", ror);
 			System.out.println("after");
 			System.out.println(registry.list()[0]);
 		} catch (Remote440Exception e) {

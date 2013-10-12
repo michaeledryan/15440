@@ -1,9 +1,9 @@
 package messages;
 
-import java.io.Serializable;
-import java.util.Set;
-
 import remote.Remote440;
+import remote.Remote440Exception;
+
+import java.io.Serializable;
 
 /**
  */
@@ -18,6 +18,7 @@ public class RegistryMessage implements Serializable {
 	private String name;
 	private Remote440 rref;
 	private String[] list;
+    private Remote440Exception exn;
 
 	private RegistryMessage(MessageType type, RegistryMessageType subtype,
 			String name, Remote440 rref) {
@@ -53,6 +54,12 @@ public class RegistryMessage implements Serializable {
 		this.type = MessageType.REPLY;
 	}
 
+    private RegistryMessage(Remote440Exception exn) {
+        this.type = MessageType.REPLY;
+        this.subtype = RegistryMessageType.EXN;
+        this.exn = exn;
+    }
+
 	public static RegistryMessage newBind(String name, Remote440 rref,
 			RegistryMessageType subtype) {
 		return new RegistryMessage(MessageType.REQUEST, subtype, name, rref);
@@ -85,6 +92,10 @@ public class RegistryMessage implements Serializable {
 		return new RegistryMessage();
 	}
 
+    public static RegistryMessage newExn(Remote440Exception exn) {
+        return new RegistryMessage(exn);
+    }
+
 	public String getName() {
 		return name;
 	}
@@ -100,4 +111,8 @@ public class RegistryMessage implements Serializable {
 	public String[] getList() {
 		return list;
 	}
+
+    public Remote440Exception getExn() {
+        return exn;
+    }
 }

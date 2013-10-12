@@ -42,6 +42,12 @@ public class RegistryProxy implements Registry {
             e.printStackTrace();
         }
 
+        RegistryMessage res = (RegistryMessage) obj;
+
+        if (res.getSubtype() == RegistryMessageType.EXN) {
+            throw res.getExn();
+        }
+
         return (RegistryMessage) obj;
     }
 

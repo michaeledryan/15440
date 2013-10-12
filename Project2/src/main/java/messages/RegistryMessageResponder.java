@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import registry.RrefTracker;
 import remote.Remote440;
+import remote.Remote440Exception;
 
 /**
  */
@@ -81,6 +82,8 @@ public class RegistryMessageResponder implements Runnable {
                     break;
                 }
             }
+        } catch (Remote440Exception e) {
+            sendReply(RegistryMessage.newExn(e));
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
