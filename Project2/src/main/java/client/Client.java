@@ -7,36 +7,43 @@ import remote.Remote440Exception;
 import toys.ToyClass;
 
 /**
+ * The client runs predefined test traces. The location of the registries are
+ * given through the CLI.
+ *
+ * @author Michael Ryan and Alex Cappiello
  */
 public class Client {
 
-	static private String helpHeader = "Project 2: RMI. 15-440, Fall 2013.";
-	static private String helpFooter =
+    static private String helpHeader = "Project 2: RMI. 15-440, Fall 2013.";
+    static private String helpFooter =
             "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
     static private RegistryProxy[] registries;
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Options opt = new Options();
-		opt.addOption("r", "registry", true,
-				"Hostname of registry. Default: localhost.");
-		opt.addOption("p", "port", true, "Port to connect to. Default: 8000.");
+        Options opt = new Options();
+        opt.addOption("r", "registry", true,
+                "Hostname of registry. Default: localhost.");
+        opt.addOption("p", "port", true, "Port to connect to. Default: 8000.");
         opt.addOption("t", "trace", true, "Trace to run internally.");
-		opt.addOption("h", "help", false, "Display help.");
+        opt.addOption("h", "help", false, "Display help.");
 
-		CommandLineParser parser = new GnuParser();
-		try {
-			CommandLine cmd = parser.parse(opt, args);
-			if (cmd.hasOption("h")) {
-				HelpFormatter help = new HelpFormatter();
-				help.printHelp("client", helpHeader, opt, helpFooter, true);
-				System.exit(1);
-			}
-			System.out.println("Starting client...");
+        CommandLineParser parser = new GnuParser();
+        try {
+            CommandLine cmd = parser.parse(opt, args);
+            if (cmd.hasOption("h")) {
+                HelpFormatter help = new HelpFormatter();
+                help.printHelp("client", helpHeader, opt, helpFooter, true);
+                System.exit(1);
+            }
+            System.out.println("Starting client...");
+            String trace = cmd.getOptionValue("t", "test1");
+
+            // CLI parsing gets a little ugly, since we have multiple
+            // registries.
             String[] regs = cmd.getOptionValues("r");
             String[] ports = cmd.getOptionValues("p");
-            String trace = cmd.getOptionValue("t", "test1");
             if (regs == null) {
                 regs = new String[1];
                 regs[0] = "localhost";
@@ -71,7 +78,9 @@ public class Client {
 
             System.out.printf("Running trace: %s\n", trace);
 
-			try {
+            // Pick the correct trace.
+            // Client and server should be on the same trace.
+            try {
                 switch (trace) {
                     case "test1": {
                         test1();
@@ -82,16 +91,21 @@ public class Client {
                         System.exit(1);
                     }
                 }
-			} catch (Remote440Exception e) {
-				e.printStackTrace();
-			}
+            } catch (Remote440Exception e) {
+                e.printStackTrace();
+            }
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-	}
+    }
 
+    /**
+     * Really simple test on the ToyClass.
+     *
+     * @throws Remote440Exception
+     */
     private static void test1() throws Remote440Exception {
         Registry proxy = registries[0];
         String item = "toy0";
