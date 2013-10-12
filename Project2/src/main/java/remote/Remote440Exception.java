@@ -1,16 +1,18 @@
-package toys;
+package remote;
+
+import java.io.IOException;
 
 /**
  * Exception thrown whenever something RMI-related goes wrong.
- * 
- * @author Michael Ryan and Alex Capiello 
+ *
+ * @author Michael Ryan and Alex Capiello
  */
-public class Remote440Exception extends Exception {
+public class Remote440Exception extends IOException {
 
 	public Remote440Exception(String string) {
 		super(string);
 	}
-	
+
 	public Remote440Exception(String string, Throwable t) {
 		super(string, t);
 	}

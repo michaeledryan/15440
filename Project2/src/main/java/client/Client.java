@@ -1,7 +1,7 @@
 package client;
 
 import org.apache.commons.cli.*;
-import toys.Remote440Exception;
+import remote.Remote440Exception;
 import toys.ToyClass;
 import toys.ToyClassImpl;
 import remote.RemoteObjectRef;

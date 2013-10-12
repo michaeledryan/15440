@@ -1,7 +1,7 @@
 package remote;
 
 import messages.RemoteMessage;
-import messages.RemoteMessageInterpreter;
+import server.ObjectTracker;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,9 +9,6 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import java.rmi.RemoteException;
-
-import server.ObjectTracker;
 
 /**
  * Receives a RMI request, runs it, and sends back the result.
@@ -27,7 +24,7 @@ public class UnMarshal implements Runnable {
 
 	/**
 	 * Wait for the message to show up, then read it.
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -44,7 +41,7 @@ public class UnMarshal implements Runnable {
 
 	/**
 	 * Send back the result.
-	 * 
+	 *
 	 * @param resp
 	 *            RemoteMessage of type REPLY or Exception.
 	 */
@@ -80,8 +77,8 @@ public class UnMarshal implements Runnable {
 	private Object interpretReply(RemoteMessage message) {
 		String meth = message.getMeth();
 		Class<?>[] clazzes = message.getClasses();
-		
-		// TODO: How do we handle lookup for remote things? Are they always local / remote? 
+
+		// TODO: How do we handle lookup for remote things? Are they always local / remote?
 		Object callee = ObjectTracker.getInstance().lookup(message.getName());
 
 		Method calling = null;
@@ -89,11 +86,11 @@ public class UnMarshal implements Runnable {
 		try {
 			calling = callee.getClass().getMethod(meth, clazzes);
 		} catch (NoSuchMethodException e) {
-			return new RemoteException(
+			return new Remote440Exception(
 					"NoSuchMethodException: could not find method " + meth
 							+ "with parameters " + clazzes, e);
 		} catch (SecurityException e) {
-			return new RemoteException("Security exception finding method "
+			return new Remote440Exception("Security exception finding method "
 					+ meth + "with parameters " + clazzes, e);
 		}
 
@@ -102,14 +99,15 @@ public class UnMarshal implements Runnable {
 		try {
 			result = calling.invoke(callee, message.getArgs());
 		} catch (IllegalAccessException e) {
-			return new RemoteException("IllegalAccessException finding method "
+			return new Remote440Exception("IllegalAccessException finding " +
+                    "method "
 					+ meth + "with parameters " + clazzes, e);
 		} catch (IllegalArgumentException e) {
-			return new RemoteException("Illegal Argument passed to method "
+			return new Remote440Exception("Illegal Argument passed to method "
 					+ meth + "with parameters " + clazzes.toString()
 					+ "and arguments " + message.getArgs(), e);
 		} catch (InvocationTargetException e) {
-			return new RemoteException("Could not invoke method " + meth
+			return new Remote440Exception("Could not invoke method " + meth
 					+ "on object " + message.getName(), e);
 		}
 

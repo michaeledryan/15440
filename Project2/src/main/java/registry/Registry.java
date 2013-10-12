@@ -1,17 +1,19 @@
 package registry;
 
-import java.rmi.RemoteException;
-import java.util.Set;
-
 import remote.Remote440;
+import remote.Remote440Exception;
+
+import java.util.Set;
 
 public interface Registry {
 
-	public void bind(String name, Remote440 obj) throws RemoteException;
+	public void bind(String name, Remote440 obj) throws Remote440Exception;
 
-	public void rebind(String name, Remote440 obj) throws RemoteException;
+	public void rebind(String name, Remote440 obj) throws Remote440Exception;
 
-	public void unbind(String name) throws RemoteException;
+	public void unbind(String name) throws Remote440Exception;
 
-	public Set<String> list() throws RemoteException;
+    public Remote440 lookup(String key) throws Remote440Exception;
+
+	public Set<String> list() throws Remote440Exception;
 }

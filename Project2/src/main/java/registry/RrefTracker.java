@@ -1,8 +1,8 @@
 package registry;
 
 import remote.Remote440;
+import remote.Remote440Exception;
 
-import java.rmi.RemoteException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,12 +45,12 @@ public class RrefTracker implements Registry {
      * Add a new Object. Does not accept rebinds.
      * @param name Identifier.
      * @param obj Remote object reference.
-     * @throws RemoteException
+     * @throws Remote440Exception
      */
     @Override
-    public void bind(String name, Remote440 obj) throws RemoteException {
+    public void bind(String name, Remote440 obj) throws Remote440Exception {
         if (refs.containsKey(name)) {
-            throw new RemoteException("Item already in registry: " + name);
+            throw new Remote440Exception("Item already in registry: " + name);
         }
         this.put(name, obj);
     }
@@ -59,22 +59,22 @@ public class RrefTracker implements Registry {
      * Add a new Object, possibly overwriting an old one.
      * @param name Identifier.
      * @param obj Remote object reference.
-     * @throws RemoteException
+     * @throws Remote440Exception
      */
     @Override
-    public void rebind(String name, Remote440 obj) throws RemoteException {
+    public void rebind(String name, Remote440 obj) throws Remote440Exception {
         this.put(name, obj);
     }
 
     /**
      * Unregister an Object.
      * @param name Identifier.
-     * @throws RemoteException
+     * @throws Remote440Exception
      */
     @Override
-    public void unbind(String name) throws RemoteException {
+    public void unbind(String name) throws Remote440Exception {
         if (!refs.containsKey(name)) {
-            throw new RemoteException("Object not in registry.");
+            throw new Remote440Exception("Object not in registry.");
         }
         refs.remove(name);
     }
@@ -82,10 +82,10 @@ public class RrefTracker implements Registry {
     /**
      * Retrieve a Set of everything in the registry.
      * @return Set of keys in the registry.
-     * @throws RemoteException
+     * @throws Remote440Exception
      */
     @Override
-    public Set<String> list() throws RemoteException {
+    public Set<String> list() throws Remote440Exception {
         return refs.keySet();
     }
 }

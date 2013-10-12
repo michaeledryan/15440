@@ -1,16 +1,15 @@
 package registry;
 
+import messages.RegistryMessage;
+import messages.RegistryMessageType;
+import remote.Remote440;
+import remote.Remote440Exception;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.util.Set;
-
-import messages.RegistryMessage;
-import messages.RegistryMessageType;
-import remote.Remote440;
 
 public class RegistryProxy implements Registry {
 
@@ -23,104 +22,59 @@ public class RegistryProxy implements Registry {
 		this.port = port;
 	}
 
+    private Object sendReceive(RegistryMessage m) throws Remote440Exception {
+        Object obj = null;
+        Socket sock;
+        try {
+            sock = new Socket(host, port);
+            ObjectOutputStream oos =
+                    new ObjectOutputStream(sock.getOutputStream());
+            ObjectInputStream ois =
+                    new ObjectInputStream(sock.getInputStream());
+
+            oos.writeObject(m);
+
+            obj = ois.readObject();
+
+            sock.close();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
 	@Override
-	public void bind(String name, Remote440 obj) throws RemoteException {
+	public void bind(String name, Remote440 obj) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newBind(name, obj,
 				RegistryMessageType.BIND);
-		Socket sock;
-		try {
-			sock = new Socket(host, port);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					sock.getOutputStream());
-
-			oos.writeObject(m);
-			
-			
-			sock.close();
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendReceive(m);
 	}
 
 	@Override
-	public void rebind(String name, Remote440 obj) throws RemoteException {
+	public void rebind(String name, Remote440 obj) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newBind(name, obj,
 				RegistryMessageType.REBIND);
-		Socket sock;
-		try {
-			sock = new Socket(host, port);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					sock.getOutputStream());
-
-			oos.writeObject(m);
-			
-			sock.close();
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendReceive(m);
 	}
 
 	@Override
-	public void unbind(String name) throws RemoteException {
+	public void unbind(String name) throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newUnBind(name);
-		Socket sock;
-		try {
-			sock = new Socket(host, port);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					sock.getOutputStream());
-
-			oos.writeObject(m);
-			
-			sock.close();
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		sendReceive(m);
 	}
 
 	@Override
-	public Set<String> list() throws RemoteException {
+	public Set<String> list() throws Remote440Exception {
 		RegistryMessage m = RegistryMessage.newList();
-		Socket sock;
-		try {
-			sock = new Socket(host, port);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					sock.getOutputStream());
-			ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
-
-			oos.writeObject(m);
-
-			Object obj = ois.readObject();
-			
-			sock.close();
-			return (Set<String>) obj;
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return (Set<String>) sendReceive(m);
 	}
+
+    @Override
+    public Remote440 lookup(String key) throws Remote440Exception {
+        RegistryMessage m = RegistryMessage.newLookup(key);
+        return (Remote440) sendReceive(m);
+    }
 
 }

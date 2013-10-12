@@ -1,6 +1,6 @@
 package toys;
 
-import java.rmi.RemoteException;
+import remote.Remote440Exception;
 
 
 public class ToyClassImpl implements ToyClass {

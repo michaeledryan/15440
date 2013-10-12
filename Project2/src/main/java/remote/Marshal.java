@@ -1,13 +1,11 @@
 package remote;
 
 import messages.RemoteMessage;
-import remote.RemoteObjectRef;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.RemoteException;
 
 /**
  * Backend behind the stubs that initializes the RMI and receives the result.
@@ -74,8 +72,8 @@ public class Marshal {
         } finally {
             sock.close();
         }
-        if (retVal instanceof RemoteException) {
-            throw (RemoteException) retVal;
+        if (retVal instanceof Remote440Exception) {
+            throw (Remote440Exception) retVal;
         } else if (retVal instanceof IOException) {
             throw (IOException) retVal;
         } else {

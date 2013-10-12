@@ -1,6 +1,7 @@
 package toys;
 
 import remote.Marshal;
+import remote.Remote440Exception;
 import remote.RemoteObjectRef;
 import remote.RemoteStub;
 
