@@ -1,11 +1,11 @@
 package registry;
 
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-
 import remote.Remote440;
 import remote.Remote440Exception;
 import remote.RemoteObjectRef;
+
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implements the Registry interface, complying with the descriptions of each
@@ -20,7 +20,7 @@ public class RrefTracker implements Registry {
     private ConcurrentHashMap<String, RemoteObjectRef> refs;
     private static RrefTracker instance = null;
 
-    public RrefTracker() {
+    private RrefTracker() {
         this.refs = new ConcurrentHashMap<>();
     }
 

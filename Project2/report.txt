@@ -4,11 +4,15 @@ Michael Ryan (mer1)
 
 Lab 2: RMI
 
-The object of this lab was the design and implementation of a Remote Method Invocation facility for Java. There were three main objectives for the project, as specified in the handout document:
+The object of this lab was the design and implementation of a Remote Method
+Invocation facility for Java. There were three main objectives for the project,
+as specified in the handout document:
 
 1. The ability to name remote objects, e.g., remote object references.
 
-2. The ability to invoke methods on remote objects, including those methods that pass and/or return remote objects references and those methods that pass and/or return references to local objects.
+2. The ability to invoke methods on remote objects, including those methods that
+pass and/or return remote objects references and those methods that pass and/or
+return references to local objects.
 
 3. The ability to locate remote objects, e.g. a registry service.
 
@@ -18,78 +22,131 @@ I. Definition of System Components
 
   RemoteObjectRef
 
-    Objects of this class represent a reference to a remote instance of a specific object. When a process queries a registry for a given object by name, the registry will return a RemoteObjectRef if it contains an object with the given name. RemoteObjectReferences are then localized to a stub of the object that they represent. The stub will make remote calls on all methods during invocation.
+    Objects of this class represent a reference to a remote instance of a
+    specific object. When a process queries a registry for a given object by
+    name, the registry will return a RemoteObjectRef if it contains an object
+    with the given name. RemoteObjectReferences are then localized to a stub of
+    the object that they represent. The stub will make remote calls on all
+    methods during invocation.
 
-    RemoteObjectRefs should be invisible to programmers - we aim to maintain the abstraction that they are indeed invoking methods on the remote object directly.
+    RemoteObjectRefs should be invisible to programmers - we aim to maintain the
+    abstraction that they are indeed invoking methods on the remote object
+    directly.
 
   RemoteStub Interface
 
-    Used on stub classes so that we can pass the RemoteObjectReference in after stub creation. This seems like an inelegant solution to the problem, but the client programmer should not have to deal with this. 
+    Used on stub classes so that we can pass the RemoteObjectReference in after
+    stub creation. This seems like an inelegant solution to the problem, but the
+    client programmer should not have to deal with this.
 
-    RemoteStubs also implement Serializable, which allows us to send them over the wire when they are used as parameters for RMI.
+    RemoteStubs also implement Serializable, which allows us to send them over
+    the wire when they are used as parameters for RMI.
 
   Remote440 Interface
 
-    This interface marks objects that can be referenced remotely. All methods in classes that implement this interface should throw a Remote440Exception in case of a problem during remote method invocation.
+    This interface marks objects that can be referenced remotely. All methods in
+    classes that implement this interface should throw a Remote440Exception in
+    case of a problem during remote method invocation.
 
   Remote440Exception
 
-    Exception indicating that a problem has occurred during remote method invocation.
+    Exception indicating that a problem has occurred during remote method
+    invocation.
 
   RemoteMessage
 
-    Used to communicate between clients and servers. It is worth noting that in the case of a remote method call that contains a remote object parameter, the RemoteMessage request for that call will pass RemoteObjectRefs by value to the remote object on which a method is being invoked. Requests contain the unique name of the target object and identifiers for the exact method to be called as well as arguments to that method.
+    Used to communicate between clients and servers. It is worth noting that in
+    the case of a remote method call that contains a remote object parameter,
+    the RemoteMessage request for that call will pass RemoteObjectRefs by value
+    to the remote object on which a method is being invoked. Requests contain
+    the unique name of the target object and identifiers for the exact method to
+    be called as well as arguments to that method.
 
-    Replies are much more streamlined and contain only the return value of the remote call.
+    Replies are much more streamlined and contain only the return value of the
+    remote call.
 
-    In case of a Remote440Exception, no return message is created - instead, the server sends a Remote440Exception over the wire to be thrown by the client. This exception contains more detailed information about what specifically happened on the server to cause the problem.
+    In case of a Remote440Exception, no return message is created - instead, the
+    server sends a Remote440Exception over the wire to be thrown by the
+    client. This exception contains more detailed information about what
+    specifically happened on the server to cause the problem.
 
   Registry
 
-    The registry itself is essentially a mapping of unique identifier names (Strings) to objects that implement the Remote440 interface.
+    The registry itself is essentially a mapping of unique identifier names
+    (Strings) to objects that implement the Remote440 interface.
 
-    As specified in the handout, each server should have its own registry. However, we feel that multiple registries should be able to speak to a single server, as traditional Java RMI handles things. To this end, we have largely separated the registry from the server and made it possible for multiple servers to host object references on the same Registry.
+    As specified in the handout, each server should have its own
+    registry. However, we feel that multiple registries should be able to speak
+    to a single server, as traditional Java RMI handles things. To this end, we
+    have largely separated the registry from the server and made it possible for
+    multiple servers to host object references on the same Registry.
 
   Communications
 
-    The Marshal class takes client-side method invocations, wraps them in the RMI framework, and sends the remote invocation. Stub classes generate a Marshal that invokes the remote method and waits for the return value. This should be largely invisible to the programmer.
+    The Marshal class takes client-side method invocations, wraps them in the
+    RMI framework, and sends the remote invocation. Stub classes generate a
+    Marshal that invokes the remote method and waits for the return value. This
+    should be largely invisible to the programmer.
 
-    The UnMarshal class mirrors the Marshal class on the server side. It receives a message indicating a remote invocation, then executes the request and returns the result.
+    The UnMarshal class mirrors the Marshal class on the server side. It
+    receives a message indicating a remote invocation, then executes the request
+    and returns the result.
 
-    RegistryMessages are almost an RMI framework in microcosm. They allow for registry operations from the client and server.
+    RegistryMessages are almost an RMI framework in microcosm. They allow for
+    registry operations from the client and server.
 
 II. Points of Extension
-  
-  This project is an RMI framework to be extended and used by applications that can leverage RMI to their needs. Points of extension include:
+
+  This project is an RMI framework to be extended and used by applications that
+  can leverage RMI to their needs. Points of extension include:
 
   RMIServer
     See TestServer.java for an example.
-    An RMIServer spins up a Listener, which waits for RMI messages after connecting to a Registry. Our TestServer code calls starts a server, then begins to populate the registry.
+    An RMIServer spins up a Listener, which waits for RMI messages after
+    connecting to a Registry. Our TestServer code calls starts a server, then
+    begins to populate the registry.
 
   Client
-    See TestClient.java for an example
-    A Client attempts to connect to specified registries, then makes that information avaiable to end programmer code. After obtaining connections to registries, clients can begin to act on remote objects.
+    See TestClient.java for an example.
+    A Client attempts to connect to specified registries, then makes that
+    information available to end programmer code. After obtaining connections to
+    registries, clients can begin to act on remote objects.
 
   Remote440 Objects
-    As mentioned above, end users should implement 
+    As mentioned above, end users should implement.
 
 III. Discussion of specification
-  
-  All parts of the basic spec were implemented. Here, we elaborate on the method of implementation and discuss any points of concern.
+
+  All parts of the basic spec were implemented. Here, we elaborate on the method
+  of implementation and discuss any points of concern.
 
   1. The ability to name remote objects, e.g., remote object references.
 
-    RemoteObjectRefs fill this need. They can be localized and will act as stubs for remote method invocation.
+    RemoteObjectRefs fill this need. They can be localized and will act as stubs
+    for remote method invocation.
 
-  2. The ability to invoke methods on remote objects, including those methods that pass and/or return remote objects references and those methods that pass and/or return references to local objects.
+  2. The ability to invoke methods on remote objects, including those methods
+  that pass and/or return remote objects references and those methods that pass
+  and/or return references to local objects.
 
-    Methods with simple, serializable parameters and return types are straightforward to invoke remotely. Methods with Remote440 parameters and return types are not too much moreso. Stubs are kept Serializable and maintain a RemoteObjectReference in order to pass the reference by value. For Remote440 returns, the local object on the server will be converted into a stub and sent across the wire back to the client. Further method invocations will take place remotely and should be transparent to programmers using the framework.
+    Methods with simple, serializable parameters and return types are
+    straightforward to invoke remotely. Methods with Remote440 parameters and
+    return types are not too much moreso. Stubs are kept Serializable and
+    maintain a RemoteObjectReference in order to pass the reference by
+    value. For Remote440 returns, the local object on the server will be
+    converted into a stub and sent across the wire back to the client. Further
+    method invocations will take place remotely and should be transparent to
+    programmers using the framework.
 
   3. The ability to locate remote objects, e.g. a registry service.
 
-    As noted above, the Registry maps unique identifiers (Strings) to RemoteObjectRefs. Each Registry maintains its own communications suite for communication with any servers, which register objects using a bind, rebind, and unbind interface, and clients, which can look up specific objects or request a list.
+    As noted above, the Registry maps unique identifiers (Strings) to
+    RemoteObjectRefs. Each Registry maintains its own communications suite for
+    communication with any servers, which register objects using a bind, rebind,
+    and unbind interface, and clients, which can look up specific objects or
+    request a list.
 
-III. Build Information
+IV. Build Information
 
   We built this project using the gradle build system. From the top-level dir,
   run "gradle assemble" to compile the source. Gradle should handle all
@@ -99,42 +156,46 @@ III. Build Information
   If this script doesn't find gradle in the local path, it will use an install
   from a publicly accessible directory on afs.
 
-  A startup script (start.sh) has been included for convenience. It assumes that
-  public key auth will work for sshing into remote boxes specified in a
-  hosts.txt file or similar. The script will start a worker for each hostname
-  and port in the specified file, then start a master listening for each one.
-  After the script runs, start the client separately. STDOUT for each worker and
-  the master is redirected to a file in the bin/logs subdirectory. Two hostfiles
-  have been included in bin/
-  - localhost.txt: starts two workers on localhost.
-  - unixhosts.txt: starts 1 worker on each of 4 unix.andrew.cmu.edu machines.
+  Additional usage information is given in section VI.
 
-  An example is shown in section V.
-
-
-IV. External libraries Used
+V. External libraries Used
   Apache Commons CLI (automatically grabbed by gradle during compilation.)
   Gradle (If on afs, just use build.sh. Otherwise, you're on your own.)
 
+VI. Example usage and tests
 
-V. Example usage and tests
-  
   The expected workflow for using this framework is as follows:
     1. Start any registries
     2. Start any servers and point each one at a registry
     3. Start clients and point them at any registries.
 
-  We have included startup scripts and tests. There are 4 tests, 1 of which uses multiple registries. Client output will be seen in the terminal, and registry and server output is redirected to a log directory.
+  We have included startup scripts and tests. There are 4 tests, 1 of which uses
+  multiple registries. Client output will be seen in the terminal, and registry
+  and server output is redirected to the logs/ directory (stderr logs should be
+  empty but are included nevertheless). These scripts start all three components
+  and kill everything after the test completes. This is merely for testing
+  simplicity, even though the registry/server can stay live afterwards to serve
+  additional clients.
+
+  These scripts start all processes on localhost, for simplicity. However, the
+  approach clearly scales to be able to run across multiple machines.
 
   Test 1: Very basic. Grab one remote object and invoke two methods on it.
-  Test 2: Use Registry.list() to get a list of registered objects. Act on each of those.
-  Test 3: 2 Registries. Look up objects on each and call methods that act on objects stored in multiple registries.
+  Test 2: Use Registry.list() to get a list of registered objects. Act on each
+          of those.
+  Test 3: 2 Registries. Look up objects on each and call methods that act on
+          objects stored in multiple registries.
   Test 4: Uses multiple types of objects that implement Remote440.
 
   Usage (from top level directory):
-    $ gradle assemble
+    $ ./build.sh  # Or gradle assemble.
     $ cd scripts
-    $ ./singleReg <test1 | test2 | test3> (For single registry tests)
-    $ ./doubleRed test3 (For double registry test)
+    $ ./singleReg.sh <test1 | test2 | test4> (For single registry tests)
+    $ ./doubleReg.sh test3 (For double registry test)
 
-    Manual startup can also be done with the client.sh, registry.sh, and server.sh scripts in /bin.
+    Manual startup can also be done with the client, registry, and
+    server scripts in bin/. Run
+    $ ./registry -h
+    $ ./server -h
+    $ ./client -h
+    For detailed information about the CLI.

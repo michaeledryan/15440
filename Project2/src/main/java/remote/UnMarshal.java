@@ -1,5 +1,8 @@
 package remote;
 
+import messages.RemoteMessage;
+import server.ObjectTracker;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,10 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.Arrays;
-
-import messages.RemoteMessage;
-import server.ObjectTracker;
-import tests.ints.RemoteInteger;
 
 /**
  * Receives a RMI request, runs it, and sends back the result.
@@ -88,7 +87,7 @@ public class UnMarshal implements Runnable {
         Object callee = ObjectTracker.getInstance().lookup(message.getName());
 
         Method calling;
-        
+
         try {
             calling = callee.getClass().getMethod(meth, clazzes);
         } catch (NoSuchMethodException e) {

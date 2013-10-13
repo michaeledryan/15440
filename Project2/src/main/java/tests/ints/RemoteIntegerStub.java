@@ -1,99 +1,93 @@
 package tests.ints;
 
-import java.io.IOException;
-
 import remote.Marshal;
 import remote.Remote440Exception;
 import remote.RemoteObjectRef;
 import remote.RemoteStub;
 
+import java.io.IOException;
+
 /**
  * Stub class for RemoteInteger. Handwritten. Each stub method prepares a
  * message to be sent, Marshals it, and waits for a return value.
- * 
+ *
  * @author michaelryan
- * 
  */
 public class RemoteIntegerStub implements RemoteInteger, RemoteStub {
 
-	private static final long serialVersionUID = -8372536048460270233L;
-	private RemoteObjectRef remoteRef;
+    private static final long serialVersionUID = -8372536048460270233L;
+    private RemoteObjectRef remoteRef;
 
-	public RemoteIntegerStub() {
-		super();
-	}
+    public RemoteIntegerStub() {
+        super();
+    }
 
-	@Override
-	public void setRemoteRef(RemoteObjectRef ror) {
-		this.remoteRef = ror;
-	}
+    @Override
+    public void setRemoteRef(RemoteObjectRef ror) {
+        this.remoteRef = ror;
+    }
 
-	@Override
-	public void destructiveAdd(RemoteInteger addend) throws Remote440Exception {
-		if (remoteRef == null) {
-			throw new Remote440Exception("No RemoteObjectRef specified");
-		}
+    @Override
+    public void destructiveAdd(RemoteInteger addend) throws Remote440Exception {
+        if (remoteRef == null) {
+            throw new Remote440Exception("No RemoteObjectRef specified");
+        }
 
-		Marshal mars = new Marshal(remoteRef);
+        Marshal mars = new Marshal(remoteRef);
 
-		Class<?>[] clazzes = { RemoteInteger.class };
+        Class<?>[] clazzes = {RemoteInteger.class};
 
-		Object[] objs = { addend };
+        Object[] objs = {addend};
 
-		try {
-			mars.run("destructiveAdd", objs, clazzes);
-		} catch (IOException e) {
-			throw new Remote440Exception(e);
-		}
+        try {
+            mars.run("destructiveAdd", objs, clazzes);
+        } catch (IOException e) {
+            throw new Remote440Exception(e);
+        }
+    }
 
-		return;
+    @Override
+    public void destructiveSum(RemoteInteger[] addends)
+            throws Remote440Exception {
 
-	}
+        if (remoteRef == null) {
+            throw new Remote440Exception("No RemoteObjectRef specified");
+        }
 
-	@Override
-	public void destructiveSum(RemoteInteger[] addends)
-			throws Remote440Exception {
+        Marshal mars = new Marshal(remoteRef);
 
-		if (remoteRef == null) {
-			throw new Remote440Exception("No RemoteObjectRef specified");
-		}
+        Class<?>[] clazzes = {RemoteInteger[].class};
 
-		Marshal mars = new Marshal(remoteRef);
+        Object[] args = {addends};
 
-		Class<?>[] clazzes = { RemoteInteger[].class };
+        try {
+            mars.run("destructiveSum", args, clazzes);
+        } catch (IOException e) {
+            throw new Remote440Exception(e);
+        }
+    }
 
-		Object[] args = { addends };
+    @Override
+    public Integer getValue() throws Remote440Exception {
+        if (remoteRef == null) {
+            throw new Remote440Exception("No RemoteObjectRef specified");
+        }
 
-		try {
-			mars.run("destructiveSum", args, clazzes);
-		} catch (IOException e) {
-			throw new Remote440Exception(e);
-		}
+        Marshal mars = new Marshal(remoteRef);
 
-		return;
-	}
+        Class<?>[] clazzes = {};
 
-	@Override
-	public Integer getValue() throws Remote440Exception {
-		if (remoteRef == null) {
-			throw new Remote440Exception("No RemoteObjectRef specified");
-		}
+        Object[] objs = {};
 
-		Marshal mars = new Marshal(remoteRef);
+        Object res;
+        try {
+            res = mars.run("getValue", objs, clazzes);
+        } catch (IOException e) {
+            throw new Remote440Exception(e);
+        }
 
-		Class<?>[] clazzes = {};
+        return (Integer) res;
 
-		Object[] objs = {};
-
-		Object res = null;
-		try {
-			res = mars.run("getValue", objs, clazzes);
-		} catch (IOException e) {
-			throw new Remote440Exception(e);
-		}
-
-		return (Integer) res;
-
-	}
+    }
 
 }

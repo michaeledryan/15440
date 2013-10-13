@@ -11,7 +11,7 @@ import java.net.Socket;
  *
  * @author Michael Ryan and Alex Cappiello
  */
-public class Listener implements Runnable {
+class Listener implements Runnable {
 
     private ServerSocket socket;
 

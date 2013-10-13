@@ -1,12 +1,6 @@
 package client;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
+import org.apache.commons.cli.*;
 import registry.RegistryProxy;
 
 /**
@@ -83,9 +77,6 @@ public class Client {
             System.out.printf("Connected to %d %s\n",
                     registries.length, word);
 
-            System.out.printf("Running trace: %s\n", trace);
-
-            
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -100,5 +91,5 @@ public class Client {
     public String getTrace() {
         return trace;
     }
-    
+
 }

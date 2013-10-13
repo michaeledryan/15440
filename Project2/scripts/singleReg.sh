@@ -34,7 +34,7 @@ echo "Starting server. Logs are in logs/."
 java -cp $EXECUTABLE tests/TestServer -t $1 > $LOGS/server_stdout.log 2> $LOGS/server_stderr.log &
 sleep 1
 echo "Starting client. Output to stdout/stderr."
-$DIR/../bin/client -t $1
+java -cp $EXECUTABLE tests/TestClient -t $1
 
 echo "Finished!"
 echo "Killing registry..."
