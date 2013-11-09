@@ -13,6 +13,10 @@ public class Message implements Serializable {
     private int start;
     private int size;
 
+    private Message() {
+        this.type = MessageType.ACK;
+    }
+
     private Message(MessageType t, String p) {
         this.type = t;
         this.path = p;
@@ -53,6 +57,10 @@ public class Message implements Serializable {
 
     public static Message fileContents(String data) {
         return new Message(MessageType.DATA, data);
+    }
+
+    public static Message ack() {
+        return new Message();
     }
 
     public MessageType getType() {
