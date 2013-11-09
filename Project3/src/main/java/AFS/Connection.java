@@ -143,4 +143,13 @@ public class Connection {
         }
     }
 
+    public void createFile(String path, String node) throws IOException {
+        Message req = Message.create(path, node);
+        out.writeObject(req);
+        Message rep = readReply(in);
+        if (rep.getType() != MessageType.ACK) {
+            throw new IOException("Bad message type.");
+        }
+    }
+
 }

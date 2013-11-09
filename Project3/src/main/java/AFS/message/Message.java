@@ -47,6 +47,10 @@ public class Message implements Serializable {
         return new Message(MessageType.WRITE, filename, data);
     }
 
+    public static Message create(String filename, String node) {
+        return new Message(MessageType.CREATE, filename, node);
+    }
+
     public static Message delete(String filename) {
         return new Message(MessageType.DELETE, filename);
     }
