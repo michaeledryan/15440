@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.7
+version = '1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'RMI', 'Implementation-Version': version
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    archiveName="MapReduce.jar"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'junit', name: 'junit', version: '4.+'
+    //compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+}
+
+test {
+    testLogging {
+        // Show that tests are run in the command-line output
+        events 'started', 'passed'
+    }
+}
+
