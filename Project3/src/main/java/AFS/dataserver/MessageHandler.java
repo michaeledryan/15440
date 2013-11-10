@@ -14,8 +14,10 @@ public class MessageHandler implements Runnable {
     private Socket s;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private String id;
 
-    public MessageHandler(Socket s) {
+    public MessageHandler(String id, Socket s) {
+        this.id = id;
         try {
             this.s = s;
             this.in = new ObjectInputStream(s.getInputStream());
@@ -42,7 +44,7 @@ public class MessageHandler implements Runnable {
         try {
             Message m = readMessage();
             Message resp = Message.ack();
-            String path = m.getPath();
+            String path = id + File.separator + m.getPath();
 
             File f;
             FileInputStream r;
@@ -50,7 +52,6 @@ public class MessageHandler implements Runnable {
 
             switch (m.getType()) {
                 case READ:
-                    // TODO: Need to be in worker's directory.
                     f = new File(path);
                     String data = FileUtils.readFileToString(f, "US-ASCII");
                     resp = Message.fileContents(data);
@@ -64,6 +65,7 @@ public class MessageHandler implements Runnable {
                 case WRITE:
                     w = new FileOutputStream(path, true);
                     w.write(m.getData().getBytes());
+                    w.close();
                     break;
                 case DELETE:
                     f = new File(path);

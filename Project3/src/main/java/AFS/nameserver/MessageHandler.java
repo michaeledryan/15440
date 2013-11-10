@@ -43,20 +43,22 @@ public class MessageHandler implements Runnable {
         try {
             Message m = readMessage();
             Message resp = Message.ack();
+            FileMap fmap = FileMap.getInstance();
             String path;
             String host;
 
             switch (m.getType()) {
                 case LOCATION:
                     path = m.getPath();
-                    host = FileMap.getInstance().get(path);
+                    host = fmap.get(path);
                     if (host == null) {
                         host = "";
                     }
                     resp = Message.location(host);
                     break;
                 case WRITE:
-                    // TODO: How do I know my data nodes?
+                    host = fmap.randomHost();
+                    resp = Message.location(host);
                     break;
                 case CREATE:
                     path = m.getPath();

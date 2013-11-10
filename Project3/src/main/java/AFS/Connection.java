@@ -63,7 +63,7 @@ public class Connection {
         if (loc.length != 2) {
             throw new IOException("Bad host reply.");
         }
-        int port = 0;
+        int port;
         try {
             port = Integer.parseInt(loc[1]);
         } catch (NumberFormatException e) {
