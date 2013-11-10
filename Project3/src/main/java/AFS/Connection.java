@@ -50,7 +50,11 @@ public class Connection {
         if (loc.getType() != MessageType.LOCATION) {
             throw new IOException("Bad message type.");
         }
-        return loc.getPath();
+        String path = loc.getPath();
+        if (path.length() == 0) {
+            throw new IOException("File not found.");
+        }
+        return path;
     }
 
     private static Socket connectToDataNode(String hoststring)
@@ -108,7 +112,7 @@ public class Connection {
     }
 
     public void writeFile(String path, String data) throws IOException {
-        Message getloc = Message.location(path);
+        Message getloc = Message.write(path, "");
         String loc = this.getLocation(getloc);
 
         Socket node = connectToDataNode(loc);

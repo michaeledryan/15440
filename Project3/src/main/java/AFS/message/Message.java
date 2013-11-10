@@ -8,7 +8,7 @@ public class Message implements Serializable {
 
     private static final long serialVersionUID = -8160308374294717492L;
     private MessageType type;
-    private String path;
+    private String path = "";
     private String data;
     private int start;
     private int size;
