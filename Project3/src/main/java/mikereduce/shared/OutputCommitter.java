@@ -1,7 +1,5 @@
 package mikereduce.shared;
 
-import AFS.DistributedOutputStream;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +15,6 @@ public class OutputCommitter {
 
     public OutputCommitter(File loc) {
         this.outputLocation = loc;
-        this.os = new DistributedOutputStream(); // TODO
     }
 
 

@@ -37,7 +37,7 @@ public class DataServer {
                         true);
                 System.exit(1);
             }
-            System.out.println("Starting Name Server...");
+            System.out.println("Starting Data Server...");
 
             String id = "data" + File.separator +
                     cmd.getOptionValue("i", UUID.randomUUID().toString());
