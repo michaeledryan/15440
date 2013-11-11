@@ -1,7 +1,5 @@
 package mikereduce.jobtracker.shared;
 
-import mikereduce.shared.Mapper;
-
 import java.io.Serializable;
 
 /**
@@ -14,10 +12,9 @@ import java.io.Serializable;
 public class JobConfig implements Serializable {
 
     private Class inputReader;
-    private Class<Mapper> miker;
-    private Class partitioner;
-    private Class comparator;
-    private Class ryaner;
+    private Class<? extends Mapper> miker;
+    private Class<? extends Partitioner> partitioner;
+    private Class<? extends Reducer> ryaner;
     private Class outputWriter;
 
     public JobConfig() {
@@ -37,10 +34,6 @@ public class JobConfig implements Serializable {
         this.partitioner = partitioner;
     }
 
-    public void setComparator(Class comparator) {
-        this.comparator = comparator;
-    }
-
     public void setRyaner(Class ryaner) {
         this.ryaner = ryaner;
     }
@@ -55,10 +48,6 @@ public class JobConfig implements Serializable {
 
     public Class getPartitioner() {
         return partitioner;
-    }
-
-    public Class getComparator() {
-        return comparator;
     }
 
     public Class getRyaner() {

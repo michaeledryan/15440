@@ -1,28 +1,29 @@
 package mikereduce.shared;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 11:04 PM
- * To change this template use File | Settings | File Templates.
+
  */
-public abstract class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
+public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
     /**
      * Called at the end of the task.
      */
-    abstract protected void cleanup(MapContext context);
+    protected void cleanup(MapContext context) {
+        // To be implemented
+    }
+
 
     /**
      * Called once per K/V pair.
      */
-    abstract protected void map(KEYIN key, VALUEIN val, MapContext context);
+    protected void map(KEYIN key, VALUEIN val, MapContext context) {
+        // To be implemented
+    }
 
     /**
      * Generally not overridden.
      */
-    void run(MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> context) {
+    public void run(MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> context) {
         setup(context);
         try {
             while (context.nextKeyValue()) {
@@ -36,5 +37,9 @@ public abstract class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     /**
      * Called before the task runs.
      */
-    abstract protected void setup(MapContext context);
+    protected void setup(MapContext context) {
+        // To be implemented.
+    }
+
+    ;
 }

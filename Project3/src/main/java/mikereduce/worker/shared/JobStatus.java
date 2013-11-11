@@ -5,11 +5,7 @@ import mikereduce.jobtracker.shared.JobState;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 7:33 PM
- * To change this template use File | Settings | File Templates.
+ * Contains information about a specific job.
  */
 public class JobStatus implements Serializable{
 

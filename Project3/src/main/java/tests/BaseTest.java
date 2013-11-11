@@ -8,11 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 6:02 PM
- * To change this template use File | Settings | File Templates.
+ * Shit test.
  */
 public class BaseTest {
 
@@ -28,7 +24,6 @@ public class BaseTest {
     public void testConnection() {
         JobConfig conf = new JobConfig();
 
-        conf.setComparator(String.class);
         conf.setInputReader(String.class);
         conf.setMiker(String.class);
         conf.setOutputWriter(String.class);

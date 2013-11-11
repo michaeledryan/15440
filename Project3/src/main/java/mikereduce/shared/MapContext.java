@@ -5,24 +5,23 @@ package mikereduce.shared;
  */
 public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
-    public Class<Mapper> getMapperClass() {
+    public Class<? extends Mapper> getMapperClass() {
         return mapperClass;
     }
 
     // Some kind of connection to the host???
 
-    private Class<Mapper> mapperClass;
+    private Class<? extends Mapper> mapperClass;
     private OutputCommitter committer;
     private InputBlock reader;
     private String currentPair;
-    private InputFormat<KEYIN, VALUEIN> inputFormatt;
+    private InputFormat<KEYIN, VALUEIN> inputFormat;
     private OutputFormat<KEYOUT, VALUEOUT> outputFormat;
 
     private long pointInBlock = 0;
 
-
-    public MapContext(Class<Mapper> mapperClass) {
-        this.mapperClass = mapperClass;
+    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper) {
+        this.mapperClass = mapper.getClass();
         this.committer = new OutputCommitter(null);
     }
 
@@ -31,16 +30,15 @@ public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
             currentPair = reader.getLine();
             pointInBlock = currentPair.length() * 2; // Convert number of chars to bytes. 1 char == 16 bits.
             return true;
-        }
-        else return false;
+        } else return false;
     }
 
     public KEYIN getCurrentKey() {
-        return inputFormatt.getKey(currentPair);
+        return inputFormat.getKey(currentPair);
     }
 
     public VALUEIN getCurrentValue() {
-        return inputFormatt.getValue(currentPair);
+        return inputFormat.getValue(currentPair);
     }
 
     /**
