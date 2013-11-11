@@ -50,6 +50,7 @@ public class MessageHandler implements Runnable {
             FileInputStream r;
             FileOutputStream w;
 
+            // TODO: Add failure messages.
             switch (m.getType()) {
                 case READ:
                     f = new File(path);

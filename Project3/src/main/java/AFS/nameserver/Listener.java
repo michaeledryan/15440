@@ -36,11 +36,12 @@ public class Listener implements Runnable {
             }
         }
 
-        System.out.println("Waiting for requests...");
         while (true) {
             Socket incoming;
             try {
+                System.out.println("Waiting for requests...");
                 incoming = ln.accept();
+                System.out.println("Got some!");
                 MessageHandler h = new MessageHandler(incoming);
                 Thread t = new Thread(h);
                 t.start();

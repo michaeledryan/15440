@@ -1,5 +1,7 @@
 package mikereduce.jobtracker.shared;
 
+import mikereduce.shared.Mapper;
+
 import java.io.Serializable;
 
 /**

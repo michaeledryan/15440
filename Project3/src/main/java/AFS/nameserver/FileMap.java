@@ -1,6 +1,7 @@
 package AFS.nameserver;
 
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +27,18 @@ public class FileMap {
         m.put(key, value);
     }
 
+    public Boolean contains(String key) {
+        return m.containsKey(key);
+    }
+
     public String get(String key) {
+        System.out.println(m.toString());
         return m.get(key);
     }
 
     public void batchPut(String[] keys, String value) {
+        System.out.println(value);
+        System.out.println(Arrays.toString(keys));
         for (String key : keys) {
             m.put(key, value);
         }
