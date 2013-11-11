@@ -1,6 +1,8 @@
 package mikereduce.worker.mapnode;
 
 import mikereduce.jobtracker.shared.JobConfig;
+import mikereduce.shared.MapContext;
+import mikereduce.shared.Mapper;
 import mikereduce.shared.WorkerControlMessage;
 
 /**
@@ -34,7 +36,26 @@ public class MessageHandler implements Runnable {
 
                 JobConfig conf = msg.getConfig();
 
+                conf.getInputReader();
+                conf.getOutputWriter();
 
+                try {
+                    final Mapper mapper = (Mapper) conf.getMiker().newInstance();
+                    final MapContext mc = new MapContext((Mapper) conf.getMiker().newInstance());
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mapper.run(mc);
+                            // Report that you're finished.
+                        }
+                    });
+
+                } catch (InstantiationException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
 
                 break;

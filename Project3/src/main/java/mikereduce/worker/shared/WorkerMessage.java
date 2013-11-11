@@ -1,5 +1,6 @@
 package mikereduce.worker.shared;
 
+import mikereduce.jobtracker.server.WorkerType;
 import mikereduce.jobtracker.shared.JobClientStatus;
 
 import java.io.Serializable;
@@ -16,10 +17,16 @@ public class WorkerMessage implements Serializable{
 
     private WorkerStatus status;
     private Set<JobStatus> jobs;
+    private WorkerType type;
 
-    public WorkerMessage(WorkerStatus status, Set<JobStatus> jobs) {
-        this.status = status;
+    public WorkerMessage(WorkerType type, Set<JobStatus> jobs, WorkerStatus status) {
+        this.type = type;
         this.jobs = jobs;
+        this.status = status;
+    }
+
+    public WorkerType getType() {
+        return type;
     }
 
     public WorkerStatus getStatus() {

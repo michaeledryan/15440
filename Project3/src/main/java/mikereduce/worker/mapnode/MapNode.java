@@ -2,9 +2,11 @@ package mikereduce.worker.mapnode;
 
 import mikereduce.jobtracker.server.ClientListener;
 import mikereduce.jobtracker.server.JobTrackerConf;
+import mikereduce.jobtracker.server.WorkerType;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.shared.ControlMessageType;
 import mikereduce.shared.WorkerControlMessage;
+import mikereduce.worker.shared.JobStatus;
 import mikereduce.worker.shared.WorkerMessage;
 import mikereduce.worker.shared.WorkerStatus;
 import org.apache.commons.cli.*;
@@ -42,7 +44,7 @@ public class MapNode {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        WorkerMessage connectMessage = new WorkerMessage(WorkerStatus.REGISTRATION, null);
+        WorkerMessage connectMessage = new WorkerMessage(WorkerType.MAPPER, new HashSet<JobStatus>(), WorkerStatus.REGISTRATION);
 
         if (out != null) {
             try {
@@ -67,6 +69,8 @@ public class MapNode {
             System.err.println("Did not receive ACK from JobTracker");
             System.exit(1);
         }
+
+        // otherwise, we are ready to go!
 
         // Start the loop that listens for control messages.
 

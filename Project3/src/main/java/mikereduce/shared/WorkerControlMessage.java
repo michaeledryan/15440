@@ -2,14 +2,12 @@ package mikereduce.shared;
 
 import mikereduce.jobtracker.shared.JobConfig;
 
+import java.io.Serializable;
+
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 9:55 PM
- * To change this template use File | Settings | File Templates.
+ * Handles control of workers.
  */
-public class WorkerControlMessage {
+public class WorkerControlMessage implements Serializable{
 
     private ControlMessageType type;
     private String jobName;

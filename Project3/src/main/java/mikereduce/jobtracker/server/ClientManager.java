@@ -33,12 +33,12 @@ public class ClientManager implements Runnable {
 
             JobConfig conf = null;
 
-
-
             try {
                 conf = (JobConfig) ois.readObject();
 
                 JobClientStatus jcs = new JobClientStatus(JobState.COMPLETED, "wahh i'm an example!");
+
+
                 oos.writeObject(jcs);
 
             } catch (ClassNotFoundException e) {

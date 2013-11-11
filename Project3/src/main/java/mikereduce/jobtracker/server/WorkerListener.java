@@ -3,19 +3,19 @@ package mikereduce.jobtracker.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 4:33 PM
- * To change this template use File | Settings | File Templates.
+ * Listens to worker requests. Keeps track of which workers exist as well as which are Mapper, Reducers, and Combiners.
+ *
  */
 public class WorkerListener implements Runnable{
 
     private int port;
     private ServerSocket sock;
     private static WorkerListener INSTANCE;
+
+    private Set<WorkerManager> mappers;
 
     private WorkerListener(int port) {
         this.port = port;
@@ -29,8 +29,24 @@ public class WorkerListener implements Runnable{
         return INSTANCE;
     }
 
+    public int registerWorker(WorkerManager man) {
+        switch (man.getType()) {
+            case MAPPER:
+                mappers.add(man);
+                return mappers.size();
+            case REDUCER:
+                break;
+            case COMBINER:
+                break;
+        }
+
+        // Shouldn't get here
+        return -1;
+    }
+
+
     @Override
-    public void run() {
+    synchronized public void run() {
         try {
             sock = new ServerSocket(port);
         } catch (IOException e) {
