@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
+ * Perform startup tasks for a data node, then wait for client requests.
  */
 public class DataHandler implements Runnable {
 
@@ -26,7 +27,14 @@ public class DataHandler implements Runnable {
         this.namePort = namePort;
     }
 
+    /**
+     * Gets a list of all files already contained on this node and send this
+     * to the nameserver.
+     *
+     * @throws IOException
+     */
     private void initialize() throws IOException {
+        // All of this node's files are kept in this directory.
         File dir = new File(id);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -49,6 +57,9 @@ public class DataHandler implements Runnable {
         msg.send(nameServer, namePort);
     }
 
+    /**
+     * After initialization, start accepting client requests.
+     */
     public void run() {
         try {
             this.initialize();

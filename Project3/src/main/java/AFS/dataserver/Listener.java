@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
+ * Serves client requests.
  */
 public class Listener implements Runnable {
 
@@ -21,6 +22,9 @@ public class Listener implements Runnable {
         }
     }
 
+    /**
+     * Accept new connections for ever and handle each in its own thread.
+     */
     public void run() {
         while (true) {
             Socket incoming;

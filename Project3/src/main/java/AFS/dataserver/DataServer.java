@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.UUID;
 
 /**
+ * Entry point for a data node.
  */
 public class DataServer {
 

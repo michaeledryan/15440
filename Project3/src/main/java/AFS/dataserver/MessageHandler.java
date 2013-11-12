@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.Socket;
 
 /**
+ * Responds to incoming messages to the data node.
  */
 public class MessageHandler implements Runnable {
 
@@ -15,6 +16,12 @@ public class MessageHandler implements Runnable {
     private ObjectOutputStream out;
     private String id;
 
+    /**
+     * Open I/O streams.
+     *
+     * @param id This node's data directory.
+     * @param s Client socket.
+     */
     public MessageHandler(String id, Socket s) {
         this.id = id;
         try {
@@ -26,6 +33,12 @@ public class MessageHandler implements Runnable {
         }
     }
 
+    /**
+     * Reads a message from the socket.
+     *
+     * @return Received message.
+     * @throws IOException
+     */
     private Message readMessage() throws IOException {
         Object obj = null;
         try {
@@ -39,9 +52,13 @@ public class MessageHandler implements Runnable {
         return (Message) obj;
     }
 
+    /**
+     * Reads and responds to a single message.
+     */
     public void run() {
         try {
             Message m = readMessage();
+            // Default reply. Overwritten where necessary.
             Message resp = Message.ack();
             String path = id + File.separator + m.getPath();
 
@@ -49,8 +66,8 @@ public class MessageHandler implements Runnable {
             FileInputStream r;
             FileOutputStream w;
 
-            // TODO: Add failure messages.
             switch (m.getType()) {
+                // Send back file contents.
                 case READ:
                     if (f.exists()) {
                         String data = FileUtils.readFileToString(f, "US-ASCII");
@@ -60,6 +77,7 @@ public class MessageHandler implements Runnable {
                                 new IOException("File not found."));
                     }
                     break;
+                // Send back the specified portion of the file.
                 case READBLOCK:
                     if (f.exists()) {
                         r = new FileInputStream(path);
@@ -78,6 +96,7 @@ public class MessageHandler implements Runnable {
                                 new IOException("File not found."));
                     }
                     break;
+                // Append to the file (created if it doesn't exist).
                 case WRITE:
                     File dir = new File(f.getParent());
                     if (!dir.exists()) {
@@ -91,6 +110,7 @@ public class MessageHandler implements Runnable {
                     w.write(m.getData().getBytes());
                     w.close();
                     break;
+                // Remove the file.
                 case DELETE:
                     if (f.exists()) {
                         Boolean b = f.delete();
