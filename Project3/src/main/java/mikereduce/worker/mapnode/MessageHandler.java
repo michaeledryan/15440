@@ -39,17 +39,19 @@ public class MessageHandler implements Runnable {
                 try {
                     final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
 
-                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9001));
-                    final MapContext mc = new MapContext(mapper, oc);
+                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9000));
+                    final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
 
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            System.out.println("START.");
                             mapper.run(mc);
                             System.out.println("DONE BITCHES");
                             // Report that you're finished.
                         }
-                    });
+                    }).run();
+
 
                 } catch (InstantiationException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

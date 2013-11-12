@@ -22,6 +22,7 @@ public class OutputCommitter {
 
     public void commitLine(String line) {
         try {
+            System.out.println("committing");
             conn.writeFile(outputPath, line);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
