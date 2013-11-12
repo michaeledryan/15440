@@ -89,7 +89,7 @@ public class MessageHandler implements Runnable {
                 out.writeObject(resp);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Client disconnected.");
         }
     }
 

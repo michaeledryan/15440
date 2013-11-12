@@ -66,7 +66,7 @@ public class Message implements Serializable {
     }
 
     public static Message fileContents(String data) {
-        return new Message(MessageType.DATA, data);
+        return new Message(MessageType.DATA, "", data);
     }
 
     public static Message ack() {

@@ -8,8 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-// TODO: Add failure messages.
-
 /**
  * Establish a connection with the nameserver to have access to the files
  * distributed across the nodes.
@@ -153,7 +151,7 @@ public class Connection {
         } else if (rep.getType() != MessageType.DATA) {
             throw new IOException("Bad message type.");
         }
-        return rep.getPath();
+        return rep.getData();
     }
 
     /**
@@ -185,7 +183,7 @@ public class Connection {
         } else if (rep.getType() != MessageType.DATA) {
             throw new IOException("Bad message type.");
         }
-        return rep.getPath();
+        return rep.getData();
     }
 
     /**
