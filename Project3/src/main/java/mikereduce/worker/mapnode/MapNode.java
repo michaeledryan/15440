@@ -20,7 +20,7 @@ import java.util.Set;
  * <p/>
  * Has to
  */
-public class MapNode {
+public class MapNode implements Runnable{
 
     private Socket sock;
     private static Set<JobConfig> jobs = new HashSet<JobConfig>();
@@ -31,6 +31,7 @@ public class MapNode {
         this.conf = conf;
     }
 
+    @Override
     public void run() {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
@@ -71,10 +72,10 @@ public class MapNode {
         // otherwise, we are ready to go!
         // Start the loop that listens for control messages.
 
+
         while (true) {
 
-            WorkerControlMessage control = null;
-
+            WorkerControlMessage control;
             try {
                 control = (WorkerControlMessage) in.readObject();
                 MessageHandler handle = new MessageHandler(control);

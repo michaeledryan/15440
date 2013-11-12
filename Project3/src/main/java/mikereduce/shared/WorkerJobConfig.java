@@ -2,10 +2,12 @@ package mikereduce.shared;
 
 import mikereduce.jobtracker.shared.JobConfig;
 
+import java.io.Serializable;
+
 /**
  *
  */
-public class WorkerJobConfig {
+public class WorkerJobConfig implements Serializable{
 
     private JobConfig conf;
     private InputBlock block;

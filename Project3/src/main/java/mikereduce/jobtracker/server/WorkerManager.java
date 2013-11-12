@@ -45,13 +45,12 @@ public class WorkerManager implements Runnable {
 
             try {
                 woo = (WorkerMessage) ois.readObject();
-                System.out.println(woo.getStatus());
 
                 switch (woo.getStatus()) {
 
                     case REGISTRATION:
+                        info = new WorkerInfo(0, woo.getType()); // Are ID's necessary?
                         int id = WorkerListener.getInstance().registerWorker(this);
-                        info = new WorkerInfo(id, woo.getType()); // Are ID's necessary?
 
                         /*
                         Timer tim = new Timer();

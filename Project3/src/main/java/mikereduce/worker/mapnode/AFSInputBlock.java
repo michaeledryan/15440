@@ -58,6 +58,8 @@ public class AFSInputBlock implements InputBlock {
                 block = new ArrayList<String>(Arrays.asList(conn.readFile(filePath).split("\n")));
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
 
             return block.size() != 0;

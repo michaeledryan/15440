@@ -3,6 +3,7 @@ package mikereduce.jobtracker.client;
 import mikereduce.jobtracker.server.ClientMessage;
 import mikereduce.jobtracker.shared.JobConfig;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -38,9 +39,12 @@ public class JobClient {
 
             while (!sock.isClosed()) {
                 Object obj = null;
+                try {
                 obj = ois.readObject();
-                System.out.println("getting status....");
-                System.out.println(obj);
+                } catch (EOFException e) {
+                    // Do nothing. There is no need to be upset.
+                }
+
 
             }
 

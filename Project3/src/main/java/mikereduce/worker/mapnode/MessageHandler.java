@@ -34,6 +34,8 @@ public class MessageHandler implements Runnable {
                 // Start a new job
                 WorkerJobConfig conf = msg.getConfig();
 
+                System.out.println("Trying to get a mapper.");
+
                 try {
                     final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
 
