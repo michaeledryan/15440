@@ -1,7 +1,5 @@
 package mikereduce.worker.mapnode;
 
-import mikereduce.jobtracker.server.ClientListener;
-import mikereduce.jobtracker.server.JobTrackerConf;
 import mikereduce.jobtracker.server.WorkerType;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.shared.ControlMessageType;
@@ -9,9 +7,7 @@ import mikereduce.shared.WorkerControlMessage;
 import mikereduce.worker.shared.JobStatus;
 import mikereduce.worker.shared.WorkerMessage;
 import mikereduce.worker.shared.WorkerStatus;
-import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,16 +17,18 @@ import java.util.Set;
 
 /**
  * Node that runs map jobs on data.
- *
+ * <p/>
  * Has to
  */
 public class MapNode {
 
     private Socket sock;
     private static Set<JobConfig> jobs = new HashSet<JobConfig>();
+    private MapperConf conf;
 
-    public MapNode(Socket sock) {
+    public MapNode(Socket sock, MapperConf conf) {
         this.sock = sock;
+        this.conf = conf;
     }
 
     public void run() {
@@ -71,10 +69,9 @@ public class MapNode {
         }
 
         // otherwise, we are ready to go!
-
         // Start the loop that listens for control messages.
 
-        while(true) {
+        while (true) {
 
             WorkerControlMessage control = null;
 

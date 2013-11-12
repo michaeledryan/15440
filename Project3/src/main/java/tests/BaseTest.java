@@ -2,6 +2,8 @@ package tests;
 
 
 import mikereduce.jobtracker.client.JobClient;
+import mikereduce.jobtracker.server.ClientMessage;
+import mikereduce.jobtracker.server.ClientMessageType;
 import mikereduce.jobtracker.server.JobTracker;
 import mikereduce.jobtracker.shared.JobConfig;
 import org.junit.Before;
@@ -16,6 +18,7 @@ public class BaseTest {
 
     @Before
     public void startTracker() {
+        System.out.println(System.getProperty("user.dir"));
         JobTracker.main(args);
     }
 
@@ -29,9 +32,12 @@ public class BaseTest {
         conf.setOutputWriter(String.class);
         conf.setPartitioner(String.class);
         conf.setRyaner(String.class);
+        conf.setInputPath("testIn.txt");
+        conf.setOutputPath("testOut.txt");
 
+        ClientMessage cm = new ClientMessage(ClientMessageType.NEW,conf);
 
-        JobClient.submit(conf, "localhost", 9000);
+        JobClient.submit(cm, "localhost", 9000);
     }
 
 }

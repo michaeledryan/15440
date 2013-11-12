@@ -1,5 +1,7 @@
 package mikereduce.jobtracker.shared;
 
+import mikereduce.shared.Mapper;
+
 import java.io.Serializable;
 
 /**
@@ -16,11 +18,20 @@ public class JobConfig implements Serializable {
     private Class<? extends Partitioner> partitioner;
     private Class<? extends Reducer> ryaner;
     private Class outputWriter;
+    private String inputPath;
+    private String outputPath;
 
     public JobConfig() {
 
     }
 
+    public String getInputPath() {
+        return inputPath;
+    }
+
+    public void setInputPath(String inputPath) {
+        this.inputPath = inputPath;
+    }
 
     public void setInputReader(Class inputReader) {
         this.inputReader = inputReader;
@@ -60,6 +71,14 @@ public class JobConfig implements Serializable {
 
     public Class getInputReader() {
         return inputReader;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
     }
 
 }

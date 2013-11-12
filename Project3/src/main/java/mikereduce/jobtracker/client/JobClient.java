@@ -1,5 +1,6 @@
 package mikereduce.jobtracker.client;
 
+import mikereduce.jobtracker.server.ClientMessage;
 import mikereduce.jobtracker.shared.JobConfig;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class JobClient {
 
     private JobClient(){}
 
-    public static void submit(JobConfig conf, String addr, int port) {
+    public static void submit(ClientMessage conf, String addr, int port) {
         // Get a connection to the JobTracker and do things.
 
         Socket sock = null;

@@ -1,7 +1,9 @@
 package mikereduce.jobtracker.server;
 
 import mikereduce.shared.ControlMessageType;
+import mikereduce.shared.MapContext;
 import mikereduce.shared.WorkerControlMessage;
+import mikereduce.shared.WorkerJobConfig;
 import mikereduce.worker.shared.WorkerMessage;
 
 import java.io.IOException;
@@ -20,17 +22,24 @@ public class WorkerManager implements Runnable {
 
     Socket sock;
     WorkerInfo info;
+    ObjectInputStream ois;
+    ObjectOutputStream oos;
 
     public WorkerManager(Socket worker) {
         sock = worker;
     }
 
+    public void sendRequest(WorkerControlMessage msg) throws IOException {
+        oos.writeObject(msg);
+    }
+
+
     @Override
     public void run() {
 
         try {
-            ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+            ois = new ObjectInputStream(sock.getInputStream());
+            oos = new ObjectOutputStream(sock.getOutputStream());
 
             WorkerMessage woo = null;
 
@@ -56,7 +65,7 @@ public class WorkerManager implements Runnable {
                         tim.schedule(killMe, 20000);
                         */
 
-                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null, null);
+                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null);
                         oos.writeObject(wcm);
 
                         // Send ACK

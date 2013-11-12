@@ -20,9 +20,9 @@ public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
     private long pointInBlock = 0;
 
-    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper) {
+    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper, OutputCommitter out) {
         this.mapperClass = mapper.getClass();
-        this.committer = new OutputCommitter(null);
+        this.committer = out;
     }
 
     public boolean nextKeyValue() {

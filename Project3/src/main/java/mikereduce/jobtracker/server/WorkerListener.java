@@ -44,6 +44,13 @@ public class WorkerListener implements Runnable{
         return -1;
     }
 
+    public int getNumWorkers() {
+        return mappers.size();
+    }
+
+    public Set<WorkerManager> getWorkers() {
+        return mappers;
+    }
 
     @Override
     synchronized public void run() {
@@ -63,8 +70,6 @@ public class WorkerListener implements Runnable{
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
-
         }
     }
 

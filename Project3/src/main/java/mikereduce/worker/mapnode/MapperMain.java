@@ -49,7 +49,7 @@ public class MapperMain {
 
             try {
                 Socket sock = new Socket(conf.getAddress(), conf.getPort());
-                MapNode map = new MapNode(sock);
+                MapNode map = new MapNode(sock, conf);
                 map.run();
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
