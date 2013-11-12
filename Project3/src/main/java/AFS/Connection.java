@@ -88,13 +88,15 @@ public class Connection {
      * hostname;port
      * @throws IOException
      */
-    private String getLocation(Message req) throws IOException {
+    private String getLocation(Message req) throws Exception {
         /*if (req.getType() != MessageType.LOCATION) {
             throw new IOException("Bad request type.");
         }*/
         write(req);
         Message loc = read();
-        if (loc.getType() != MessageType.LOCATION) {
+        if (loc.getType() == MessageType.ERROR) {
+            throw loc.getException();
+        } else if (loc.getType() != MessageType.LOCATION) {
             throw new IOException("Bad message type.");
         }
         String path = loc.getPath();
@@ -131,7 +133,7 @@ public class Connection {
      * @return Contents.
      * @throws IOException
      */
-    public String readFile(String path) throws IOException {
+    public String readFile(String path) throws Exception {
         Message getloc = Message.location(path);
         String loc = this.getLocation(getloc);
 
@@ -144,10 +146,14 @@ public class Connection {
         ObjectInputStream nodeIn =
                 new ObjectInputStream(node.getInputStream());
         Message rep = readReply(nodeIn);
-        if (rep.getType() != MessageType.DATA) {
+        node.close();
+
+        if (rep.getType() == MessageType.ERROR) {
+            throw rep.getException();
+        } else if (rep.getType() != MessageType.DATA) {
             throw new IOException("Bad message type.");
         }
-        return rep.getData();
+        return rep.getPath();
     }
 
     /**
@@ -159,7 +165,7 @@ public class Connection {
      * @throws IOException
      */
     public String readBlock(String path, int start, int size)
-            throws IOException{
+            throws Exception{
         Message getloc = Message.location(path);
         String loc = this.getLocation(getloc);
 
@@ -172,10 +178,14 @@ public class Connection {
         ObjectInputStream nodeIn =
                 new ObjectInputStream(node.getInputStream());
         Message rep = readReply(nodeIn);
-        if (rep.getType() != MessageType.DATA) {
+        node.close();
+
+        if (rep.getType() == MessageType.ERROR) {
+            throw rep.getException();
+        } else if (rep.getType() != MessageType.DATA) {
             throw new IOException("Bad message type.");
         }
-        return rep.getData();
+        return rep.getPath();
     }
 
     /**
@@ -185,7 +195,7 @@ public class Connection {
      * @param data Data to append.
      * @throws IOException
      */
-    public void writeFile(String path, String data) throws IOException {
+    public void writeFile(String path, String data) throws Exception {
         Message getloc = Message.write(path, "");
         String loc = this.getLocation(getloc);
         System.out.println(loc);
@@ -200,10 +210,13 @@ public class Connection {
         ObjectInputStream nodeIn =
                 new ObjectInputStream(node.getInputStream());
         Message rep = readReply(nodeIn);
-        if (rep.getType() != MessageType.ACK) {
+        node.close();
+
+        if (rep.getType() == MessageType.ERROR) {
+            throw rep.getException();
+        } else if (rep.getType() != MessageType.ACK) {
             throw new IOException("Bad message type.");
         }
-        node.close();
     }
 
     /**
@@ -211,20 +224,23 @@ public class Connection {
      * @param path File location.
      * @throws IOException
      */
-    public void deleteFile(String path) throws IOException {
-        Message getloc = Message.location(path);
-        String loc = this.getLocation(getloc);
+    public void deleteFile(String path) throws Exception {
+        Message msg = Message.delete(path);
+        String loc = this.getLocation(msg);
 
         Socket node = connectToDataNode(loc);
         ObjectOutputStream nodeOut =
                 new ObjectOutputStream(node.getOutputStream());
-        Message req = Message.delete(path);
-        nodeOut.writeObject(req);
+        nodeOut.writeObject(msg);
 
         ObjectInputStream nodeIn =
                 new ObjectInputStream(node.getInputStream());
         Message rep = readReply(nodeIn);
-        if (rep.getType() != MessageType.ACK) {
+        node.close();
+
+        if (rep.getType() == MessageType.ERROR) {
+            throw rep.getException();
+        } else if (rep.getType() != MessageType.ACK) {
             throw new IOException("Bad message type.");
         }
     }
@@ -237,11 +253,14 @@ public class Connection {
      * @param node Data node to use. hostname:port.
      * @throws IOException
      */
-    public void createFile(String path, String node) throws IOException {
+    public void createFile(String path, String node) throws Exception {
         Message req = Message.create(path, node);
         write(req);
         Message rep = readReply(in);
-        if (rep.getType() != MessageType.ACK) {
+
+        if (rep.getType() == MessageType.ERROR) {
+            throw rep.getException();
+        } else if (rep.getType() != MessageType.ACK) {
             throw new IOException("Bad message type.");
         }
     }

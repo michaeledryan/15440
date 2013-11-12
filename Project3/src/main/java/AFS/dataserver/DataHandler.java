@@ -52,7 +52,8 @@ public class DataHandler implements Runnable {
     public void run() {
         try {
             this.initialize();
-            new Listener(id, port).run();
+            Listener ln = new Listener(id, port);
+            ln.run();
         } catch (IOException e) {
             e.printStackTrace();
         }

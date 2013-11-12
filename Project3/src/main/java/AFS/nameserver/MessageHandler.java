@@ -1,7 +1,6 @@
 package AFS.nameserver;
 
 import AFS.message.Message;
-import AFS.message.MessageType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,9 +16,7 @@ public class MessageHandler implements Runnable {
     private ObjectOutputStream out;
 
     public MessageHandler(Socket s) {
-        System.out.println("foo");
         this.s = s;
-        System.out.println("bar");
     }
 
     private Message readMessage() throws IOException {
@@ -43,22 +40,20 @@ public class MessageHandler implements Runnable {
                 Message m = readMessage();
                 Message resp = Message.ack();
                 FileMap fmap = FileMap.getInstance();
-                String path;
+                String path = m.getPath();
                 String host;
 
-                // TODO: DELETE.
-                // TODO: Add failure messages.
                 switch (m.getType()) {
                     case LOCATION:
-                        path = m.getPath();
-                        host = fmap.get(path);
-                        if (host == null) {
-                            host = "";
+                        if (!fmap.contains(path)) {
+                            resp = Message.error(
+                                    new IOException("Unknown file."));
+                        } else {
+                            host = fmap.get(path);
+                            resp = Message.location(host);
                         }
-                        resp = Message.location(host);
                         break;
                     case WRITE:
-                        path = m.getPath();
                         if (fmap.contains(path)) {
                             host = fmap.get(path);
                         } else {
@@ -67,10 +62,26 @@ public class MessageHandler implements Runnable {
                         resp = Message.location(host);
                         break;
                     case CREATE:
-                        path = m.getPath();
                         host = m.getData();
-                        FileMap.getInstance().put(path, host);
+                        if (fmap.contains(path)) {
+                            resp = Message.error(
+                                    new IOException("File already exists."));
+                        } else if (fmap.validHost(host)) {
+                            fmap.put(path, host);
+                        } else {
+                            resp = Message.error(
+                                    new IOException("Unknown data node."));
+                        }
                         break;
+                    case DELETE:
+                        if (fmap.contains(path)) {
+                            host = fmap.get(path);
+                            fmap.delete(path);
+                            resp = Message.location(host);
+                        } else {
+                            resp = Message.error(
+                                    new IOException("Unknown file."));
+                        }
                     default:
                         break;
                 }

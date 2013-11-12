@@ -12,6 +12,7 @@ public class Message implements Serializable {
     private String data;
     private int start;
     private int size;
+    private Exception exception;
 
     private Message() {
         this.type = MessageType.ACK;
@@ -33,6 +34,11 @@ public class Message implements Serializable {
         this.path = p;
         this.start = start;
         this.size = size;
+    }
+
+    private Message(MessageType t, Exception exception) {
+        this.type = t;
+        this.exception = exception;
     }
 
     public static Message read(String filename) {
@@ -67,6 +73,10 @@ public class Message implements Serializable {
         return new Message();
     }
 
+    public static Message error(Exception e) {
+        return new Message(MessageType.ERROR, e);
+    }
+
     public MessageType getType() {
         return type;
     }
@@ -85,5 +95,9 @@ public class Message implements Serializable {
 
     public int getSize() {
         return size;
+    }
+
+    public Exception getException() {
+        return exception;
     }
 }

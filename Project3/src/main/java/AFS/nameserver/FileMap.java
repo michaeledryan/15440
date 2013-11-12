@@ -1,16 +1,19 @@
 package AFS.nameserver;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  */
 public class FileMap {
     private static FileMap ourInstance = new FileMap();
     private ConcurrentHashMap<String, String> m;
-    private ConcurrentHashMap<String, Socket> socketCache;
+    private ConcurrentHashMap<String, Boolean> nodes;
     private Random r;
 
     public static FileMap getInstance() {
@@ -19,7 +22,7 @@ public class FileMap {
 
     private FileMap() {
         m = new ConcurrentHashMap<>();
-        socketCache = new ConcurrentHashMap<>();
+        nodes = new ConcurrentHashMap<>();
         r = new Random();
     }
 
@@ -36,6 +39,10 @@ public class FileMap {
         return m.get(key);
     }
 
+    public void delete(String key) {
+        m.remove(key);
+    }
+
     public void batchPut(String[] keys, String value) {
         System.out.println(value);
         System.out.println(Arrays.toString(keys));
@@ -44,18 +51,18 @@ public class FileMap {
         }
     }
 
-    public void addSocket(String host, Socket s) {
-        socketCache.put(host, s);
-    }
-
-    public Socket getSocket(String host) {
-        return socketCache.get(host);
+    public void addNode(String host) {
+        nodes.put(host, true);
     }
 
     public String randomHost() {
-        String[] keys = socketCache.keySet().toArray(new String[0]);
+        String[] keys = nodes.keySet().toArray(new String[0]);
         int idx = r.nextInt(keys.length);
         return keys[idx];
+    }
+
+    public Boolean validHost(String key) {
+        return nodes.containsKey(key);
     }
 
 }
