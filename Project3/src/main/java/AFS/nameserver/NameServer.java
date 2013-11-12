@@ -3,6 +3,7 @@ package AFS.nameserver;
 import org.apache.commons.cli.*;
 
 /**
+ * Entry point for the nameserver.
  */
 public class NameServer {
 

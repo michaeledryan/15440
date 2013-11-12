@@ -11,6 +11,12 @@ public class Listener implements Runnable {
     private ServerSocket ln;
     private int nodes;
 
+    /**
+     * Initializes the server socket.
+     *
+     * @param port Port to listen on.
+     * @param nodes Number of data nodes.
+     */
     public Listener(int port, int nodes) {
         this.nodes = nodes;
         try {
@@ -21,10 +27,13 @@ public class Listener implements Runnable {
         }
     }
 
+    /**
+     * Wait for all data nodes to connect, then listen for client requests
+     * forever. Each is served by a new thread.
+     */
     public void run() {
         System.out.println("Waiting for data nodes...");
         for (int i = 0; i < nodes; i++) {
-            System.out.println(i);
             Socket incoming;
             try {
                 incoming = ln.accept();
@@ -36,12 +45,11 @@ public class Listener implements Runnable {
             }
         }
 
+        System.out.println("Waiting for requests...");
         while (true) {
             Socket incoming;
             try {
-                System.out.println("Waiting for requests...");
                 incoming = ln.accept();
-                System.out.println("Got some!");
                 MessageHandler h = new MessageHandler(incoming);
                 Thread t = new Thread(h);
                 t.start();

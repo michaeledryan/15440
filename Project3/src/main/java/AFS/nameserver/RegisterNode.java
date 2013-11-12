@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 
 /**
+ * Adds a new data node to the map during startup.
  */
 public class RegisterNode implements Runnable {
 
@@ -16,6 +17,10 @@ public class RegisterNode implements Runnable {
         this.s = s;
     }
 
+    /**
+     * The message from the data node contains its identity as well as all
+     * files that it already holds.
+     */
     public void run() {
         try {
             ObjectInputStream in = new ObjectInputStream(s.getInputStream());

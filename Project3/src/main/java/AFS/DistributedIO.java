@@ -1,6 +1,8 @@
 package AFS;
 
 /**
+ * Interface to the distributed file system. All client-side IO can be done
+ * with these.
  */
 public interface DistributedIO {
 

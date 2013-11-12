@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
+ * Responds to messages from a client.
  */
 public class MessageHandler implements Runnable {
 
@@ -19,6 +20,12 @@ public class MessageHandler implements Runnable {
         this.s = s;
     }
 
+    /**
+     * Reads a message from the socket.
+     *
+     * @return Message received.
+     * @throws IOException
+     */
     private Message readMessage() throws IOException {
         Object obj = null;
         try {
@@ -32,18 +39,23 @@ public class MessageHandler implements Runnable {
         return (Message) obj;
     }
 
+    /**
+     * Serves this client until it hangs up.
+     */
     public void run() {
         try {
             this.in = new ObjectInputStream(s.getInputStream());
             this.out = new ObjectOutputStream(s.getOutputStream());
             while (s.isConnected()) {
                 Message m = readMessage();
+                // Default reply. Overwritten where necessary.
                 Message resp = Message.ack();
                 FileMap fmap = FileMap.getInstance();
                 String path = m.getPath();
                 String host;
 
                 switch (m.getType()) {
+                    // Send the data node that contains the file.
                     case LOCATION:
                         if (!fmap.contains(path)) {
                             resp = Message.error(
@@ -53,6 +65,8 @@ public class MessageHandler implements Runnable {
                             resp = Message.location(host);
                         }
                         break;
+                    // If the file does not exist, assign to a random data
+                    // node, then send back the location.
                     case WRITE:
                         if (fmap.contains(path)) {
                             host = fmap.get(path);
@@ -61,6 +75,7 @@ public class MessageHandler implements Runnable {
                         }
                         resp = Message.location(host);
                         break;
+                    // Creates a record for the file on the given data node.
                     case CREATE:
                         host = m.getData();
                         if (fmap.contains(path)) {
@@ -73,6 +88,7 @@ public class MessageHandler implements Runnable {
                                     new IOException("Unknown data node."));
                         }
                         break;
+                    // Remove record from the index.
                     case DELETE:
                         if (fmap.contains(path)) {
                             host = fmap.get(path);
@@ -82,6 +98,7 @@ public class MessageHandler implements Runnable {
                             resp = Message.error(
                                     new IOException("Unknown file."));
                         }
+                    // Should not exist. Ignore them.
                     default:
                         break;
                 }
