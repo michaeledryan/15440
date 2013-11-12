@@ -1,7 +1,9 @@
 package mikereduce.jobtracker.server;
 
 import mikereduce.shared.ControlMessageType;
+import mikereduce.shared.MapContext;
 import mikereduce.shared.WorkerControlMessage;
+import mikereduce.shared.WorkerJobConfig;
 import mikereduce.worker.shared.WorkerMessage;
 
 import java.io.IOException;
@@ -20,29 +22,35 @@ public class WorkerManager implements Runnable {
 
     Socket sock;
     WorkerInfo info;
+    ObjectInputStream ois;
+    ObjectOutputStream oos;
 
     public WorkerManager(Socket worker) {
         sock = worker;
     }
 
+    public void sendRequest(WorkerControlMessage msg) throws IOException {
+        oos.writeObject(msg);
+    }
+
+
     @Override
     public void run() {
 
         try {
-            ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+            ois = new ObjectInputStream(sock.getInputStream());
+            oos = new ObjectOutputStream(sock.getOutputStream());
 
             WorkerMessage woo = null;
 
             try {
                 woo = (WorkerMessage) ois.readObject();
-                System.out.println(woo.getStatus());
 
                 switch (woo.getStatus()) {
 
                     case REGISTRATION:
+                        info = new WorkerInfo(0, woo.getType()); // Are ID's necessary?
                         int id = WorkerListener.getInstance().registerWorker(this);
-                        info = new WorkerInfo(id, woo.getType()); // Are ID's necessary?
 
                         /*
                         Timer tim = new Timer();
@@ -56,7 +64,7 @@ public class WorkerManager implements Runnable {
                         tim.schedule(killMe, 20000);
                         */
 
-                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null, null);
+                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null);
                         oos.writeObject(wcm);
 
                         // Send ACK

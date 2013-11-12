@@ -10,12 +10,10 @@ import java.io.Serializable;
 public class WorkerControlMessage implements Serializable{
 
     private ControlMessageType type;
-    private String jobName;
-    private JobConfig config;
+    private WorkerJobConfig config;
 
-    public WorkerControlMessage(ControlMessageType type, String jobName, JobConfig conf) {
+    public WorkerControlMessage(ControlMessageType type, WorkerJobConfig conf) {
         this.type = type;
-        this.jobName = jobName;
         this.config = conf;
     }
 
@@ -23,11 +21,7 @@ public class WorkerControlMessage implements Serializable{
         return type;
     }
 
-    public String getJobName() {
-        return jobName;
-    }
-
-    public JobConfig getConfig() {
+    public WorkerJobConfig getConfig() {
         return config;
     }
 }

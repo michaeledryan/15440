@@ -41,7 +41,7 @@ public class MapperMain {
                 System.exit(1);
             }
 
-            System.out.println("Starting JobTracker...");
+            System.out.println("Starting Mapper...");
 
             File confLocation = new File(cmd.getOptionValue("c", "TrackerConf.ini"));
 
@@ -49,8 +49,8 @@ public class MapperMain {
 
             try {
                 Socket sock = new Socket(conf.getAddress(), conf.getPort());
-                MapNode map = new MapNode(sock);
-                map.run();
+                MapNode map = new MapNode(sock, conf);
+                new Thread(map).start();
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }

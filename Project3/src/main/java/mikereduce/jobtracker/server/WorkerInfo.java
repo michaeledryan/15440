@@ -15,6 +15,8 @@ public class WorkerInfo {
     private WorkerType type;
 
     public WorkerInfo(int id, WorkerType type) {
+        this.id = id;
+        this.type = type;
     }
 
     public int getId() {

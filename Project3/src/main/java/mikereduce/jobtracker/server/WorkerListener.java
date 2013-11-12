@@ -3,7 +3,9 @@ package mikereduce.jobtracker.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Listens to worker requests. Keeps track of which workers exist as well as which are Mapper, Reducers, and Combiners.
@@ -15,7 +17,7 @@ public class WorkerListener implements Runnable{
     private ServerSocket sock;
     private static WorkerListener INSTANCE;
 
-    private Set<WorkerManager> mappers;
+    private Set<WorkerManager> mappers = new HashSet<WorkerManager>();
 
     private WorkerListener(int port) {
         this.port = port;
@@ -44,6 +46,13 @@ public class WorkerListener implements Runnable{
         return -1;
     }
 
+    public int getNumWorkers() {
+        return mappers.size();
+    }
+
+    public Set<WorkerManager> getWorkers() {
+        return mappers;
+    }
 
     @Override
     synchronized public void run() {
@@ -63,8 +72,6 @@ public class WorkerListener implements Runnable{
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
-
         }
     }
 

@@ -2,14 +2,11 @@ package mikereduce.shared;
 
 import AFS.Connection;
 
+import java.io.Serializable;
+
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/10/13
- * Time: 2:22 PM
- * To change this template use File | Settings | File Templates.
  */
-public interface InputBlock {
+public interface InputBlock extends Serializable{
 
     /**
      *

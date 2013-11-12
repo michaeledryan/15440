@@ -1,9 +1,8 @@
 package mikereduce.worker.mapnode;
 
+import AFS.Connection;
 import mikereduce.jobtracker.shared.JobConfig;
-import mikereduce.shared.MapContext;
-import mikereduce.shared.Mapper;
-import mikereduce.shared.WorkerControlMessage;
+import mikereduce.shared.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,20 +32,21 @@ public class MessageHandler implements Runnable {
                 break;
             case NEW:
                 // Start a new job
+                WorkerJobConfig conf = msg.getConfig();
 
-                JobConfig conf = msg.getConfig();
-
-                conf.getInputReader();
-                conf.getOutputWriter();
+                System.out.println("Trying to get a mapper.");
 
                 try {
-                    final Mapper mapper = (Mapper) conf.getMiker().newInstance();
-                    final MapContext mc = new MapContext((Mapper) conf.getMiker().newInstance());
+                    final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
+
+                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9001));
+                    final MapContext mc = new MapContext(mapper, oc);
 
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             mapper.run(mc);
+                            System.out.println("DONE BITCHES");
                             // Report that you're finished.
                         }
                     });
