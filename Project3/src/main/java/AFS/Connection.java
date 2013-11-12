@@ -11,11 +11,11 @@ import java.net.Socket;
 /**
  * Establish a connection with the nameserver to have access to the files
  * distributed across the nodes.
- *
+ * <p/>
  * It is NOT thread-safe to have multiple concurrent read requests on a single
  * Connection object.
  */
-public class Connection {
+public class Connection implements DistributedIO {
 
     private Socket s;
     private ObjectInputStream in = null;
@@ -23,6 +23,7 @@ public class Connection {
 
     /**
      * Connects to the nameserver.
+     *
      * @param host Nameserver hostname.
      * @param port Nameserver port.
      */
@@ -36,6 +37,7 @@ public class Connection {
 
     /**
      * Wait for a message to arrive and ensure it is a valid Message.
+     *
      * @param in ObjectInputStream to read from.
      * @return Received message.
      * @throws IOException
@@ -50,12 +52,13 @@ public class Connection {
         if (obj == null || !(obj instanceof Message)) {
             throw new IOException("Failed to get message.");
         }
-        return (Message)obj;
+        return (Message) obj;
     }
 
     /**
      * Reads a reply from the nameserver, opening the InputStream,
      * if necessary.
+     *
      * @return Received message.
      * @throws IOException
      */
@@ -69,6 +72,7 @@ public class Connection {
     /**
      * Sends a message to the namesever, opening the ObjectOutputStream if
      * necessary.
+     *
      * @param m Message to send.
      * @throws IOException
      */
@@ -81,9 +85,10 @@ public class Connection {
 
     /**
      * Determines the datanode that a particular file is located on.
+     *
      * @param req Message containing the path to look up.
      * @return String representing the hostname and port of the data node.
-     * hostname;port
+     *         hostname;port
      * @throws IOException
      */
     private String getLocation(Message req) throws Exception {
@@ -106,6 +111,7 @@ public class Connection {
 
     /**
      * Open a socket to the specified data node.
+     *
      * @param hoststring hostname:port
      * @return Valid socket.
      * @throws IOException
@@ -127,9 +133,10 @@ public class Connection {
 
     /**
      * Reads the entirety of the specified file.
+     *
      * @param path File location.
      * @return Contents.
-     * @throws IOException
+     * @throws Exception
      */
     public String readFile(String path) throws Exception {
         Message getloc = Message.location(path);
@@ -156,14 +163,15 @@ public class Connection {
 
     /**
      * Reads size bytes from the specified file, starting at start.
-     * @param path File location.
+     *
+     * @param path  File location.
      * @param start First byte to read.
-     * @param size Number of bytes to read.
+     * @param size  Number of bytes to read.
      * @return Contents.
-     * @throws IOException
+     * @throws Exception
      */
     public String readBlock(String path, int start, int size)
-            throws Exception{
+            throws Exception {
         Message getloc = Message.location(path);
         String loc = this.getLocation(getloc);
 
@@ -189,9 +197,10 @@ public class Connection {
     /**
      * Appends output to the specified file. If it does not exist,
      * then it is created on a random data node.
+     *
      * @param path File location.
      * @param data Data to append.
-     * @throws IOException
+     * @throws Exception
      */
     public void writeFile(String path, String data) throws Exception {
         Message getloc = Message.write(path, "");
@@ -219,8 +228,9 @@ public class Connection {
 
     /**
      * Deletes a file from the nameserver and data node.
+     *
      * @param path File location.
-     * @throws IOException
+     * @throws Exception
      */
     public void deleteFile(String path) throws Exception {
         Message msg = Message.delete(path);
@@ -247,9 +257,10 @@ public class Connection {
      * Creates an empty file on a particular data node. Note that this only
      * registers the file on the nameserver and doesn't actually create an
      * empty file. So, it would be unwise to read before writing.
+     *
      * @param path File location.
      * @param node Data node to use. hostname:port.
-     * @throws IOException
+     * @throws Exception
      */
     public void createFile(String path, String node) throws Exception {
         Message req = Message.create(path, node);

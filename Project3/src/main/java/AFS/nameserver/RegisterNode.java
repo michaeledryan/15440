@@ -23,7 +23,7 @@ public class RegisterNode implements Runnable {
             if (!(obj instanceof StartupMessage)) {
                 throw new IOException("Bad message.");
             }
-            StartupMessage msg = (StartupMessage)obj;
+            StartupMessage msg = (StartupMessage) obj;
             String id = msg.getHostname() + ":" + msg.getPort();
             FileMap fmap = FileMap.getInstance();
             fmap.addNode(id);

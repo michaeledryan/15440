@@ -1,11 +1,10 @@
 package AFS.dataserver;
 
 import AFS.message.Message;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.Socket;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  */
@@ -37,7 +36,7 @@ public class MessageHandler implements Runnable {
         if (obj == null || !(obj instanceof Message)) {
             throw new IOException("Failed to get message.");
         }
-        return (Message)obj;
+        return (Message) obj;
     }
 
     public void run() {

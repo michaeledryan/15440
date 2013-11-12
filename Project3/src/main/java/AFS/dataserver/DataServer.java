@@ -1,6 +1,5 @@
 package AFS.dataserver;
 
-import AFS.nameserver.Listener;
 import org.apache.commons.cli.*;
 
 import java.io.File;

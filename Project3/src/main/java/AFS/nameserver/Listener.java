@@ -23,7 +23,7 @@ public class Listener implements Runnable {
 
     public void run() {
         System.out.println("Waiting for data nodes...");
-        for (int i = 0; i < nodes; i ++) {
+        for (int i = 0; i < nodes; i++) {
             System.out.println(i);
             Socket incoming;
             try {
