@@ -22,7 +22,9 @@ public class Listener implements Runnable {
     }
 
     public void run() {
-        for (int i = 0; i < nodes; i ++) {
+        System.out.println("Waiting for data nodes...");
+        for (int i = 0; i < nodes; i++) {
+            System.out.println(i);
             Socket incoming;
             try {
                 incoming = ln.accept();
@@ -37,7 +39,9 @@ public class Listener implements Runnable {
         while (true) {
             Socket incoming;
             try {
+                System.out.println("Waiting for requests...");
                 incoming = ln.accept();
+                System.out.println("Got some!");
                 MessageHandler h = new MessageHandler(incoming);
                 Thread t = new Thread(h);
                 t.start();

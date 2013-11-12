@@ -41,7 +41,7 @@ public class DataHandler implements Runnable {
         String[] files = new String[data.size()];
         Iterator<File> it = data.iterator();
         for (int i = 0; it.hasNext(); i++) {
-            files[i] = it.next().getPath();
+            files[i] = it.next().getPath().substring(dir.getPath().length() + 1);
         }
 
         StartupMessage msg = new StartupMessage(InetAddress.getLocalHost()
@@ -52,7 +52,8 @@ public class DataHandler implements Runnable {
     public void run() {
         try {
             this.initialize();
-            new Listener(id, port).run();
+            Listener ln = new Listener(id, port);
+            ln.run();
         } catch (IOException e) {
             e.printStackTrace();
         }

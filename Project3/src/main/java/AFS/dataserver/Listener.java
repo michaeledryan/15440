@@ -6,7 +6,7 @@ import java.net.Socket;
 
 /**
  */
-public class Listener {
+public class Listener implements Runnable {
 
     private String id;
     private ServerSocket ln;

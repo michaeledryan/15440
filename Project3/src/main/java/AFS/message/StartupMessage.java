@@ -23,6 +23,7 @@ public class StartupMessage implements Serializable {
         Socket s = new Socket(host, port);
         ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
         out.writeObject(this);
+        s.close();
     }
 
     public String getHostname() {

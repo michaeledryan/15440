@@ -1,7 +1,6 @@
 package AFS.nameserver;
 
 import AFS.message.Message;
-import AFS.message.MessageType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,13 +16,7 @@ public class MessageHandler implements Runnable {
     private ObjectOutputStream out;
 
     public MessageHandler(Socket s) {
-        try {
-            this.s = s;
-            this.in = new ObjectInputStream(s.getInputStream());
-            this.out = new ObjectOutputStream(s.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.s = s;
     }
 
     private Message readMessage() throws IOException {
@@ -36,42 +29,67 @@ public class MessageHandler implements Runnable {
         if (obj == null || !(obj instanceof Message)) {
             throw new IOException("Failed to get message.");
         }
-        return (Message)obj;
+        return (Message) obj;
     }
 
     public void run() {
         try {
-            Message m = readMessage();
-            Message resp = Message.ack();
-            FileMap fmap = FileMap.getInstance();
-            String path;
-            String host;
+            this.in = new ObjectInputStream(s.getInputStream());
+            this.out = new ObjectOutputStream(s.getOutputStream());
+            while (s.isConnected()) {
+                Message m = readMessage();
+                Message resp = Message.ack();
+                FileMap fmap = FileMap.getInstance();
+                String path = m.getPath();
+                String host;
 
-            switch (m.getType()) {
-                case LOCATION:
-                    path = m.getPath();
-                    host = fmap.get(path);
-                    if (host == null) {
-                        host = "";
-                    }
-                    resp = Message.location(host);
-                    break;
-                case WRITE:
-                    host = fmap.randomHost();
-                    resp = Message.location(host);
-                    break;
-                case CREATE:
-                    path = m.getPath();
-                    host = m.getData();
-                    FileMap.getInstance().put(path, host);
-                    break;
-                default:
-                    break;
+                switch (m.getType()) {
+                    case LOCATION:
+                        if (!fmap.contains(path)) {
+                            resp = Message.error(
+                                    new IOException("Unknown file."));
+                        } else {
+                            host = fmap.get(path);
+                            resp = Message.location(host);
+                        }
+                        break;
+                    case WRITE:
+                        if (fmap.contains(path)) {
+                            host = fmap.get(path);
+                        } else {
+                            host = fmap.randomHost();
+                        }
+                        resp = Message.location(host);
+                        break;
+                    case CREATE:
+                        host = m.getData();
+                        if (fmap.contains(path)) {
+                            resp = Message.error(
+                                    new IOException("File already exists."));
+                        } else if (fmap.validHost(host)) {
+                            fmap.put(path, host);
+                        } else {
+                            resp = Message.error(
+                                    new IOException("Unknown data node."));
+                        }
+                        break;
+                    case DELETE:
+                        if (fmap.contains(path)) {
+                            host = fmap.get(path);
+                            fmap.delete(path);
+                            resp = Message.location(host);
+                        } else {
+                            resp = Message.error(
+                                    new IOException("Unknown file."));
+                        }
+                    default:
+                        break;
+                }
+
+                out.writeObject(resp);
             }
-
-            out.writeObject(resp);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Client disconnected.");
         }
     }
 
