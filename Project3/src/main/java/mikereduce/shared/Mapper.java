@@ -41,5 +41,20 @@ public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
         // To be implemented.
     }
 
-    ;
+
+    /**
+     * OVERRIDE THIS!
+     * @return
+     */
+    public InputFormat<KEYIN, VALUEIN> getInputFormat() {
+        return null;
+    }
+
+    /**
+     * OVERRIDE THIS!
+     * @return
+     */
+    public OutputFormat<KEYOUT, VALUEOUT> getOutputFormat() {
+        return null;
+    }
 }

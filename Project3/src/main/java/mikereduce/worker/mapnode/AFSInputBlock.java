@@ -46,14 +46,14 @@ public class AFSInputBlock implements InputBlock {
 
     @Override
     public String getLine() {
-        return block.get(blockIndex);
+        return block.get(blockIndex++);
     }
 
     @Override
     public boolean nextLine() {
         if (conn == null) {
 
-            conn = new Connection("localhost", 9001); // TBD
+            conn = new Connection("localhost", 9000); // TBD
             try {
                 block = new ArrayList<String>(Arrays.asList(conn.readFile(filePath).split("\n")));
             } catch (IOException e) {
@@ -68,7 +68,6 @@ public class AFSInputBlock implements InputBlock {
             if (blockIndex == block.size()) {
                 return false;
             } else {
-                blockIndex++;
                 return true;
             }
 

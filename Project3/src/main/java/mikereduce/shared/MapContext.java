@@ -20,13 +20,17 @@ public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
     private long pointInBlock = 0;
 
-    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper, OutputCommitter out) {
+    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper, OutputCommitter out, InputBlock in) {
         this.mapperClass = mapper.getClass();
         this.committer = out;
+        reader = in;
+        inputFormat = mapper.getInputFormat();
+        outputFormat = mapper.getOutputFormat();
     }
 
     public boolean nextKeyValue() {
         if (reader.nextLine()) {
+            System.out.println("next line");
             currentPair = reader.getLine();
             pointInBlock = currentPair.length() * 2; // Convert number of chars to bytes. 1 char == 16 bits.
             return true;
