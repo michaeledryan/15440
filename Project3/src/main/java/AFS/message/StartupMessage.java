@@ -11,11 +11,14 @@ public class StartupMessage implements Serializable {
 
     private String hostname;
     private int port;
+    private String id;
     private String[] files;
 
-    public StartupMessage(String hostname, int port, String[] files) {
+    public StartupMessage(String hostname, int port, String id,
+                          String[] files) {
         this.hostname = hostname;
         this.port = port;
+        this.id = id;
         this.files = files;
     }
 
@@ -36,5 +39,9 @@ public class StartupMessage implements Serializable {
 
     public String[] getFiles() {
         return files;
+    }
+
+    public String getId() {
+        return id;
     }
 }

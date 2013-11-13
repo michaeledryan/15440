@@ -118,6 +118,12 @@ public class MessageHandler implements Runnable {
                             resp = Message.error(
                                     new IOException("Unable to delete file."));
                         }
+                        f = f.getParentFile();
+                        while (b && f.isDirectory() && f.list().length == 0) {
+                            b = f.delete();
+                            f = f.getParentFile();
+                        }
+
                     } else {
                         resp = Message.error(
                                 new IOException("File not found."));

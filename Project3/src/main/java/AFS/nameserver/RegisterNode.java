@@ -29,9 +29,10 @@ public class RegisterNode implements Runnable {
                 throw new IOException("Bad message.");
             }
             StartupMessage msg = (StartupMessage) obj;
-            String id = msg.getHostname() + ":" + msg.getPort();
+            String host = msg.getHostname() + ":" + msg.getPort();
+            String id = msg.getId();
             FileMap fmap = FileMap.getInstance();
-            fmap.addNode(id);
+            fmap.addNode(id, host);
             fmap.batchPut(msg.getFiles(), id);
             s.close();
         } catch (IOException | ClassNotFoundException e) {

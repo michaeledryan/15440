@@ -53,7 +53,7 @@ public class DataHandler implements Runnable {
         }
 
         StartupMessage msg = new StartupMessage(InetAddress.getLocalHost()
-                .getHostName(), port, files);
+                .getHostName(), port, id, files);
         msg.send(nameServer, namePort);
     }
 

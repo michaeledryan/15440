@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Responds to messages from a client.
@@ -71,13 +72,17 @@ public class MessageHandler implements Runnable {
                         if (fmap.contains(path)) {
                             host = fmap.get(path);
                         } else {
-                            host = fmap.randomHost();
+                            ArrayList<String> tmp = fmap.randomHosts(fmap
+                                    .getReplication());
+                            fmap.putAll(path, tmp);
+                            host = fmap.flattenHosts(tmp);
                         }
                         resp = Message.location(host);
                         break;
                     // Creates a record for the file on the given data node.
                     case CREATE:
-                        host = m.getData();
+                        String id = m.getData();
+                        host = fmap.getNode(id);
                         if (fmap.contains(path)) {
                             resp = Message.error(
                                     new IOException("File already exists."));

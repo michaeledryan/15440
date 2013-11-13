@@ -1,5 +1,6 @@
 package AFS.nameserver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,8 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileMap {
 
     private static FileMap ourInstance = new FileMap();
-    private ConcurrentHashMap<String, String> m;
-    private ConcurrentHashMap<String, Boolean> nodes;
+    private ConcurrentHashMap<String, ArrayList<String>> m;
+    private ConcurrentHashMap<String, String> nodes;
+    private int replication = 2;
     private Random r;
 
     public static FileMap getInstance() {
@@ -25,6 +27,17 @@ public class FileMap {
         r = new Random();
     }
 
+    public String flattenHosts(ArrayList<String> hosts) {
+        String res = "";
+        for (int i = 0; i < hosts.size(); i++) {
+            res += hosts.get(i);
+            if (i != hosts.size() - 1) {
+                res += ";";
+            }
+        }
+        return res;
+    }
+
     /**
      * Track a new file.
      *
@@ -32,6 +45,16 @@ public class FileMap {
      * @param value Hostname:port of data node.
      */
     public void put(String key, String value) {
+        if (m.containsKey(key)) {
+            m.get(key).add(value);
+        } else {
+            ArrayList<String> data = new ArrayList<>(replication);
+            data.add(value);
+            m.put(key, data);
+        }
+    }
+
+    public void putAll(String key, ArrayList<String> value) {
         m.put(key, value);
     }
 
@@ -52,7 +75,7 @@ public class FileMap {
      * @return Hostname:port of the data node that stores the file key.
      */
     public String get(String key) {
-        return m.get(key);
+        return flattenHosts(m.get(key));
     }
 
     /**
@@ -74,7 +97,7 @@ public class FileMap {
         System.out.println(value);
         System.out.println(Arrays.toString(keys));
         for (String key : keys) {
-            m.put(key, value);
+            put(key, value);
         }
     }
 
@@ -83,8 +106,21 @@ public class FileMap {
      *
      * @param host Hostname:port of the node.
      */
-    public void addNode(String host) {
-        nodes.put(host, true);
+    public void addNode(String id, String host) {
+        nodes.put(id, host);
+    }
+
+    public String getNode(String id) {
+        return nodes.get(id);
+    }
+
+    private void shuffle(ArrayList<String> arr) {
+        for (int i = arr.size(); i > 1; i--) {
+            int idx = r.nextInt(i);
+            String tmp = arr.get(i);
+            arr.set(i, arr.get(idx));
+            arr.set(idx, tmp);
+        }
     }
 
     /**
@@ -92,10 +128,10 @@ public class FileMap {
      *
      * @return A valid data node.
      */
-    public String randomHost() {
-        String[] keys = nodes.keySet().toArray(new String[0]);
-        int idx = r.nextInt(keys.length);
-        return keys[idx];
+    public ArrayList<String> randomHosts(int n) {
+        ArrayList<String> hosts = new ArrayList<>(nodes.values());
+        shuffle(hosts);
+        return hosts;
     }
 
     /**
@@ -108,4 +144,11 @@ public class FileMap {
         return nodes.containsKey(key);
     }
 
+    public int getReplication() {
+        return replication;
+    }
+
+    public void setReplication(int replication) {
+        this.replication = replication;
+    }
 }
