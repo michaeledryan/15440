@@ -2,7 +2,14 @@ package mikereduce.worker.mapnode;
 
 import AFS.Connection;
 import mikereduce.jobtracker.shared.JobConfig;
+import mikereduce.jobtracker.shared.JobState;
 import mikereduce.shared.*;
+import mikereduce.worker.shared.JobStatus;
+import mikereduce.worker.shared.WorkerMessage;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,9 +22,11 @@ public class MessageHandler implements Runnable {
     // How can I abstract this?
 
     private WorkerControlMessage msg;
+    private ObjectOutputStream oos;
 
-    public MessageHandler(WorkerControlMessage msg) {
+    public MessageHandler(WorkerControlMessage msg, ObjectOutputStream oos) {
         this.msg = msg;
+        this.oos = oos;
     }
 
     @Override
@@ -39,19 +48,24 @@ public class MessageHandler implements Runnable {
                 try {
                     final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
 
-                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9000));
+                    System.out.println(conf.getNumReducers());
+
+                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9000), conf.getNumReducers());
                     final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.out.println("START.");
-                            mapper.run(mc);
-                            System.out.println("DONE BITCHES");
-                            // Report that you're finished.
-                        }
-                    }).run();
+                    mapper.run(mc);
 
+
+                    // Report that you're finished.
+
+                    WorkerMessage response = WorkerMessage.update(new JobStatus(JobState.COMPLETED, conf.getJobId()), 100);
+
+                    try {
+                        System.out.println("finished map trying to send update back");
+                        oos.writeObject(response);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                 } catch (InstantiationException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

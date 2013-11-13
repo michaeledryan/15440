@@ -23,7 +23,6 @@ public class BaseTest {
     private static String[] argsData1 = {"-p", "8001", "-i", "test1"};
     private static String[] argsData2 = {"-p", "8002", "-i", "test2"};
 
-
     @Test
     public void testConnection() {
 
@@ -52,11 +51,13 @@ public class BaseTest {
         }).start();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             System.out.println("done with sleep.");
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+
+
 
         JobConfig conf = new JobConfig();
 

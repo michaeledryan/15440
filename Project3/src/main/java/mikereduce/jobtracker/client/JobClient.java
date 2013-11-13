@@ -1,7 +1,8 @@
 package mikereduce.jobtracker.client;
 
 import mikereduce.jobtracker.server.ClientMessage;
-import mikereduce.jobtracker.shared.JobConfig;
+import mikereduce.jobtracker.shared.JobClientStatus;
+import mikereduce.jobtracker.shared.JobState;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -18,7 +19,8 @@ import java.net.Socket;
  */
 public class JobClient {
 
-    private JobClient(){}
+    private JobClient() {
+    }
 
     public static void submit(ClientMessage conf, String addr, int port) {
         // Get a connection to the JobTracker and do things.
@@ -38,13 +40,17 @@ public class JobClient {
             oos.flush();
 
             while (!sock.isClosed()) {
-                Object obj = null;
+                JobClientStatus message = null;
                 try {
-                obj = ois.readObject();
-                } catch (EOFException e) {
-                    // Do nothing. There is no need to be upset.
-                }
+                    message = (JobClientStatus) ois.readObject();
+                    System.out.println(message.getMessage());
+                    if (message.getState() == JobState.COMPLETED) {
+                        break;
+                    }
 
+                } catch (EOFException e) {
+                    // There is no need to be upset.
+                }
 
             }
 

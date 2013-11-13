@@ -53,7 +53,7 @@ public class JobTracker {
 
             System.out.println("Starting JobTracker...");
 
-            ClientListener client = new ClientListener(conf.getClientPort());
+            ClientListener client = ClientListener.setupClientListener(conf.getClientPort());
 
             WorkerListener worker;
             WorkerListener.setPort(conf.getWorkerPort());
