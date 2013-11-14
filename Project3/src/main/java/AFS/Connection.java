@@ -21,6 +21,7 @@ public class Connection implements DistributedIO {
     private Socket s;
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;
+    private int timeout = 200;
 
     /**
      * Connects to the nameserver.
@@ -117,7 +118,7 @@ public class Connection implements DistributedIO {
      * @return Valid socket.
      * @throws IOException
      */
-    private static Socket connectToDataNode(String hoststring)
+    private Socket connectToDataNode(String hoststring)
             throws IOException {
         String[] loc = hoststring.split(":");
         if (loc.length != 2) {
@@ -129,37 +130,51 @@ public class Connection implements DistributedIO {
         } catch (NumberFormatException e) {
             throw new IOException("Bad port.");
         }
-        return new Socket(loc[0], port);
+        Socket s = new Socket(loc[0], port);
+        s.setSoTimeout(timeout);
+        return s;
     }
 
     /**
      * Reads the entirety of the specified file.
      *
      * @param path File location.
+     * @param nodeId Preferred node.
      * @return Contents.
      * @throws Exception
      */
-    public String readFile(String path) throws Exception {
+    public String readFile(String path, String nodeId) throws Exception {
         Message getloc = Message.location(path);
-        String loc = this.getLocations(getloc)[0];
+        String[] locs = this.getLocations(getloc);
 
-        Socket node = connectToDataNode(loc);
-        ObjectOutputStream nodeOut =
-                new ObjectOutputStream(node.getOutputStream());
-        Message req = Message.read(path);
-        nodeOut.writeObject(req);
+        for (String loc : locs) {
+            try {
+                Socket node = connectToDataNode(loc);
+                ObjectOutputStream nodeOut =
+                        new ObjectOutputStream(node.getOutputStream());
+                Message req = Message.read(path, nodeId);
+                nodeOut.writeObject(req);
 
-        ObjectInputStream nodeIn =
-                new ObjectInputStream(node.getInputStream());
-        Message rep = readReply(nodeIn);
-        node.close();
+                ObjectInputStream nodeIn =
+                        new ObjectInputStream(node.getInputStream());
+                Message rep = readReply(nodeIn);
+                node.close();
 
-        if (rep.getType() == MessageType.ERROR) {
-            throw rep.getException();
-        } else if (rep.getType() != MessageType.DATA) {
-            throw new IOException("Bad message type.");
+                if (rep.getType() == MessageType.ERROR) {
+                    throw rep.getException();
+                } else if (rep.getType() != MessageType.DATA) {
+                    throw new IOException("Bad message type.");
+                }
+                return rep.getData();
+            } catch (Exception e) {
+
+            }
         }
-        return rep.getData();
+        throw new IOException("No reachable data nodes.");
+    }
+
+    public String readFile(String path) throws Exception {
+        return readFile(path, null);
     }
 
     /**
@@ -168,31 +183,44 @@ public class Connection implements DistributedIO {
      * @param path  File location.
      * @param start First byte to read.
      * @param size  Number of bytes to read.
+     * @param nodeId Preferred data node.
      * @return Contents.
      * @throws Exception
      */
-    public String readBlock(String path, int start, int size)
+    public String readBlock(String path, int start, int size, String nodeId)
             throws Exception {
         Message getloc = Message.location(path);
-        String loc = this.getLocations(getloc)[0];
+        String[] locs = this.getLocations(getloc);
 
-        Socket node = connectToDataNode(loc);
-        ObjectOutputStream nodeOut =
-                new ObjectOutputStream(node.getOutputStream());
-        Message req = Message.readBlock(path, start, size);
-        nodeOut.writeObject(req);
+        for (String loc : locs) {
+            try {
+                Socket node = connectToDataNode(loc);
+                ObjectOutputStream nodeOut =
+                        new ObjectOutputStream(node.getOutputStream());
+                Message req = Message.readBlock(path, start, size, nodeId);
+                nodeOut.writeObject(req);
 
-        ObjectInputStream nodeIn =
-                new ObjectInputStream(node.getInputStream());
-        Message rep = readReply(nodeIn);
-        node.close();
+                ObjectInputStream nodeIn =
+                        new ObjectInputStream(node.getInputStream());
+                Message rep = readReply(nodeIn);
+                node.close();
 
-        if (rep.getType() == MessageType.ERROR) {
-            throw rep.getException();
-        } else if (rep.getType() != MessageType.DATA) {
-            throw new IOException("Bad message type.");
+                if (rep.getType() == MessageType.ERROR) {
+                    throw rep.getException();
+                } else if (rep.getType() != MessageType.DATA) {
+                    throw new IOException("Bad message type.");
+                }
+                return rep.getData();
+            } catch (Exception e) {
+
+            }
         }
-        return rep.getData();
+        throw new IOException("No reachable data nodes.");
+    }
+
+    public String readBlock(String path, int start,
+                            int size) throws Exception {
+        return readBlock(path, start, size, null);
     }
 
     /**
@@ -278,4 +306,11 @@ public class Connection implements DistributedIO {
         }
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 }

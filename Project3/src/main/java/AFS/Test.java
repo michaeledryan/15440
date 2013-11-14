@@ -15,7 +15,7 @@ public class Test {
 
             //conn.createFile("xyz/bar.txt", "1");
             conn.writeFile("xyz/bar.txt", "meow!");
-            System.out.println(conn.readFile("xyz/bar.txt"));
+            System.out.println(conn.readFile("xyz/bar.txt", "1"));
             conn.deleteFile("xyz/bar.txt");
         } catch (Exception e) {
             e.printStackTrace();

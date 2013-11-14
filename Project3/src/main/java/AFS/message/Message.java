@@ -9,7 +9,7 @@ public class Message implements Serializable {
     private static final long serialVersionUID = -8160308374294717492L;
     private MessageType type;
     private String path = "";
-    private String data;
+    private String data = null;
     private int start;
     private int size;
     private Exception exception;
@@ -29,11 +29,13 @@ public class Message implements Serializable {
         this.data = d;
     }
 
-    private Message(MessageType t, String p, int start, int size) {
+    private Message(MessageType t, String p, int start, int size,
+                    String nodeId) {
         this.type = t;
         this.path = p;
         this.start = start;
         this.size = size;
+        this.data = nodeId;
     }
 
     private Message(MessageType t, Exception exception) {
@@ -41,12 +43,14 @@ public class Message implements Serializable {
         this.exception = exception;
     }
 
-    public static Message read(String filename) {
-        return new Message(MessageType.READ, filename);
+    public static Message read(String filename, String nodeId) {
+        return new Message(MessageType.READ, filename, nodeId);
     }
 
-    public static Message readBlock(String filename, int start, int size) {
-        return new Message(MessageType.READBLOCK, filename, start, size);
+    public static Message readBlock(String filename, int start, int size,
+                                    String nodeId) {
+        return new Message(MessageType.READBLOCK, filename, start, size,
+                nodeId);
     }
 
     public static Message write(String filename, String data) {

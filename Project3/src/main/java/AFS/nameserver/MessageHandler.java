@@ -54,6 +54,7 @@ public class MessageHandler implements Runnable {
                 FileMap fmap = FileMap.getInstance();
                 String path = m.getPath();
                 String host;
+                String priority;
 
                 switch (m.getType()) {
                     // Send the data node that contains the file.
@@ -62,7 +63,12 @@ public class MessageHandler implements Runnable {
                             resp = Message.error(
                                     new IOException("Unknown file."));
                         } else {
-                            host = fmap.get(path);
+                            priority = m.getData();
+                            if (priority != null) {
+                                host = fmap.priorityGet(path, priority);
+                            } else {
+                                host = fmap.get(path);
+                            }
                             resp = Message.location(host);
                         }
                         break;

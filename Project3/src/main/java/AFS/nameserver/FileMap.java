@@ -69,13 +69,37 @@ public class FileMap {
     }
 
     /**
-     * Get the data node that a file is stored on.
+     * Get the data nodes that a file is stored on.
      *
      * @param key Filename.
-     * @return Hostname:port of the data node that stores the file key.
+     * @return Hostname:port ';' delimited list of hosts.
      */
     public String get(String key) {
-        return flattenHosts(m.get(key));
+        ArrayList<String> hosts = m.get(key);
+        shuffle(hosts);
+        return flattenHosts(hosts);
+    }
+
+    /**
+     * Allows a single data node to be preferred over the others.
+     * This is implemented by putting it first in the result. If it is not
+     * valid, then proceed as though it was not specified.
+     *
+     * @param key Filename.
+     * @param id Data node.
+     * @return Hostname:port ';' delimited list of hosts.
+     */
+    public String priorityGet(String key, String id) {
+        ArrayList<String> hosts = m.get(key);
+        String priorityHost = nodes.get(id);
+        shuffle(hosts);
+        int idx = hosts.indexOf(priorityHost);
+        if (idx > -1) {
+            String tmp = hosts.get(0);
+            hosts.set(0, hosts.get(idx));
+            hosts.set(idx, tmp);
+        }
+        return flattenHosts(hosts);
     }
 
     /**

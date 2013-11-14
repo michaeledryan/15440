@@ -10,9 +10,11 @@ public interface DistributedIO {
      * Reads the entirety of the specified file.
      *
      * @param path File location.
+     * @param nodeId Preferred data node.
      * @return Contents.
      * @throws Exception
      */
+    public String readFile(String path, String nodeId) throws Exception;
     public String readFile(String path) throws Exception;
 
     /**
@@ -21,9 +23,12 @@ public interface DistributedIO {
      * @param path  File location.
      * @param start First byte to read.
      * @param size  Number of bytes to read.
+     * @param nodeId Preferred data node.
      * @return Contents.
      * @throws Exception
      */
+    public String readBlock(String path, int start, int size, String nodeId)
+            throws Exception;
     public String readBlock(String path, int start, int size) throws Exception;
 
     /**
