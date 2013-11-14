@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Establish a connection with the nameserver to have access to the files
@@ -91,7 +92,7 @@ public class Connection implements DistributedIO {
      *         hostname;port
      * @throws IOException
      */
-    private String getLocation(Message req) throws Exception {
+    private String[] getLocations(Message req) throws Exception {
         /*if (req.getType() != MessageType.LOCATION) {
             throw new IOException("Bad request type.");
         }*/
@@ -106,7 +107,7 @@ public class Connection implements DistributedIO {
         if (path.length() == 0) {
             throw new IOException("File not found.");
         }
-        return path;
+        return path.split(";");
     }
 
     /**
@@ -140,7 +141,7 @@ public class Connection implements DistributedIO {
      */
     public String readFile(String path) throws Exception {
         Message getloc = Message.location(path);
-        String loc = this.getLocation(getloc);
+        String loc = this.getLocations(getloc)[0];
 
         Socket node = connectToDataNode(loc);
         ObjectOutputStream nodeOut =
@@ -173,7 +174,7 @@ public class Connection implements DistributedIO {
     public String readBlock(String path, int start, int size)
             throws Exception {
         Message getloc = Message.location(path);
-        String loc = this.getLocation(getloc);
+        String loc = this.getLocations(getloc)[0];
 
         Socket node = connectToDataNode(loc);
         ObjectOutputStream nodeOut =
@@ -204,25 +205,26 @@ public class Connection implements DistributedIO {
      */
     public void writeFile(String path, String data) throws Exception {
         Message getloc = Message.write(path, "");
-        String loc = this.getLocation(getloc);
-        System.out.println(loc);
+        String[] locs = this.getLocations(getloc);
 
-        Socket node = connectToDataNode(loc);
-        ObjectOutputStream nodeOut =
-                new ObjectOutputStream(node.getOutputStream());
+        for (String loc : locs) {
+            Socket node = connectToDataNode(loc);
+            ObjectOutputStream nodeOut =
+                    new ObjectOutputStream(node.getOutputStream());
 
-        Message req = Message.write(path, data);
-        nodeOut.writeObject(req);
+            Message req = Message.write(path, data);
+            nodeOut.writeObject(req);
 
-        ObjectInputStream nodeIn =
-                new ObjectInputStream(node.getInputStream());
-        Message rep = readReply(nodeIn);
-        node.close();
+            ObjectInputStream nodeIn =
+                    new ObjectInputStream(node.getInputStream());
+            Message rep = readReply(nodeIn);
+            node.close();
 
-        if (rep.getType() == MessageType.ERROR) {
-            throw rep.getException();
-        } else if (rep.getType() != MessageType.ACK) {
-            throw new IOException("Bad message type.");
+            if (rep.getType() == MessageType.ERROR) {
+                throw rep.getException();
+            } else if (rep.getType() != MessageType.ACK) {
+                throw new IOException("Bad message type.");
+            }
         }
     }
 
@@ -234,22 +236,24 @@ public class Connection implements DistributedIO {
      */
     public void deleteFile(String path) throws Exception {
         Message msg = Message.delete(path);
-        String loc = this.getLocation(msg);
+        String[] locs = this.getLocations(msg);
 
-        Socket node = connectToDataNode(loc);
-        ObjectOutputStream nodeOut =
-                new ObjectOutputStream(node.getOutputStream());
-        nodeOut.writeObject(msg);
+        for (String loc : locs) {
+            Socket node = connectToDataNode(loc);
+            ObjectOutputStream nodeOut =
+                    new ObjectOutputStream(node.getOutputStream());
+            nodeOut.writeObject(msg);
 
-        ObjectInputStream nodeIn =
-                new ObjectInputStream(node.getInputStream());
-        Message rep = readReply(nodeIn);
-        node.close();
+            ObjectInputStream nodeIn =
+                    new ObjectInputStream(node.getInputStream());
+            Message rep = readReply(nodeIn);
+            node.close();
 
-        if (rep.getType() == MessageType.ERROR) {
-            throw rep.getException();
-        } else if (rep.getType() != MessageType.ACK) {
-            throw new IOException("Bad message type.");
+            if (rep.getType() == MessageType.ERROR) {
+                throw rep.getException();
+            } else if (rep.getType() != MessageType.ACK) {
+                throw new IOException("Bad message type.");
+            }
         }
     }
 

@@ -39,7 +39,7 @@ public class DataServer {
             }
             System.out.println("Starting Data Server...");
 
-            String id = "data" + File.separator +
+            String id =
                     cmd.getOptionValue("i", UUID.randomUUID().toString());
             String ns = cmd.getOptionValue("n", "localhost");
             int port = 8000;

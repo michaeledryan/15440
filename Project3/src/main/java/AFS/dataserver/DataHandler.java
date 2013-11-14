@@ -16,12 +16,14 @@ import java.util.Iterator;
 public class DataHandler implements Runnable {
 
     private String id;
+    private String localDir;
     private int port;
     private String nameServer;
     private int namePort;
 
     public DataHandler(String id, int port, String nameServer, int namePort) {
         this.id = id;
+        this.localDir = "data" + File.separator + id;
         this.port = port;
         this.nameServer = nameServer;
         this.namePort = namePort;
@@ -35,7 +37,7 @@ public class DataHandler implements Runnable {
      */
     private void initialize() throws IOException {
         // All of this node's files are kept in this directory.
-        File dir = new File(id);
+        File dir = new File(localDir);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IOException("Unable to create directory: " +
@@ -63,7 +65,7 @@ public class DataHandler implements Runnable {
     public void run() {
         try {
             this.initialize();
-            Listener ln = new Listener(id, port);
+            Listener ln = new Listener(localDir, port);
             ln.run();
         } catch (IOException e) {
             e.printStackTrace();

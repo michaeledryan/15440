@@ -33,7 +33,7 @@ public class RegisterNode implements Runnable {
             String id = msg.getId();
             FileMap fmap = FileMap.getInstance();
             fmap.addNode(id, host);
-            fmap.batchPut(msg.getFiles(), id);
+            fmap.batchPut(msg.getFiles(), host);
             s.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

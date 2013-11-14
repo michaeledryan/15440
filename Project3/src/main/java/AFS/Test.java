@@ -13,7 +13,7 @@ public class Test {
             System.out.println(conn.readFile("foo.txt"));
             System.out.println(conn.readBlock("foo.txt", 2, 4));
 
-            conn.createFile("xyz/bar.txt", "1");
+            //conn.createFile("xyz/bar.txt", "1");
             conn.writeFile("xyz/bar.txt", "meow!");
             System.out.println(conn.readFile("xyz/bar.txt"));
             conn.deleteFile("xyz/bar.txt");

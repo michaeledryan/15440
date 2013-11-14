@@ -115,7 +115,7 @@ public class FileMap {
     }
 
     private void shuffle(ArrayList<String> arr) {
-        for (int i = arr.size(); i > 1; i--) {
+        for (int i = arr.size()-1; i >= 1; i--) {
             int idx = r.nextInt(i);
             String tmp = arr.get(i);
             arr.set(i, arr.get(idx));

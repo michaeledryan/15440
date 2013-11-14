@@ -82,11 +82,11 @@ public class MessageHandler implements Runnable {
                     // Creates a record for the file on the given data node.
                     case CREATE:
                         String id = m.getData();
-                        host = fmap.getNode(id);
                         if (fmap.contains(path)) {
                             resp = Message.error(
                                     new IOException("File already exists."));
-                        } else if (fmap.validHost(host)) {
+                        } else if (fmap.validHost(id)) {
+                            host = fmap.getNode(id);
                             fmap.put(path, host);
                         } else {
                             resp = Message.error(
