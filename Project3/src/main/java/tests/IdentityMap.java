@@ -5,13 +5,6 @@ import mikereduce.shared.MapContext;
 import mikereduce.shared.Mapper;
 import mikereduce.shared.OutputFormat;
 
-/**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/11/13
- * Time: 11:29 PM
- * To change this template use File | Settings | File Templates.
- */
 public class IdentityMap extends Mapper<String, String, String, String> {
 
     @Override
@@ -27,12 +20,12 @@ public class IdentityMap extends Mapper<String, String, String, String> {
         return new InputFormat<String, String>() {
             @Override
             public String getValue(String currentPair) {
-                return currentPair.split(" ")[0];
+                return currentPair.split(" ")[1];
             }
 
             @Override
             public String getKey(String currentPair) {
-                return currentPair.split(" ")[1];
+                return currentPair.split(" ")[0];
             }
         };
     }

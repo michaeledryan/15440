@@ -3,6 +3,7 @@ package mikereduce.worker.shared;
 import mikereduce.jobtracker.shared.JobState;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Contains information about a specific job.
@@ -11,18 +12,19 @@ public class JobStatus implements Serializable{
 
     private JobState state;
 
-    private String jobName; // What do we use for job IDs?
+    private UUID id; // What do we use for job IDs?
 
-    public JobStatus(JobState state, String jobName) {
+    public JobStatus(JobState state, UUID jobId) {
         this.state = state;
-        this.jobName = jobName;
+        this.id = jobId;
     }
 
     public JobState getState() {
         return state;
     }
 
-    public String getJobName() {
-        return jobName;
+    public UUID getId() {
+        return id;
     }
+
 }

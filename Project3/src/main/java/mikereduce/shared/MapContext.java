@@ -30,7 +30,6 @@ public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
     public boolean nextKeyValue() {
         if (reader.nextLine()) {
-            System.out.println("next line");
             currentPair = reader.getLine();
             pointInBlock = currentPair.length() * 2; // Convert number of chars to bytes. 1 char == 16 bits.
             return true;
@@ -52,7 +51,7 @@ public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
      * @param val value to be written out
      */
     public void commit(KEYOUT key, VALUEOUT val) {
-        committer.commitLine(outputFormat.parse(key, val));
+        committer.commitLine(outputFormat.parse(key, val), key.hashCode());
 
     }
 

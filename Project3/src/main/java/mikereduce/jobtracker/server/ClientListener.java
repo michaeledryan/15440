@@ -3,27 +3,45 @@ package mikereduce.jobtracker.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 4:33 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class ClientListener implements Runnable{
 
     int port;
     ServerSocket sock;
+    private Map<UUID, ClientManager> jobsToClients = new ConcurrentHashMap<>();
 
-    public ClientListener(int clientPort) {
+    private static  ClientListener INSTANCE;
+
+    private ClientListener(int clientPort) {
         port = clientPort;
         try {
             sock = new ServerSocket(port);
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
+
+    public static ClientListener getInstance() {
+        return INSTANCE;
+    }
+
+    public static ClientListener setupClientListener(int port) {
+        INSTANCE = new ClientListener(port);
+        return INSTANCE;
+    }
+
+    public ClientManager getManager(UUID jobID) {
+        return jobsToClients.get(jobID);
+    }
+
+    public void addManager(UUID jobId, ClientManager man) {
+        jobsToClients.put(jobId, man);
+    }
+
 
     @Override
     public void run() {
@@ -35,7 +53,7 @@ public class ClientListener implements Runnable{
                 t.start();
 
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
 
 

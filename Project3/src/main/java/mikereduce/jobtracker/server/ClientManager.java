@@ -27,6 +27,9 @@ import java.util.UUID;
 public class ClientManager implements Runnable {
 
     Socket sock;
+    ObjectInputStream ois;
+    ObjectOutputStream oos;
+    private int numWorkers;
 
     public ClientManager(Socket client) {
         sock = client;
@@ -36,8 +39,8 @@ public class ClientManager implements Runnable {
     public void run() {
 
         try {
-            ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+            ois = new ObjectInputStream(sock.getInputStream());
+            oos = new ObjectOutputStream(sock.getOutputStream());
 
             ClientMessage msg = null;
 
@@ -66,17 +69,11 @@ public class ClientManager implements Runnable {
                 }
 
                 // Get config to a thing that runs jobs.
-                JobClientStatus jcs = new JobClientStatus(JobState.COMPLETED, "wahh i'm an example!");
-                oos.writeObject(jcs);
+
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
-
-            System.out.println(msg);
-            oos.flush();
-            sock.close();
 
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -84,18 +81,24 @@ public class ClientManager implements Runnable {
 
     }
 
+
+    //public void update
+
     private void startTask(JobConfig conf) {
         // Assume 1 mapper for the time being
 
-        String jobName = UUID.randomUUID().toString();
+        UUID jobId = UUID.randomUUID();
+        String outputLoc = jobId.toString();
         Set<WorkerManager> workers = WorkerListener.getInstance().getWorkers();
 
         InputBlock ib = new AFSInputBlock(conf.getInputPath(), 0, 0);
+        ClientListener.getInstance().addManager(jobId, this);
 
         for (WorkerManager manager : workers) {
 
-            WorkerJobConfig wjc = new WorkerJobConfig(conf, ib, jobName);
+            WorkerJobConfig wjc = new WorkerJobConfig(conf, ib, outputLoc, jobId, 3);
             WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc);
+
 
             try {
                 manager.sendRequest(message);
@@ -103,6 +106,25 @@ public class ClientManager implements Runnable {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+
+        JobClientStatus jcs = new JobClientStatus(JobState.RUNNING, "Starts the job.");
+        try {
+            oos.writeObject(jcs);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendMessage(JobClientStatus message) throws IOException {
+        oos.writeObject(message);
+    }
+
+    /**
+     * Report that the Worker finished.
+     * @param workerManager
+     */
+    public void reportDone(WorkerManager workerManager) {
 
     }
 }

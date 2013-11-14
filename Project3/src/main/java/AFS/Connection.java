@@ -269,7 +269,7 @@ public class Connection implements DistributedIO {
     public void createFile(String path, String node) throws Exception {
         Message req = Message.create(path, node);
         write(req);
-        Message rep = readReply(in);
+        Message rep = read();
 
         if (rep.getType() == MessageType.ERROR) {
             throw rep.getException();

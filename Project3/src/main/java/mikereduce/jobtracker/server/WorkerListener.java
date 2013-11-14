@@ -17,7 +17,7 @@ public class WorkerListener implements Runnable{
     private ServerSocket sock;
     private static WorkerListener INSTANCE;
 
-    private Set<WorkerManager> mappers = new HashSet<WorkerManager>();
+    private Set<WorkerManager> mappers = new HashSet<>();
 
     private WorkerListener(int port) {
         this.port = port;

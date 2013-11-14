@@ -1,10 +1,6 @@
 package mikereduce.shared;
 
 import AFS.Connection;
-import mikereduce.worker.mapnode.MapNode;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Takes output from a job and writes it to the correct file.
@@ -12,20 +8,31 @@ import java.io.IOException;
 public class OutputCommitter {
 
     // We assume the output location is unique for each job.
-    private String outputPath;
+    private String[] outputPaths;
     private Connection conn;
+    private int numPartitions;
 
-    public OutputCommitter(String path, Connection conn) {
-        this.outputPath = path;
+    public OutputCommitter(String path, Connection conn, int numPartitions) {
+        this.outputPaths = new String[numPartitions];
+        this.numPartitions = numPartitions;
         this.conn = conn;
+
+        try {
+            for (int i = 0; i < numPartitions; i++) {
+                outputPaths[i] = path + "_" + i;
+                conn.createFile(outputPaths[i], "michaels-air:8002");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void commitLine(String line) {
+    public void commitLine(String line, int hash) {
         try {
-            System.out.println("committing");
-            conn.writeFile(outputPath, line);
+            System.out.println("committing " + line);
+            conn.writeFile(outputPaths[hash % numPartitions], line);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 

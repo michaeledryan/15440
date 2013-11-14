@@ -16,15 +16,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Node that runs map jobs on data.
- * <p/>
- * Has to
+ * Node that runs jobs on data.
  */
 public class MapNode implements Runnable{
 
     private Socket sock;
     private static Set<JobConfig> jobs = new HashSet<JobConfig>();
     private MapperConf conf;
+    private int numCores = Runtime.getRuntime().availableProcessors();
 
     public MapNode(Socket sock, MapperConf conf) {
         this.sock = sock;
@@ -40,16 +39,16 @@ public class MapNode implements Runnable{
             out = new ObjectOutputStream(sock.getOutputStream());
             in = new ObjectInputStream(sock.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
-        WorkerMessage connectMessage = new WorkerMessage(WorkerType.MAPPER, new HashSet<JobStatus>(), WorkerStatus.REGISTRATION);
+        WorkerMessage connectMessage = WorkerMessage.registration(WorkerType.MAPPER, numCores);
 
         if (out != null) {
             try {
                 out.writeObject(connectMessage);
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
 
@@ -57,9 +56,9 @@ public class MapNode implements Runnable{
         try {
             ack = (WorkerControlMessage) in.readObject();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
 
@@ -72,18 +71,16 @@ public class MapNode implements Runnable{
         // otherwise, we are ready to go!
         // Start the loop that listens for control messages.
 
-
         while (true) {
-
             WorkerControlMessage control;
             try {
                 control = (WorkerControlMessage) in.readObject();
-                MessageHandler handle = new MessageHandler(control);
+                MessageHandler handle = new MessageHandler(control, out);
                 new Thread(handle).start();
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
 
         }
