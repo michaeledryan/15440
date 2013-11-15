@@ -32,6 +32,35 @@ public interface DistributedIO {
     public String readBlock(String path, int start, int size) throws Exception;
 
     /**
+     * Reads the specified number of consecutive lines in the file,
+     * starting at start.
+     *
+     * @param path Filename.
+     * @param start First line to read.
+     * @param size Number of lines to read.
+     * @param nodeId Preferred data node.
+     * @return Contents.
+     * @throws Exception
+     */
+    public String readLines(String path, int start, int size, String nodeId)
+            throws Exception;
+    public String readLines(String path, int start, int size)
+            throws Exception;
+
+    /**
+     * Reads the specified line.
+     *
+     * @param path Filename.
+     * @param line Line to read.
+     * @param nodeId Preferred data node.
+     * @return Contents.
+     * @throws Exception
+     */
+    public String readLine(String path, int line, String nodeId)
+            throws Exception;
+    public String readLine(String path, int line) throws Exception;
+
+    /**
      * Appends output to the specified file. If it does not exist,
      * then it is created on a random data node.
      *

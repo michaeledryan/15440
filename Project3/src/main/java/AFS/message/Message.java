@@ -53,6 +53,12 @@ public class Message implements Serializable {
                 nodeId);
     }
 
+    public static Message readLines(String filename, int start, int size,
+                                    String nodeId) {
+        return new Message(MessageType.READLINES, filename, start, size,
+                nodeId);
+    }
+
     public static Message write(String filename, String data) {
         return new Message(MessageType.WRITE, filename, data);
     }

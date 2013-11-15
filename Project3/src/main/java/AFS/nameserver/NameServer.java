@@ -46,10 +46,14 @@ public class NameServer {
                 System.exit(1);
             }
 
+            if (rep > nodes) {
+                throw new Exception("Replication exceeds node count.");
+            }
+
             FileMap.getInstance().setReplication(rep);
             new Listener(port, nodes).run();
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

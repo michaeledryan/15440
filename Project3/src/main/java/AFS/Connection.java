@@ -135,15 +135,7 @@ public class Connection implements DistributedIO {
         return s;
     }
 
-    /**
-     * Reads the entirety of the specified file.
-     *
-     * @param path File location.
-     * @param nodeId Preferred node.
-     * @return Contents.
-     * @throws Exception
-     */
-    public String readFile(String path, String nodeId) throws Exception {
+    private String readRequest(String path, Message req) throws Exception {
         Message getloc = Message.location(path);
         String[] locs = this.getLocations(getloc);
 
@@ -152,7 +144,6 @@ public class Connection implements DistributedIO {
                 Socket node = connectToDataNode(loc);
                 ObjectOutputStream nodeOut =
                         new ObjectOutputStream(node.getOutputStream());
-                Message req = Message.read(path, nodeId);
                 nodeOut.writeObject(req);
 
                 ObjectInputStream nodeIn =
@@ -171,6 +162,19 @@ public class Connection implements DistributedIO {
             }
         }
         throw new IOException("No reachable data nodes.");
+    }
+
+    /**
+     * Reads the entirety of the specified file.
+     *
+     * @param path File location.
+     * @param nodeId Preferred node.
+     * @return Contents.
+     * @throws Exception
+     */
+    public String readFile(String path, String nodeId) throws Exception {
+        Message req = Message.read(path, nodeId);
+        return readRequest(path, req);
     }
 
     public String readFile(String path) throws Exception {
@@ -189,38 +193,53 @@ public class Connection implements DistributedIO {
      */
     public String readBlock(String path, int start, int size, String nodeId)
             throws Exception {
-        Message getloc = Message.location(path);
-        String[] locs = this.getLocations(getloc);
-
-        for (String loc : locs) {
-            try {
-                Socket node = connectToDataNode(loc);
-                ObjectOutputStream nodeOut =
-                        new ObjectOutputStream(node.getOutputStream());
-                Message req = Message.readBlock(path, start, size, nodeId);
-                nodeOut.writeObject(req);
-
-                ObjectInputStream nodeIn =
-                        new ObjectInputStream(node.getInputStream());
-                Message rep = readReply(nodeIn);
-                node.close();
-
-                if (rep.getType() == MessageType.ERROR) {
-                    throw rep.getException();
-                } else if (rep.getType() != MessageType.DATA) {
-                    throw new IOException("Bad message type.");
-                }
-                return rep.getData();
-            } catch (Exception e) {
-
-            }
-        }
-        throw new IOException("No reachable data nodes.");
+        Message req = Message.readBlock(path, start, size, nodeId);
+        return readRequest(path, req);
     }
 
     public String readBlock(String path, int start,
                             int size) throws Exception {
         return readBlock(path, start, size, null);
+    }
+
+    /**
+     * Reads the specified number of consecutive lines in the file,
+     * starting at start.
+     *
+     * @param path Filename.
+     * @param start First line to read.
+     * @param size Number of lines to read.
+     * @param nodeId Preferred data node.
+     * @return Contents.
+     * @throws Exception
+     */
+    public String readLines(String path, int start, int size, String nodeId)
+            throws Exception {
+        Message req = Message.readLines(path, start, size, nodeId);
+        return readRequest(path, req);
+    }
+
+    public String readLines(String path, int start, int size)
+            throws Exception {
+        return readLines(path, start, size, null);
+    }
+
+    /**
+     * Reads the specified line.
+     *
+     * @param path Filename.
+     * @param line Line to read.
+     * @param nodeId Preferred data node.
+     * @return Contents.
+     * @throws Exception
+     */
+    public String readLine(String path, int line, String nodeId)
+            throws Exception {
+        return readLines(path, line, 1, nodeId);
+    }
+
+    public String readLine(String path, int line) throws Exception {
+        return readLines(path, line, 1, null);
     }
 
     /**

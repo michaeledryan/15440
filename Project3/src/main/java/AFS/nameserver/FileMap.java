@@ -59,6 +59,40 @@ public class FileMap {
     }
 
     /**
+     * Adds a group of files that are all stored on the same data node.
+     *
+     * @param keys Array of filenames.
+     * @param value Hostname:port of data node storing them.
+     */
+    public void batchPut(String[] keys, String value) {
+        System.out.println(value);
+        System.out.println(Arrays.toString(keys));
+        for (String key : keys) {
+            put(key, value);
+        }
+    }
+
+    /**
+     * Create a new file, ensuring it is replicated on a particular node.
+     *
+     * @param key Filename.
+     * @param nodeId Node identifier.
+     */
+    public void priorityPut(String key, String nodeId) {
+        if (replication == nodes.size()) {
+            m.put(key, new ArrayList<>(nodes.values()));
+        } else {
+            ArrayList<String> hosts = randomHosts(replication);
+            String priorityHost = nodes.get(nodeId);
+            int idx = hosts.indexOf(priorityHost);
+            if (idx == -1) {
+                hosts.set(0, priorityHost);
+            }
+            m.put(key, hosts);
+        }
+    }
+
+    /**
      * Checks if a file exists.
      *
      * @param key Filename.
@@ -86,12 +120,12 @@ public class FileMap {
      * valid, then proceed as though it was not specified.
      *
      * @param key Filename.
-     * @param id Data node.
+     * @param nodeId Data node.
      * @return Hostname:port ';' delimited list of hosts.
      */
-    public String priorityGet(String key, String id) {
+    public String priorityGet(String key, String nodeId) {
         ArrayList<String> hosts = m.get(key);
-        String priorityHost = nodes.get(id);
+        String priorityHost = nodes.get(nodeId);
         shuffle(hosts);
         int idx = hosts.indexOf(priorityHost);
         if (idx > -1) {
@@ -109,20 +143,6 @@ public class FileMap {
      */
     public void delete(String key) {
         m.remove(key);
-    }
-
-    /**
-     * Adds a group of files that are all stored on the same data node.
-     *
-     * @param keys Array of filenames.
-     * @param value Hostname:port of data node storing them.
-     */
-    public void batchPut(String[] keys, String value) {
-        System.out.println(value);
-        System.out.println(Arrays.toString(keys));
-        for (String key : keys) {
-            put(key, value);
-        }
     }
 
     /**
@@ -155,7 +175,7 @@ public class FileMap {
     public ArrayList<String> randomHosts(int n) {
         ArrayList<String> hosts = new ArrayList<>(nodes.values());
         shuffle(hosts);
-        return hosts;
+        return new ArrayList<>(hosts.subList(0, n));
     }
 
     /**

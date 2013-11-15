@@ -3,6 +3,8 @@ package AFS.dataserver;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 /**
@@ -19,7 +21,7 @@ public class DataServer {
 
         Options opt = new Options();
         opt.addOption("i", "identity", true,
-                "Node identity. Default: randomized.");
+                "Node identity. Default: host:port.");
         opt.addOption("p", "port", true,
                 "Port to listen on. Default: 8000.");
         opt.addOption("n", "nameserver", true,
@@ -39,9 +41,6 @@ public class DataServer {
             }
             System.out.println("Starting Data Server...");
 
-            String id =
-                    cmd.getOptionValue("i", UUID.randomUUID().toString());
-            String ns = cmd.getOptionValue("n", "localhost");
             int port = 8000;
             int np = 9000;
             try {
@@ -51,10 +50,14 @@ public class DataServer {
                 System.err.println("Invalid port number.");
                 System.exit(1);
             }
+            String hostname = InetAddress.getLocalHost().getHostName() + port;
+            String id =
+                    cmd.getOptionValue("i", hostname);
+            String ns = cmd.getOptionValue("n", "localhost");
 
             new DataHandler(id, port, ns, np).run();
 
-        } catch (ParseException e) {
+        } catch (ParseException | UnknownHostException e) {
             e.printStackTrace();
         }
 

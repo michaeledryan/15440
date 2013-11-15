@@ -92,8 +92,7 @@ public class MessageHandler implements Runnable {
                             resp = Message.error(
                                     new IOException("File already exists."));
                         } else if (fmap.validHost(id)) {
-                            host = fmap.getNode(id);
-                            fmap.put(path, host);
+                            fmap.priorityPut(path, id);
                         } else {
                             resp = Message.error(
                                     new IOException("Unknown data node."));
