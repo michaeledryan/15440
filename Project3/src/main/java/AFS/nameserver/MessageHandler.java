@@ -1,5 +1,6 @@
 package AFS.nameserver;
 
+import AFS.management.QueryType;
 import AFS.message.Message;
 
 import java.io.IOException;
@@ -55,8 +56,10 @@ public class MessageHandler implements Runnable {
                 String path = m.getPath();
                 String host;
                 String priority;
+                String data;
 
                 switch (m.getType()) {
+
                     // Send the data node that contains the file.
                     case LOCATION:
                         if (!fmap.contains(path)) {
@@ -72,6 +75,7 @@ public class MessageHandler implements Runnable {
                             resp = Message.location(host);
                         }
                         break;
+
                     // If the file does not exist, assign to a random data
                     // node, then send back the location.
                     case WRITE:
@@ -85,6 +89,7 @@ public class MessageHandler implements Runnable {
                         }
                         resp = Message.location(host);
                         break;
+
                     // Creates a record for the file on the given data node.
                     case CREATE:
                         String id = m.getData();
@@ -98,6 +103,7 @@ public class MessageHandler implements Runnable {
                                     new IOException("Unknown data node."));
                         }
                         break;
+
                     // Remove record from the index.
                     case DELETE:
                         if (fmap.contains(path)) {
@@ -108,6 +114,27 @@ public class MessageHandler implements Runnable {
                             resp = Message.error(
                                     new IOException("Unknown file."));
                         }
+                        break;
+
+                    case ADMIN:
+                        try {
+                            switch (QueryType.fromString(m.getPath())) {
+                                case FILES:
+                                    data = fmap.getFiles();
+                                    resp = Message.fileContents(data);
+                                    break;
+
+                                case NODES:
+                                    data = fmap.getNodes();
+                                    resp = Message.fileContents(data);
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            resp = Message.error(e);
+                        }
+
+                        break;
+
                     // Should not exist. Ignore them.
                     default:
                         break;

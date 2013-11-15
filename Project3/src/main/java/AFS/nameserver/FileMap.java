@@ -1,8 +1,8 @@
 package AFS.nameserver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -186,6 +186,34 @@ public class FileMap {
      */
     public Boolean validHost(String key) {
         return nodes.containsKey(key);
+    }
+
+    public String getFiles() {
+        String out = "Filename\tLocation\n";
+        out += StringUtils.repeat("-", 80) + "\n";
+        Iterator<Map.Entry<String, ArrayList<String>>> it =
+                m.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, ArrayList<String>> data = it.next();
+            String key = data.getKey();
+            ArrayList<String> value = data.getValue();
+            out += key + "\t\t" + Arrays.toString(value.toArray()) + "\n";
+        }
+        return out;
+    }
+
+    public String getNodes() {
+        String out = "Node Identifier\tNode hostname:port\n";
+        out += StringUtils.repeat("-", 80) + "\n";
+        Iterator<Map.Entry<String, String>> it =
+                nodes.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> data = it.next();
+            String key = data.getKey();
+            String value = data.getValue();
+            out += key + "\t\t" + value + "\n";
+        }
+        return out;
     }
 
     public int getReplication() {

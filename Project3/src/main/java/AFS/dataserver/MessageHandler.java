@@ -1,11 +1,15 @@
 package AFS.dataserver;
 
+import AFS.management.QueryType;
 import AFS.message.Message;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Responds to incoming messages to the data node.
@@ -64,6 +68,7 @@ public class MessageHandler implements Runnable {
             String path = id + File.separator + m.getPath();
 
             File f = new File(path);
+            File dir;
             FileInputStream r;
             FileOutputStream w;
 
@@ -146,7 +151,7 @@ public class MessageHandler implements Runnable {
 
                 // Append to the file (created if it doesn't exist).
                 case WRITE:
-                    File dir = new File(f.getParent());
+                    dir = new File(f.getParent());
                     if (!dir.exists()) {
                         if (!dir.mkdirs()) {
                             resp = Message.error(
@@ -178,6 +183,35 @@ public class MessageHandler implements Runnable {
                                 new IOException("File not found."));
                     }
                     break;
+
+                case ADMIN:
+                    try {
+                        switch (QueryType.fromString(m.getPath())) {
+                            case FILES:
+                                dir = new File(id);
+                                Collection<File> data = FileUtils.listFiles(dir,
+                                        FileFilterUtils.trueFileFilter(),
+                                        FileFilterUtils.trueFileFilter());
+                                String res = "Filename\n";
+                                res += StringUtils.repeat("-", 80) + "\n";
+                                Iterator<File> it = data.iterator();
+                                while(it.hasNext()) {
+                                    res += it.next().getPath().substring(dir
+                                            .getPath().length() + 1) + "\n";
+                                }
+                                resp = Message.fileContents(res);
+                                break;
+
+                            default:
+                                resp = Message.error(
+                                        new Exception ("Unknown task for " +
+                                                "data node: " + m.getPath()));
+                                break;
+                        }
+                    } catch (Exception e) {
+                        resp = Message.error(e);
+                    }
+
                 default:
                     break;
             }

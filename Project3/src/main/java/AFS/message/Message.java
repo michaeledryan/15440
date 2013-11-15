@@ -89,6 +89,10 @@ public class Message implements Serializable {
         return new Message(MessageType.ERROR, e);
     }
 
+    public static Message adminQuery(String type, String arg) {
+        return new Message(MessageType.ADMIN, type, arg);
+    }
+
     public MessageType getType() {
         return type;
     }
