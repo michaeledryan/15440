@@ -2,7 +2,9 @@ package AFS;
 
 import AFS.message.Message;
 import AFS.message.MessageType;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -342,6 +344,60 @@ public class Connection implements DistributedIO {
         } else if (rep.getType() != MessageType.ACK) {
             throw new IOException("Bad message type.");
         }
+    }
+
+    /**
+     * Copy a local file to the DFS.
+     *
+     * @param path Filename.
+     * @param node Preferred data node.
+     * @throws Exception
+     */
+    public void addLocalFile(File path, String node) throws Exception {
+        if (node != null) {
+            createFile(path.getPath(), node);
+        }
+        String data = FileUtils.readFileToString(path, "US-ASCII");
+        writeFile(path.getPath(), data);
+    }
+
+    public void addLocalFile(File path) throws Exception {
+        addLocalFile(path, null);
+    }
+
+    public void addLocalFile(String path, String node) throws Exception {
+        addLocalFile(new File(path), node);
+    }
+
+    public void addLocalFile(String path) throws Exception {
+        addLocalFile(new File(path), null);
+    }
+
+    /**
+     * Copy a group of files to the DFS.
+     *
+     * @param files Files to copy.
+     * @param node Preferred data node.
+     * @throws Exception
+     */
+    public void addLocalFiles(File[] files, String node) throws Exception {
+        for (File f : files) {
+            addLocalFile(f, node);
+        }
+    }
+
+    public void addLocalFiles(File[] files) throws Exception {
+        addLocalFiles(files, null);
+    }
+
+    public void addLocalFiles(String[] files, String node) throws Exception {
+        for (String f : files) {
+            addLocalFile(new File(f), node);
+        }
+    }
+
+    public void addLocalFiles(String[] files) throws Exception {
+        addLocalFiles(files, null);
     }
 
     public int getTimeout() {

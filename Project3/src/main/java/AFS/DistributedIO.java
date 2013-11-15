@@ -1,5 +1,7 @@
 package AFS;
 
+import java.io.File;
+
 /**
  * Interface to the distributed file system. All client-side IO can be done
  * with these.
@@ -99,5 +101,29 @@ public interface DistributedIO {
      * @throws Exception
      */
     public void createFile(String path, String node) throws Exception;
+
+    /**
+     * Copy a local file to the DFS.
+     *
+     * @param path Filename.
+     * @param node Preferred data node.
+     * @throws Exception
+     */
+    public void addLocalFile(File path, String node) throws Exception;
+    public void addLocalFile(File path) throws Exception;
+    public void addLocalFile(String path, String node) throws Exception;
+    public void addLocalFile(String path) throws Exception;
+
+    /**
+     * Copy a group of files to the DFS.
+     *
+     * @param files Files to copy.
+     * @param node Preferred data node.
+     * @throws Exception
+     */
+    public void addLocalFiles(File[] files, String node) throws Exception;
+    public void addLocalFiles(File[] files) throws Exception;
+    public void addLocalFiles(String[] files, String node) throws Exception;
+    public void addLocalFiles(String[] files) throws Exception;
 
 }
