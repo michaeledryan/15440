@@ -132,6 +132,18 @@ public class MessageHandler implements Runnable {
                     }
                     break;
 
+                // Counts the number of lines.
+                case COUNTLINES:
+                    if (f.exists()) {
+                        String data = FileUtils.readFileToString(f, "US-ASCII");
+                        int count = data.split("\n").length;
+                        resp = Message.fileContents(Integer.toString(count));
+                    } else {
+                        resp = Message.error(
+                                new IOException("File not found."));
+                    }
+                    break;
+
                 // Append to the file (created if it doesn't exist).
                 case WRITE:
                     File dir = new File(f.getParent());

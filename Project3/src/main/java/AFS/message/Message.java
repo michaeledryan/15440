@@ -29,13 +29,11 @@ public class Message implements Serializable {
         this.data = d;
     }
 
-    private Message(MessageType t, String p, int start, int size,
-                    String nodeId) {
+    private Message(MessageType t, String p, int start, int size) {
         this.type = t;
         this.path = p;
         this.start = start;
         this.size = size;
-        this.data = nodeId;
     }
 
     private Message(MessageType t, Exception exception) {
@@ -43,20 +41,20 @@ public class Message implements Serializable {
         this.exception = exception;
     }
 
-    public static Message read(String filename, String nodeId) {
-        return new Message(MessageType.READ, filename, nodeId);
+    public static Message read(String filename) {
+        return new Message(MessageType.READ, filename);
     }
 
-    public static Message readBlock(String filename, int start, int size,
-                                    String nodeId) {
-        return new Message(MessageType.READBLOCK, filename, start, size,
-                nodeId);
+    public static Message readBlock(String filename, int start, int size) {
+        return new Message(MessageType.READBLOCK, filename, start, size);
     }
 
-    public static Message readLines(String filename, int start, int size,
-                                    String nodeId) {
-        return new Message(MessageType.READLINES, filename, start, size,
-                nodeId);
+    public static Message readLines(String filename, int start, int size) {
+        return new Message(MessageType.READLINES, filename, start, size);
+    }
+
+    public static Message countLines(String filename) {
+        return new Message(MessageType.COUNTLINES, filename);
     }
 
     public static Message write(String filename, String data) {
@@ -73,6 +71,10 @@ public class Message implements Serializable {
 
     public static Message location(String loc) {
         return new Message(MessageType.LOCATION, loc);
+    }
+
+    public static Message location(String loc, String nodeId) {
+        return new Message(MessageType.LOCATION, loc, nodeId);
     }
 
     public static Message fileContents(String data) {

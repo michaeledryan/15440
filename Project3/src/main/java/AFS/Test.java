@@ -15,6 +15,7 @@ public class Test {
             System.out.println(conn.readLine("foo.txt", 0));
 
             System.out.println(conn.readLines("abc.txt", 1, 4, "2"));
+            System.out.println(conn.countLines("abc.txt"));
 
             conn.createFile("xyz/bar.txt", "1");
             conn.writeFile("xyz/bar.txt", "meow!");

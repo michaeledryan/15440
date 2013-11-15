@@ -135,8 +135,9 @@ public class Connection implements DistributedIO {
         return s;
     }
 
-    private String readRequest(String path, Message req) throws Exception {
-        Message getloc = Message.location(path);
+    private String readRequest(String path, Message req,
+                               String nodeId) throws Exception {
+        Message getloc = Message.location(path, nodeId);
         String[] locs = this.getLocations(getloc);
 
         for (String loc : locs) {
@@ -173,8 +174,8 @@ public class Connection implements DistributedIO {
      * @throws Exception
      */
     public String readFile(String path, String nodeId) throws Exception {
-        Message req = Message.read(path, nodeId);
-        return readRequest(path, req);
+        Message req = Message.read(path);
+        return readRequest(path, req, nodeId);
     }
 
     public String readFile(String path) throws Exception {
@@ -193,8 +194,8 @@ public class Connection implements DistributedIO {
      */
     public String readBlock(String path, int start, int size, String nodeId)
             throws Exception {
-        Message req = Message.readBlock(path, start, size, nodeId);
-        return readRequest(path, req);
+        Message req = Message.readBlock(path, start, size);
+        return readRequest(path, req, nodeId);
     }
 
     public String readBlock(String path, int start,
@@ -215,8 +216,8 @@ public class Connection implements DistributedIO {
      */
     public String readLines(String path, int start, int size, String nodeId)
             throws Exception {
-        Message req = Message.readLines(path, start, size, nodeId);
-        return readRequest(path, req);
+        Message req = Message.readLines(path, start, size);
+        return readRequest(path, req, nodeId);
     }
 
     public String readLines(String path, int start, int size)
@@ -240,6 +241,24 @@ public class Connection implements DistributedIO {
 
     public String readLine(String path, int line) throws Exception {
         return readLines(path, line, 1, null);
+    }
+
+    /**
+     * Gets the number of lines in the file.
+     *
+     * @param path File name.
+     * @param nodeId Preferred data node.
+     * @return Line count.
+     * @throws Exception
+     */
+    public int countLines(String path, String nodeId) throws Exception {
+        Message req = Message.countLines(path);
+        // This is a bit dumb...
+        return Integer.parseInt(readRequest(path, req, nodeId));
+    }
+
+    public int countLines(String path) throws Exception {
+        return countLines(path, null);
     }
 
     /**

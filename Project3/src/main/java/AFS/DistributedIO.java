@@ -61,6 +61,17 @@ public interface DistributedIO {
     public String readLine(String path, int line) throws Exception;
 
     /**
+     * Gets the number of lines in the file.
+     *
+     * @param path File name.
+     * @param nodeId Preferred data node.
+     * @return Line count.
+     * @throws Exception
+     */
+    public int countLines(String path, String nodeId) throws Exception;
+    public int countLines(String path) throws Exception;
+
+    /**
      * Appends output to the specified file. If it does not exist,
      * then it is created on a random data node.
      *
