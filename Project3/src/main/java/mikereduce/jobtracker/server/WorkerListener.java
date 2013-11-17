@@ -3,12 +3,11 @@ package mikereduce.jobtracker.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
- * Listens to worker requests. Keeps track of which workers exist as well as which are Mapper, Reducers, and Combiners.
+ * Listens to worker requests. Keeps track of which workers are still running.
  *
  */
 public class WorkerListener implements Runnable{
@@ -17,7 +16,7 @@ public class WorkerListener implements Runnable{
     private ServerSocket sock;
     private static WorkerListener INSTANCE;
 
-    private Set<WorkerManager> mappers = new HashSet<>();
+    private Map<WorkerManager, Integer> mappers = new HashMap<>();
 
     private WorkerListener(int port) {
         this.port = port;
@@ -31,26 +30,15 @@ public class WorkerListener implements Runnable{
         return INSTANCE;
     }
 
-    public int registerWorker(WorkerManager man) {
-        switch (man.getType()) {
-            case MAPPER:
-                mappers.add(man);
-                return mappers.size();
-            case REDUCER:
-                break;
-            case COMBINER:
-                break;
-        }
-
-        // Shouldn't get here
-        return -1;
+    public void registerWorker(WorkerManager man) {
+        mappers.put(man, 1);
     }
 
     public int getNumWorkers() {
         return mappers.size();
     }
 
-    public Set<WorkerManager> getWorkers() {
+    public Map<WorkerManager, Integer> getWorkers() {
         return mappers;
     }
 
@@ -75,4 +63,8 @@ public class WorkerListener implements Runnable{
         }
     }
 
+
+    public void removeWorker(WorkerManager worker) {
+        mappers.remove(worker);
+    }
 }

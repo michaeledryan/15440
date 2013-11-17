@@ -66,11 +66,6 @@ public class JobTracker {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
     }
-
-
-    // Need a way to share the location of each worker node.
 
 }

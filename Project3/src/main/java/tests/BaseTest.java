@@ -9,8 +9,9 @@ import mikereduce.jobtracker.server.ClientMessageType;
 import mikereduce.jobtracker.server.JobTracker;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.worker.mapnode.MapperMain;
-import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * Shit test.
@@ -27,6 +28,7 @@ public class BaseTest {
     public void testConnection() {
 
         JobTracker.main(args);
+        MapperMain.main(args2);
         MapperMain.main(args2);
 
         new Thread(new Runnable() {
@@ -51,13 +53,15 @@ public class BaseTest {
         }).start();
 
         try {
-            Thread.sleep(4000);
+            Thread.sleep(3000);
             System.out.println("done with sleep.");
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-
+        System.out.println("TESTSTESTEST");
+        System.out.println(Arrays.toString("".split("\n")));
+        System.out.println("".split("\n").length);
 
         JobConfig conf = new JobConfig();
 
@@ -65,9 +69,11 @@ public class BaseTest {
         conf.setMiker(IdentityMap.class);
         conf.setOutputWriter(String.class);
         conf.setPartitioner(String.class);
-        conf.setRyaner(String.class);
+        conf.setRyaner(IdentityReducer.class);
         conf.setInputPath("a.txt");
         conf.setOutputPath("testOut.txt");
+        conf.setNumMappers(2);
+        conf.setNumReducers(2);
 
         ClientMessage cm = new ClientMessage(ClientMessageType.NEW,conf);
 

@@ -1,12 +1,9 @@
 package mikereduce.worker.mapnode;
 
-import mikereduce.jobtracker.server.WorkerType;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.shared.ControlMessageType;
 import mikereduce.shared.WorkerControlMessage;
-import mikereduce.worker.shared.JobStatus;
 import mikereduce.worker.shared.WorkerMessage;
-import mikereduce.worker.shared.WorkerStatus;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,11 +11,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Node that runs jobs on data.
  */
-public class MapNode implements Runnable{
+public class MapNode implements Runnable {
 
     private Socket sock;
     private static Set<JobConfig> jobs = new HashSet<JobConfig>();
@@ -42,7 +41,8 @@ public class MapNode implements Runnable{
             e.printStackTrace();
         }
 
-        WorkerMessage connectMessage = WorkerMessage.registration(WorkerType.MAPPER, numCores);
+        // Connect and register
+        WorkerMessage connectMessage = WorkerMessage.registration(numCores);
 
         if (out != null) {
             try {
@@ -52,6 +52,7 @@ public class MapNode implements Runnable{
             }
         }
 
+        // Wait for an ACK
         WorkerControlMessage ack = null;
         try {
             ack = (WorkerControlMessage) in.readObject();
@@ -68,7 +69,22 @@ public class MapNode implements Runnable{
             System.exit(1);
         }
 
-        // otherwise, we are ready to go!
+        // Spin up the heartbeat guy
+        Timer tim = new Timer();
+        final ObjectOutputStream outf = out;
+        TimerTask tt = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    outf.writeObject(WorkerMessage.heartbeat());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        tim.scheduleAtFixedRate(tt, 0, 6500);
+
+        // We are ready to go!
         // Start the loop that listens for control messages.
 
         while (true) {

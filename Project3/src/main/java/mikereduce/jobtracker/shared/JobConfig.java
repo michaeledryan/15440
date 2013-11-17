@@ -20,10 +20,14 @@ public class JobConfig implements Serializable {
     private Class outputWriter;
     private String inputPath;
     private String outputPath;
+    private int numMappers = 0;
+    private int numReducers = 0;
 
     public JobConfig() {
 
     }
+
+
 
     public String getInputPath() {
         return inputPath;
@@ -79,6 +83,22 @@ public class JobConfig implements Serializable {
 
     public String getOutputPath() {
         return outputPath;
+    }
+
+    public int getNumMappers() {
+        return numMappers;
+    }
+
+    public void setNumMappers(int numMappers) {
+        this.numMappers = numMappers;
+    }
+
+    public int getNumReducers() {
+        return numReducers;
+    }
+
+    public void setNumReducers(int numReducers) {
+        this.numReducers = numReducers;
     }
 
 }

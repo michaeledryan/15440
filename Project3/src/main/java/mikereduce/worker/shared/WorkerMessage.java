@@ -1,24 +1,14 @@
 package mikereduce.worker.shared;
 
-import mikereduce.jobtracker.server.WorkerType;
-import mikereduce.jobtracker.shared.JobClientStatus;
-
 import java.io.Serializable;
-import java.util.Set;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 7:14 PM
- * To change this template use File | Settings | File Templates.
+ * Message sent from worker to JobTracker.
  */
 public class WorkerMessage implements Serializable{
 
     private WorkerStatus status;
     private JobStatus job;
-    private WorkerType type;
     private int numCores;
     private int percent;
 
@@ -28,22 +18,25 @@ public class WorkerMessage implements Serializable{
         this.status = WorkerStatus.UPDATE;
     }
 
-    private WorkerMessage(WorkerType type, int numCores) {
-        this.type = type;
+    private WorkerMessage(int numCores) {
         this.numCores = numCores;
         this.status = WorkerStatus.REGISTRATION;
     }
 
-    public static WorkerMessage registration(WorkerType type, int numCores) {
-        return new WorkerMessage(type, numCores);
+    private WorkerMessage() {
+        this.status = WorkerStatus.HEARTBEAT;
+    }
+
+    public static WorkerMessage registration(int numCores) {
+        return new WorkerMessage(numCores);
     }
 
     public static WorkerMessage update(JobStatus job, int percent) {
         return new WorkerMessage(job, percent);
     }
 
-    public WorkerType getType() {
-        return type;
+    public static WorkerMessage heartbeat() {
+        return new WorkerMessage();
     }
 
     public WorkerStatus getStatus() {

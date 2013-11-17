@@ -1,25 +1,21 @@
 package mikereduce.worker.mapnode;
 
 import AFS.Connection;
-import mikereduce.jobtracker.shared.JobConfig;
+import mikereduce.jobtracker.server.JobPhase;
 import mikereduce.jobtracker.shared.JobState;
+import mikereduce.jobtracker.shared.ReduceContext;
+import mikereduce.jobtracker.shared.Reducer;
 import mikereduce.shared.*;
 import mikereduce.worker.shared.JobStatus;
 import mikereduce.worker.shared.WorkerMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 10:26 PM
- * To change this template use File | Settings | File Templates.
+ * Handles a WorkerControlMessage from the JobTracker.
  */
 public class MessageHandler implements Runnable {
-    // How can I abstract this?
 
     private WorkerControlMessage msg;
     private ObjectOutputStream oos;
@@ -34,48 +30,83 @@ public class MessageHandler implements Runnable {
         // Parse that message! Start the job!
         switch (msg.getType()) {
             case ACK:
-                // Uhh, do nothing here? This is for the
+                // Don't really need to do anything
                 break;
             case KILL:
 
                 break;
             case NEW:
-                // Start a new job
-                WorkerJobConfig conf = msg.getConfig();
-
-                System.out.println("Trying to get a mapper.");
-
-                try {
-                    final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
-
-                    System.out.println(conf.getNumReducers());
-
-                    OutputCommitter oc = new OutputCommitter(conf.getConf().getOutputPath(), new Connection("localhost", 9000), conf.getNumReducers());
-                    final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
-
-                    mapper.run(mc);
-
-
-                    // Report that you're finished.
-
-                    WorkerMessage response = WorkerMessage.update(new JobStatus(JobState.COMPLETED, conf.getJobId()), 100);
-
-                    try {
-                        System.out.println("finished map trying to send update back");
-                        oos.writeObject(response);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                } catch (InstantiationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                // Start the new job
+                if (msg.getConfig().getPhase() == JobPhase.MAP) {
+                    startMap(msg);
+                } else {
+                    startReduce(msg);
                 }
-
-
-                break;
         }
+    }
+
+
+    /**
+     * Spin up a reduce thread
+     *
+     * @param msg Message with configuration for the reduce.
+     */
+    private void startReduce(WorkerControlMessage msg) {
+
+        WorkerJobConfig conf = msg.getConfig();
+        try {
+
+            // Construct reducer and context
+            final Reducer reducer = (Reducer) conf.getConf().getRyaner().newInstance();
+            OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
+                    new Connection("localhost", 9000), conf.getNumReducers(), conf.getReducerIndex());
+            String[] outPath = new String[1];
+            outPath[0] = conf.getOutputLocation();
+            oc.setOutputPaths(outPath);
+            final ReduceContext rc = new ReduceContext(reducer, oc, conf.getBlock());
+
+            // Run job
+
+            reducer.run(rc);
+            WorkerMessage response = WorkerMessage.update(new JobStatus(JobState.COMPLETED, conf.getJobId()), 100);
+
+            // Send response
+            oos.writeObject(response);
+
+        } catch (InstantiationException | IllegalAccessException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Spin up a reduce thread
+     *
+     * @param msg Message with configuration for the reduce.
+     */
+    private void startMap(WorkerControlMessage msg) {
+
+        WorkerJobConfig conf = msg.getConfig();
+
+        try {
+            // Construct mapper and context.
+            final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
+            OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
+                    new Connection("localhost", 9000), conf.getNumReducers(), conf.getReducerIndex());
+            final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
+
+            // Run job
+            mapper.run(mc);
+
+            // Send Response
+            WorkerMessage response = WorkerMessage.update(new JobStatus(JobState.COMPLETED, conf.getJobId()), 100);
+
+            oos.writeObject(response);
+
+        } catch (InstantiationException | IllegalAccessException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
