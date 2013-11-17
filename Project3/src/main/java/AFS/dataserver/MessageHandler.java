@@ -25,7 +25,7 @@ public class MessageHandler implements Runnable {
      * Open I/O streams.
      *
      * @param id This node's data directory.
-     * @param s Client socket.
+     * @param s  Client socket.
      */
     public MessageHandler(String id, Socket s) {
         this.id = id;
@@ -195,7 +195,7 @@ public class MessageHandler implements Runnable {
                                 String res = "Filename\n";
                                 res += StringUtils.repeat("-", 80) + "\n";
                                 Iterator<File> it = data.iterator();
-                                while(it.hasNext()) {
+                                while (it.hasNext()) {
                                     res += it.next().getPath().substring(dir
                                             .getPath().length() + 1) + "\n";
                                 }
@@ -204,7 +204,7 @@ public class MessageHandler implements Runnable {
 
                             default:
                                 resp = Message.error(
-                                        new Exception ("Unknown task for " +
+                                        new Exception("Unknown task for " +
                                                 "data node: " + m.getPath()));
                                 break;
                         }

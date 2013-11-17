@@ -14,7 +14,7 @@ public class ToolImpl implements Tools {
 
     private Socket s;
 
-    public ToolImpl (String host, int port) throws IOException {
+    public ToolImpl(String host, int port) throws IOException {
         this.s = new Socket(host, port);
     }
 

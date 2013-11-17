@@ -3,7 +3,6 @@ package AFS.management;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * CLI for AFS management.

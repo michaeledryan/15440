@@ -2,10 +2,8 @@ package AFS.dataserver;
 
 import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.UUID;
 
 /**
  * Entry point for a data node.

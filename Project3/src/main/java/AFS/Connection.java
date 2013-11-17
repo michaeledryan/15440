@@ -17,6 +17,9 @@ import java.net.SocketTimeoutException;
  * <p/>
  * It is NOT thread-safe to have multiple concurrent read requests on a single
  * Connection object.
+ * <p/>
+ * Overloaded functions with the optional node parameter, as well as createFile,
+ * allows the client to specify a preferred data node.
  */
 public class Connection implements DistributedIO {
 
@@ -44,7 +47,7 @@ public class Connection implements DistributedIO {
      *
      * @param in ObjectInputStream to read from.
      * @return Received message.
-     * @throws IOException
+     * @throws IOException Invalid message received.
      */
     private static Message readReply(ObjectInputStream in) throws IOException {
         Object obj = null;
@@ -64,7 +67,7 @@ public class Connection implements DistributedIO {
      * if necessary.
      *
      * @return Received message.
-     * @throws IOException
+     * @throws IOException Invalid message received.
      */
     private Message read() throws IOException {
         if (in == null) {
@@ -78,7 +81,7 @@ public class Connection implements DistributedIO {
      * necessary.
      *
      * @param m Message to send.
-     * @throws IOException
+     * @throws IOException Unable to send message.
      */
     private void write(Message m) throws IOException {
         if (out == null) {
@@ -93,7 +96,8 @@ public class Connection implements DistributedIO {
      * @param req Message containing the path to look up.
      * @return String representing the hostname and port of the data node.
      *         hostname;port
-     * @throws IOException
+     * @throws IOException Invalid message received or exception raised by
+     * name node.
      */
     private String[] queryFileLocations(Message req) throws Exception {
         /*if (req.getType() != MessageType.LOCATION) {
@@ -118,7 +122,7 @@ public class Connection implements DistributedIO {
      *
      * @param hoststring hostname:port
      * @return Valid socket.
-     * @throws IOException
+     * @throws IOException Unable to connect to node.
      */
     private Socket connectToDataNode(String hoststring)
             throws IOException {
@@ -137,6 +141,15 @@ public class Connection implements DistributedIO {
         return s;
     }
 
+    /**
+     * Central handling of all types of read requests.
+     *
+     * @param path   File location.
+     * @param req    Message for the appropriate read request.
+     * @param nodeId Preferred data node.
+     * @return File data.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
     private String readRequest(String path, Message req,
                                String nodeId) throws Exception {
         Message getloc = Message.location(path, nodeId);
@@ -170,18 +183,41 @@ public class Connection implements DistributedIO {
     /**
      * Reads the entirety of the specified file.
      *
-     * @param path File location.
+     * @param path   File location.
      * @param nodeId Preferred node.
      * @return Contents.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or no reachable nodes.
      */
     public String readFile(String path, String nodeId) throws Exception {
         Message req = Message.read(path);
         return readRequest(path, req, nodeId);
     }
 
+    /**
+     * Reads the entirety of the specified file.
+     *
+     * @param path File location.
+     * @return Contents.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
     public String readFile(String path) throws Exception {
         return readFile(path, null);
+    }
+
+    /**
+     * Reads size bytes from the specified file, starting at start.
+     *
+     * @param path   File location.
+     * @param start  First byte to read.
+     * @param size   Number of bytes to read.
+     * @param nodeId Preferred data node.
+     * @return Contents.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
+    public String readBlock(String path, int start, int size, String nodeId)
+            throws Exception {
+        Message req = Message.readBlock(path, start, size);
+        return readRequest(path, req, nodeId);
     }
 
     /**
@@ -190,16 +226,9 @@ public class Connection implements DistributedIO {
      * @param path  File location.
      * @param start First byte to read.
      * @param size  Number of bytes to read.
-     * @param nodeId Preferred data node.
      * @return Contents.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or no reachable nodes.
      */
-    public String readBlock(String path, int start, int size, String nodeId)
-            throws Exception {
-        Message req = Message.readBlock(path, start, size);
-        return readRequest(path, req, nodeId);
-    }
-
     public String readBlock(String path, int start,
                             int size) throws Exception {
         return readBlock(path, start, size, null);
@@ -209,12 +238,12 @@ public class Connection implements DistributedIO {
      * Reads the specified number of consecutive lines in the file,
      * starting at start.
      *
-     * @param path Filename.
-     * @param start First line to read.
-     * @param size Number of lines to read.
+     * @param path   Filename.
+     * @param start  First line to read.
+     * @param size   Number of lines to read.
      * @param nodeId Preferred data node.
      * @return Contents.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or no reachable nodes.
      */
     public String readLines(String path, int start, int size, String nodeId)
             throws Exception {
@@ -222,6 +251,16 @@ public class Connection implements DistributedIO {
         return readRequest(path, req, nodeId);
     }
 
+    /**
+     * Reads the specified number of consecutive lines in the file,
+     * starting at start.
+     *
+     * @param path  Filename.
+     * @param start First line to read.
+     * @param size  Number of lines to read.
+     * @return Contents.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
     public String readLines(String path, int start, int size)
             throws Exception {
         return readLines(path, start, size, null);
@@ -230,17 +269,25 @@ public class Connection implements DistributedIO {
     /**
      * Reads the specified line.
      *
-     * @param path Filename.
-     * @param line Line to read.
+     * @param path   Filename.
+     * @param line   Line to read.
      * @param nodeId Preferred data node.
      * @return Contents.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or no reachable nodes.
      */
     public String readLine(String path, int line, String nodeId)
             throws Exception {
         return readLines(path, line, 1, nodeId);
     }
 
+    /**
+     * Reads the specified line.
+     *
+     * @param path Filename.
+     * @param line Line to read.
+     * @return Contents.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
     public String readLine(String path, int line) throws Exception {
         return readLines(path, line, 1, null);
     }
@@ -248,10 +295,10 @@ public class Connection implements DistributedIO {
     /**
      * Gets the number of lines in the file.
      *
-     * @param path File name.
+     * @param path   File name.
      * @param nodeId Preferred data node.
      * @return Line count.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or no reachable nodes.
      */
     public int countLines(String path, String nodeId) throws Exception {
         Message req = Message.countLines(path);
@@ -259,6 +306,13 @@ public class Connection implements DistributedIO {
         return Integer.parseInt(readRequest(path, req, nodeId));
     }
 
+    /**
+     * Gets the number of lines in the file.
+     *
+     * @param path File name.
+     * @return Line count.
+     * @throws Exception Exception raised by data node or no reachable nodes.
+     */
     public int countLines(String path) throws Exception {
         return countLines(path, null);
     }
@@ -269,7 +323,7 @@ public class Connection implements DistributedIO {
      *
      * @param path File location.
      * @param data Data to append.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or invalid reply.
      */
     public void writeFile(String path, String data) throws Exception {
         Message getloc = Message.write(path, "");
@@ -300,7 +354,7 @@ public class Connection implements DistributedIO {
      * Deletes a file from the nameserver and data node.
      *
      * @param path File location.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or invalid reply.
      */
     public void deleteFile(String path) throws Exception {
         Message msg = Message.delete(path);
@@ -332,7 +386,7 @@ public class Connection implements DistributedIO {
      *
      * @param path File location.
      * @param node Data node to use. hostname:port.
-     * @throws Exception
+     * @throws Exception Exception raised by name node or invalid reply.
      */
     public void createFile(String path, String node) throws Exception {
         Message req = Message.create(path, node);
@@ -351,7 +405,8 @@ public class Connection implements DistributedIO {
      *
      * @param path Filename.
      * @return Array of hostname:port.
-     * @throws Exception
+     * @throws Exception Invalid message received or exception raised by
+     * name node.
      */
     public String[] getLocations(String path) throws Exception {
         Message req = Message.location(path);
@@ -363,7 +418,7 @@ public class Connection implements DistributedIO {
      *
      * @param path Filename.
      * @param node Preferred data node.
-     * @throws Exception
+     * @throws Exception Exception raised by data node or invalid reply.
      */
     public void addLocalFile(File path, String node) throws Exception {
         if (node != null) {
@@ -373,14 +428,33 @@ public class Connection implements DistributedIO {
         writeFile(path.getPath(), data);
     }
 
+    /**
+     * Copy a local file to the DFS.
+     *
+     * @param path Filename.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFile(File path) throws Exception {
         addLocalFile(path, null);
     }
 
+    /**
+     * Copy a local file to the DFS.
+     *
+     * @param path Filename.
+     * @param node Preferred data node.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFile(String path, String node) throws Exception {
         addLocalFile(new File(path), node);
     }
 
+    /**
+     * Copy a local file to the DFS.
+     *
+     * @param path Filename.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFile(String path) throws Exception {
         addLocalFile(new File(path), null);
     }
@@ -389,8 +463,8 @@ public class Connection implements DistributedIO {
      * Copy a group of files to the DFS.
      *
      * @param files Files to copy.
-     * @param node Preferred data node.
-     * @throws Exception
+     * @param node  Preferred data node.
+     * @throws Exception Exception raised by data node or invalid reply.
      */
     public void addLocalFiles(File[] files, String node) throws Exception {
         for (File f : files) {
@@ -398,24 +472,53 @@ public class Connection implements DistributedIO {
         }
     }
 
+    /**
+     * Copy a group of files to the DFS.
+     *
+     * @param files Files to copy.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFiles(File[] files) throws Exception {
         addLocalFiles(files, null);
     }
 
+    /**
+     * Copy a group of files to the DFS.
+     *
+     * @param files Files to copy.
+     * @param node  Preferred data node.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFiles(String[] files, String node) throws Exception {
         for (String f : files) {
             addLocalFile(new File(f), node);
         }
     }
 
+    /**
+     * Copy a group of files to the DFS.
+     *
+     * @param files Files to copy.
+     * @throws Exception Exception raised by data node or invalid reply.
+     */
     public void addLocalFiles(String[] files) throws Exception {
         addLocalFiles(files, null);
     }
 
+    /**
+     * The communication timeout on sockets.
+     *
+     * @return Value in ms.
+     */
     public int getTimeout() {
         return timeout;
     }
 
+    /**
+     * Set the communication timeout on sockets.
+     *
+     * @param timeout Time in ms.
+     */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }

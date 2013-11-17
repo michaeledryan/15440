@@ -14,7 +14,7 @@ public class Listener implements Runnable {
     /**
      * Initializes the server socket.
      *
-     * @param port Port to listen on.
+     * @param port  Port to listen on.
      * @param nodes Number of data nodes.
      */
     public Listener(int port, int nodes) {

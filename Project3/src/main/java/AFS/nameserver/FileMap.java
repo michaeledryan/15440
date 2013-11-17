@@ -41,7 +41,7 @@ public class FileMap {
     /**
      * Track a new file.
      *
-     * @param key Filename.
+     * @param key   Filename.
      * @param value Hostname:port of data node.
      */
     public void put(String key, String value) {
@@ -61,7 +61,7 @@ public class FileMap {
     /**
      * Adds a group of files that are all stored on the same data node.
      *
-     * @param keys Array of filenames.
+     * @param keys  Array of filenames.
      * @param value Hostname:port of data node storing them.
      */
     public void batchPut(String[] keys, String value) {
@@ -75,7 +75,7 @@ public class FileMap {
     /**
      * Create a new file, ensuring it is replicated on a particular node.
      *
-     * @param key Filename.
+     * @param key    Filename.
      * @param nodeId Node identifier.
      */
     public void priorityPut(String key, String nodeId) {
@@ -119,7 +119,7 @@ public class FileMap {
      * This is implemented by putting it first in the result. If it is not
      * valid, then proceed as though it was not specified.
      *
-     * @param key Filename.
+     * @param key    Filename.
      * @param nodeId Data node.
      * @return Hostname:port ';' delimited list of hosts.
      */
@@ -159,7 +159,7 @@ public class FileMap {
     }
 
     private void shuffle(ArrayList<String> arr) {
-        for (int i = arr.size()-1; i >= 1; i--) {
+        for (int i = arr.size() - 1; i >= 1; i--) {
             int idx = r.nextInt(i);
             String tmp = arr.get(i);
             arr.set(i, arr.get(idx));
@@ -185,7 +185,7 @@ public class FileMap {
      * @return Is it in the group of nodes?
      */
     public Boolean validHost(String key) {
-        return key!= null && nodes.containsKey(key);
+        return key != null && nodes.containsKey(key);
     }
 
     public String getFiles() {
