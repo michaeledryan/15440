@@ -348,6 +348,18 @@ public class Connection implements DistributedIO {
     }
 
     /**
+     * Determines which data nodes a files is replicated on.
+     *
+     * @param path Filename.
+     * @return Array of hostname:port.
+     * @throws Exception
+     */
+    public String[] getLocations(String path) throws Exception {
+        Message req = Message.location(path);
+        return getLocations(req);
+    }
+
+    /**
      * Copy a local file to the DFS.
      *
      * @param path Filename.

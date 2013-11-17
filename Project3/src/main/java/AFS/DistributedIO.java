@@ -103,6 +103,15 @@ public interface DistributedIO {
     public void createFile(String path, String node) throws Exception;
 
     /**
+     * Determines which data nodes a files is replicated on.
+     *
+     * @param path Filename.
+     * @return Array of hostname:port.
+     * @throws Exception
+     */
+    public String[] getLocations(String path) throws Exception;
+
+    /**
      * Copy a local file to the DFS.
      *
      * @param path Filename.
