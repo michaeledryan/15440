@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 
 /**
  * Establish a connection with the nameserver to have access to the files
@@ -96,7 +95,7 @@ public class Connection implements DistributedIO {
      *         hostname;port
      * @throws IOException
      */
-    private String[] getLocations(Message req) throws Exception {
+    private String[] queryFileLocations(Message req) throws Exception {
         /*if (req.getType() != MessageType.LOCATION) {
             throw new IOException("Bad request type.");
         }*/
@@ -141,7 +140,7 @@ public class Connection implements DistributedIO {
     private String readRequest(String path, Message req,
                                String nodeId) throws Exception {
         Message getloc = Message.location(path, nodeId);
-        String[] locs = this.getLocations(getloc);
+        String[] locs = this.queryFileLocations(getloc);
 
         for (String loc : locs) {
             try {
@@ -274,7 +273,7 @@ public class Connection implements DistributedIO {
      */
     public void writeFile(String path, String data) throws Exception {
         Message getloc = Message.write(path, "");
-        String[] locs = this.getLocations(getloc);
+        String[] locs = this.queryFileLocations(getloc);
 
         for (String loc : locs) {
             Socket node = connectToDataNode(loc);
@@ -305,7 +304,7 @@ public class Connection implements DistributedIO {
      */
     public void deleteFile(String path) throws Exception {
         Message msg = Message.delete(path);
-        String[] locs = this.getLocations(msg);
+        String[] locs = this.queryFileLocations(msg);
 
         for (String loc : locs) {
             Socket node = connectToDataNode(loc);
@@ -356,7 +355,7 @@ public class Connection implements DistributedIO {
      */
     public String[] getLocations(String path) throws Exception {
         Message req = Message.location(path);
-        return getLocations(req);
+        return queryFileLocations(req);
     }
 
     /**
