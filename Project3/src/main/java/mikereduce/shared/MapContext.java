@@ -3,7 +3,7 @@ package mikereduce.shared;
 /**
  *
  */
-public class MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
+public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable, VALUEOUT> {
 
     public Class<? extends Mapper> getMapperClass() {
         return mapperClass;

@@ -1,13 +1,11 @@
 package mikereduce.shared;
 
-import mikereduce.jobtracker.shared.JobConfig;
-
 import java.io.Serializable;
 
 /**
  * Handles control of workers.
  */
-public class WorkerControlMessage implements Serializable{
+public class WorkerControlMessage implements Serializable {
 
     private ControlMessageType type;
     private WorkerJobConfig config;

@@ -185,7 +185,7 @@ public class FileMap {
      * @return Is it in the group of nodes?
      */
     public Boolean validHost(String key) {
-        return nodes.containsKey(key);
+        return key!= null && nodes.containsKey(key);
     }
 
     public String getFiles() {

@@ -3,7 +3,7 @@ package mikereduce.shared;
 /**
 
  */
-public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
+public class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable, VALUEOUT> {
 
     /**
      * Called at the end of the task.

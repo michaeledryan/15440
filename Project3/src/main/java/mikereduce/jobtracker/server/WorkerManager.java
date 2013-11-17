@@ -10,21 +10,34 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListSet;
 
-
+/**
+ * Interface to a worker node.
+ */
 public class WorkerManager implements Runnable {
 
     Socket sock;
-    WorkerInfo info;
     ObjectInputStream ois;
     ObjectOutputStream oos;
+    Set<UUID> jobIds = new ConcurrentSkipListSet<UUID>();
 
     public WorkerManager(Socket worker) {
         sock = worker;
     }
 
+    /**
+     * Sends a WorkerControlMessage to the worker represented
+     * @param msg
+     * @throws IOException
+     */
     public void sendRequest(WorkerControlMessage msg) throws IOException {
         oos.writeObject(msg);
+        jobIds.add(msg.getConfig().getJobId());
     }
 
 
@@ -36,13 +49,15 @@ public class WorkerManager implements Runnable {
             oos = new ObjectOutputStream(sock.getOutputStream());
 
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         while (true) {
 
-
-            WorkerMessage woo = null;
+            /**
+             * Loop to listen for messages from workers.
+             */
+            WorkerMessage woo;
 
             try {
                 woo = (WorkerMessage) ois.readObject();
@@ -50,40 +65,30 @@ public class WorkerManager implements Runnable {
                 switch (woo.getStatus()) {
 
                     case REGISTRATION:
-                        info = new WorkerInfo(0, woo.getType()); // Are ID's necessary?
-                        int id = WorkerListener.getInstance().registerWorker(this);
+                        WorkerListener.getInstance().registerWorker(this);
 
-                        /*
-                        Timer tim = new Timer();
-                        TimerTask killMe = new TimerTask(){
-                            @Override
-                            public void run() {
-                                // This should mark the worker as "dead."
-                            }
-                        };
+                        setupKill();
 
-                        tim.schedule(killMe, 20000);
-                        */
-
+                        // Send ACK back to worker. This completes registration.
                         WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null);
                         oos.writeObject(wcm);
 
-                        // Send ACK
                         break;
                     case HEARTBEAT:
-                        // Make me not dead!
+                        // After a heartbeat message, keep yourself alive.
+                        WorkerListener.getInstance().getWorkers().put(this, 1);
                         break;
                     case UPDATE:
+                        // This is updated progress on a job.
                         int percent = woo.getPercent();
                         System.out.println("PERCENT: " + percent);
                         ClientManager client = ClientListener.getInstance().getManager(woo.getJob().getId());
 
-                        JobClientStatus jcs = new JobClientStatus(JobState.COMPLETED, "done");
+                        JobClientStatus jcs;
                         if (percent == 100) {
-                            client.sendMessage(jcs);
                             client.reportDone(this);
                         } else {
-
+                            // What about partial updates?
                         }
                         // Send data to client running job?
                         break;
@@ -100,9 +105,34 @@ public class WorkerManager implements Runnable {
         }
     }
 
-    public WorkerType getType() {
-        return info.getType();
-    }
+    /**
+     * Creates a TimerTask to kill the worker in the event of failure.
+     */
+    private void setupKill() {
+        final WorkerManager that = this;
 
+        Timer tim = new Timer();
+        TimerTask killMe = new TimerTask() {
+            @Override
+            public void run() {
+                int a = WorkerListener.getInstance().getWorkers().get(that);
+                if (a == 0) {
+                    // Remove it
+                    WorkerListener.getInstance().removeWorker(that);
+
+                    for (UUID jid : jobIds) {
+                        ClientListener.getInstance().getManager(jid).reportFailure(that);
+                    }
+
+                    System.out.println("Worker at " + sock.getInetAddress() + ":" + sock.getPort() + " died.");
+                } else if (a == 1) {
+                    WorkerListener.getInstance().getWorkers().put(that, 0);
+                }
+            }
+        };
+
+        tim.scheduleAtFixedRate(killMe, 0, 7000);
+
+    }
 
 }

@@ -1,18 +1,25 @@
 package tests;
 
+import mikereduce.jobtracker.shared.ReduceContext;
+import mikereduce.jobtracker.shared.Reducer;
 import mikereduce.shared.InputFormat;
-import mikereduce.shared.MapContext;
-import mikereduce.shared.Mapper;
 import mikereduce.shared.OutputFormat;
 
-public class IdentityMap extends Mapper<String, String, String, String> {
+/**
+ * Simple Reducer. Appends all values together
+ */
+public class IdentityReducer extends Reducer<String, String>{
 
     @Override
     /**
      * Called once per K/V pair.
      */
-    protected void map(String key, String val, MapContext context) {
-        context.commit(context.getCurrentKey(), context.getCurrentValue());
+    protected void reduce(String key, Iterable<String> vals, ReduceContext context) {
+        String reduced = "";
+        for (String s : vals) {
+            reduced = reduced + s;
+        }
+        context.commit(key, reduced);
     }
 
 

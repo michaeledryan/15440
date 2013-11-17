@@ -7,14 +7,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-public class ClientListener implements Runnable{
+/**
+ * Singleton on the JobTracker that listens for requests from clients. Spins up a ClientManager for each one.
+ */
+public class ClientListener implements Runnable {
 
     int port;
     ServerSocket sock;
     private Map<UUID, ClientManager> jobsToClients = new ConcurrentHashMap<>();
 
-    private static  ClientListener INSTANCE;
+    private static ClientListener INSTANCE;
 
     private ClientListener(int clientPort) {
         port = clientPort;
@@ -34,6 +36,9 @@ public class ClientListener implements Runnable{
         return INSTANCE;
     }
 
+    /**
+     * Access to jobsToClients hashmap.
+     */
     public ClientManager getManager(UUID jobID) {
         return jobsToClients.get(jobID);
     }
@@ -42,10 +47,9 @@ public class ClientListener implements Runnable{
         jobsToClients.put(jobId, man);
     }
 
-
     @Override
     public void run() {
-        while(true) {
+        while (true) {
             try {
                 Socket client = sock.accept();
                 ClientManager man = new ClientManager(client);

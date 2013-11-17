@@ -3,51 +3,35 @@ package mikereduce.worker.mapnode;
 import AFS.Connection;
 import mikereduce.shared.InputBlock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
- * InputBlock that reads from AFS.
  */
-public class AFSInputBlock implements InputBlock {
+public class AFSReduceInputBlock implements InputBlock {
 
     private final String hostname;
     private final int port;
-    private String filePath;
-    private int offset;
-    private int size;
+    private Set<String> filePaths;
     private Connection conn;
     private List<String> block;
     private int blockIndex = 1;
 
-    public AFSInputBlock(String filePath, int startLine, int endLine, String hostname, int port) {
-        this.filePath = filePath;
-        this.offset = startLine;
-        this.size = endLine;
+    public AFSReduceInputBlock(Set<String> filePaths, String hostname, int port) {
+        this.filePaths = filePaths;
         this.hostname = hostname;
         this.port = port;
-    }
-
-
-    public long getOffset() {
-        return offset;
-    }
-
-    public long getSize() {
-        return size;
     }
 
 
     @Override
     public String getLine() {
         if (conn == null) {
-
             setupBlock();
         }
 
         return block.get(blockIndex - 1);
     }
+
 
     @Override
     public boolean nextLine() {
@@ -70,13 +54,25 @@ public class AFSInputBlock implements InputBlock {
         return (block == null) || blockIndex <= block.size();
     }
 
+
     private void setupBlock() {
-        System.out.println("start at line: " + offset + ", end at line: " + (offset + size));
-        conn = new Connection("localhost", 9000); // TODO: Add actual location.
+        System.out.println("mothafuckin reduce!: " + filePaths.toString());
+        conn = new Connection(hostname, port);
+        block = new ArrayList<>();
+
         try {
-            block = new ArrayList<>(Arrays.asList(conn.readLines(filePath, offset, size).split("\n")));
+            for (String filename : filePaths) {
+                String blockStr = conn.readFile(filename);
+
+                List<String> oneBlock = new ArrayList<>(Arrays.asList(blockStr.split("\n")));
+                if (!oneBlock.isEmpty() && !blockStr.equals("")) {
+                    block.addAll(oneBlock);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Collections.sort(block);
     }
 }

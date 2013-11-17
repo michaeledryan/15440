@@ -7,11 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 9:37 PM
- * To change this template use File | Settings | File Templates.
+ * Starts up a mapnode.
  */
 public class MapperMain {
 

@@ -6,11 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 7:46 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class MapperConf {
 
@@ -36,7 +32,8 @@ public class MapperConf {
         private int port;
         private String address;
 
-        public MapperConfBuilder() {}
+        public MapperConfBuilder() {
+        }
 
 
         public MapperConf buildFromFile(File location) {
