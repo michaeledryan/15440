@@ -70,12 +70,15 @@ public class WorkerManager implements Runnable {
                         setupKill();
 
                         // Send ACK back to worker. This completes registration.
-                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null);
+                        WorkerControlMessage wcm = new WorkerControlMessage(ControlMessageType.ACK, null, "", 0);
                         oos.writeObject(wcm);
 
                         break;
                     case HEARTBEAT:
                         // After a heartbeat message, keep yourself alive.
+                        if (woo.getJob() != null) {
+                            jobIds.add(woo.getJob().getId());
+                        }
                         WorkerListener.getInstance().getWorkers().put(this, 1);
                         break;
                     case UPDATE:
@@ -84,10 +87,10 @@ public class WorkerManager implements Runnable {
                         System.out.println("PERCENT: " + percent);
                         ClientManager client = ClientListener.getInstance().getManager(woo.getJob().getId());
 
-                        ClientResponse jcs;
                         if (percent == 100) {
                             client.reportDone(this);
                         } else {
+                            client.sendUpdate(this, percent);
                             // What about partial updates?
                         }
                         // Send data to client running job?

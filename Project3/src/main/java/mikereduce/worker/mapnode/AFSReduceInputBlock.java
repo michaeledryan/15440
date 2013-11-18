@@ -23,6 +23,7 @@ public class AFSReduceInputBlock implements InputBlock {
     }
 
 
+
     @Override
     public String getLine() {
         if (conn == null) {
@@ -30,6 +31,15 @@ public class AFSReduceInputBlock implements InputBlock {
         }
 
         return block.get(blockIndex - 1);
+    }
+
+    @Override
+    public int getLines() {
+        if (conn == null) {
+            setupBlock();
+        }
+
+        return block.size();
     }
 
 

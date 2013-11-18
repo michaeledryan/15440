@@ -64,7 +64,7 @@ public class MessageHandler implements Runnable {
             String[] outPath = new String[1];
             outPath[0] = conf.getOutputLocation();
             oc.setOutputPaths(outPath);
-            final ReduceContext rc = new ReduceContext(reducer, oc, conf.getBlock());
+            final ReduceContext rc = new ReduceContext(reducer, oc, conf.getBlock(), this);
 
             // Run job
 
@@ -92,9 +92,10 @@ public class MessageHandler implements Runnable {
         try {
             // Construct mapper and context.
             final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
+            System.out.println("\t" + address);
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
                     new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
-            final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
+            final MapContext mc = new MapContext(mapper, oc, conf.getBlock(), this);
 
             // Run job
             mapper.run(mc);
@@ -110,4 +111,12 @@ public class MessageHandler implements Runnable {
 
     }
 
+    /**
+     * Send a 10% progress update back to the JobTracker.
+     *
+     * @throws IOException if there is an error writing the message out.
+     */
+    public void sendUpdate() throws IOException {
+        oos.writeObject(WorkerMessage.update(new JobStatus(JobState.RUNNING, msg.getConfig().getJobId()), 10));
+    }
 }

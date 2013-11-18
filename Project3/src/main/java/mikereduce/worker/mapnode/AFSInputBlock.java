@@ -39,6 +39,14 @@ public class AFSInputBlock implements InputBlock {
     }
 
     @Override
+    public int getLines() {
+        if (conn == null) {
+            setupBlock();
+        }
+        return block.size();
+    }
+
+    @Override
     public boolean nextLine() {
         if (conn == null) {
             setupBlock();

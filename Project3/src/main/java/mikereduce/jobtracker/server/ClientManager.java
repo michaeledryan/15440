@@ -35,6 +35,7 @@ public class ClientManager implements Runnable {
     private PriorityQueue<Integer> remainingIndices = new PriorityQueue<>();
     private JobConfig conf;
     private int numReducers;
+    private int percentDone;
 
     private int port;
     private String address;
@@ -287,5 +288,23 @@ public class ClientManager implements Runnable {
         System.out.println("\t" + workerManager);
         remainingIndices.add(workers.get(workerManager));
         workers.remove(workerManager);
+    }
+
+    public void sendUpdate(WorkerManager workerManager, int percent) {
+        if (phase == JobPhase.MAP) {
+            percentDone += 10 / numMappers;
+            try {
+                sendMessage(new ClientResponse(JobState.RUNNING, "The job is now " + percentDone +"% percent complete."));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            percentDone += 10 / numMappers;
+            try {
+                sendMessage(new ClientResponse(JobState.RUNNING, "The job is now " + percentDone +"% percent complete."));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

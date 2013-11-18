@@ -4,6 +4,7 @@ import mikereduce.shared.InputBlock;
 import mikereduce.shared.InputFormat;
 import mikereduce.shared.OutputCommitter;
 import mikereduce.shared.OutputFormat;
+import mikereduce.worker.mapnode.MessageHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Context for a Reducer. Holds input and output channels through which a Reducer performs its tasks.
  */
-public abstract class ReduceContext<KEY extends Comparable, VALUE> {
+public class ReduceContext<KEY extends Comparable, VALUE> {
 
 
     public Class<? extends Reducer> getReducerClass() {
@@ -25,6 +26,7 @@ public abstract class ReduceContext<KEY extends Comparable, VALUE> {
     private Iterable<VALUE> currentVals = new ArrayList<>();
     private InputFormat<KEY, VALUE> inputFormat;
     private OutputFormat<KEY, VALUE> outputFormat;
+    private final MessageHandler handler;
 
     /**
      * Constructor. Sets relevant fields.
@@ -33,12 +35,13 @@ public abstract class ReduceContext<KEY extends Comparable, VALUE> {
      * @param out     OutputCommitter through which we send output
      * @param in      InputBlock from which reducer reads input
      */
-    public ReduceContext(Reducer<KEY, VALUE> reducer, OutputCommitter out, InputBlock in) {
+    public ReduceContext(Reducer<KEY, VALUE> reducer, OutputCommitter out, InputBlock in, MessageHandler handler) {
         this.reducerClass = reducer.getClass();
         this.committer = out;
         reader = in;
         inputFormat = reducer.getInputFormat();
         outputFormat = reducer.getOutputFormat();
+        this.handler = handler;
     }
 
     /**

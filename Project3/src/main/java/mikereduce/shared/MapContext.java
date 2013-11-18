@@ -1,5 +1,12 @@
 package mikereduce.shared;
 
+import mikereduce.jobtracker.shared.JobState;
+import mikereduce.worker.mapnode.MessageHandler;
+import mikereduce.worker.shared.JobStatus;
+import mikereduce.worker.shared.WorkerMessage;
+
+import java.io.IOException;
+
 /**
  *
  */
@@ -15,13 +22,18 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
     private String currentPair;
     private InputFormat<KEYIN, VALUEIN> inputFormat;
     private OutputFormat<KEYOUT, VALUEOUT> outputFormat;
+    private int counter = 0;
+    MessageHandler handler;
 
-    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper, OutputCommitter out, InputBlock in) {
+    public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper,
+                      OutputCommitter out, InputBlock in,
+                      MessageHandler handler) {
         this.mapperClass = mapper.getClass();
         this.committer = out;
-        reader = in;
-        inputFormat = mapper.getInputFormat();
-        outputFormat = mapper.getOutputFormat();
+        this.reader = in;
+        this.inputFormat = mapper.getInputFormat();
+        this.outputFormat = mapper.getOutputFormat();
+        this.handler = handler;
     }
 
     public boolean nextKeyValue() {
@@ -47,7 +59,14 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
      */
     public void commit(KEYOUT key, VALUEOUT val) {
         committer.commitLine(outputFormat.parse(key, val), key.hashCode());
-
+        counter++;
+        if ((counter % reader.getLines() / 10) == 0) {
+            try {
+                handler.sendUpdate();
+            } catch (IOException e) {
+                //
+            }
+        }
     }
 
     public void finishCommit() {

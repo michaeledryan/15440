@@ -27,7 +27,6 @@ public class IdentityMap extends Mapper<String, String, String, String> {
         return new InputFormat<String, String>() {
             @Override
             public String getValue(String currentPair) {
-                System.out.println("\t " + currentPair);
                 return currentPair.split(" ")[1];
             }
 
