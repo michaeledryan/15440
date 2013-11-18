@@ -25,7 +25,6 @@ public class AFSReduceInputBlock implements InputBlock {
     }
 
 
-
     @Override
     public String getLine() {
         if (conn == null) {

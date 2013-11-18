@@ -1,11 +1,8 @@
 package mikereduce.jobtracker.server;
 
-import com.google.gson.Gson;
-import mikereduce.jobtracker.shared.ClientResponse;
 import mikereduce.shared.ControlMessageType;
 import mikereduce.shared.WorkerControlMessage;
 import mikereduce.worker.shared.WorkerMessage;
-import oracle.jrockit.jfr.settings.JSONElement;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

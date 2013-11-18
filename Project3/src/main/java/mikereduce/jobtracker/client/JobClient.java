@@ -9,7 +9,6 @@ import org.apache.commons.cli.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Simple point of interaction with the MikeReduce framework. This submits
@@ -103,7 +102,7 @@ public class JobClient {
         }
 
         try {
-        oos = new ObjectOutputStream(sock.getOutputStream());
+            oos = new ObjectOutputStream(sock.getOutputStream());
             ois = new ObjectInputStream(sock.getInputStream());
 
             // Send the config

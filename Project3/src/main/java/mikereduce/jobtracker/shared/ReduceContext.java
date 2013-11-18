@@ -16,8 +16,6 @@ import java.util.List;
 public class ReduceContext<KEY extends Comparable, VALUE> {
 
 
-
-
     public Class<? extends Reducer> getReducerClass() {
         return reducerClass;
     }
