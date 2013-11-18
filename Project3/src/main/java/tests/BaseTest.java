@@ -4,17 +4,13 @@ package tests;
 import AFS.dataserver.DataServer;
 import AFS.nameserver.NameServer;
 import mikereduce.jobtracker.client.JobClient;
-import mikereduce.jobtracker.server.ClientMessage;
-import mikereduce.jobtracker.server.ClientMessageType;
 import mikereduce.jobtracker.server.JobTracker;
-import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.worker.mapnode.MapperMain;
 import org.ini4j.Ini;
 import org.junit.Test;
 
-import java.io.*;
-import java.util.Arrays;
-import java.util.Random;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Shit test.

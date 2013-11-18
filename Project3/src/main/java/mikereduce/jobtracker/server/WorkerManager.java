@@ -31,6 +31,7 @@ public class WorkerManager implements Runnable {
 
     /**
      * Sends a WorkerControlMessage to the worker represented
+     *
      * @param msg
      * @throws IOException
      */

@@ -3,14 +3,13 @@ package mikereduce.jobtracker.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Listens to worker requests. Keeps track of which workers are still running.
- *
  */
-public class WorkerListener implements Runnable{
+public class WorkerListener implements Runnable {
 
     private int port;
     private ServerSocket sock;
@@ -50,7 +49,7 @@ public class WorkerListener implements Runnable{
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        while(true) {
+        while (true) {
             try {
                 Socket client = sock.accept();
                 WorkerManager man = new WorkerManager(client);

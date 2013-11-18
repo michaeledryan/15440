@@ -55,7 +55,7 @@ public class JobConfig implements Serializable {
         this.inputPath = inputPath;
     }
 
-    public void setMiker(Class<? extends Mapper>  miker) {
+    public void setMiker(Class<? extends Mapper> miker) {
         this.miker = miker;
     }
 

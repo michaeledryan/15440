@@ -1,7 +1,6 @@
 package mikereduce.jobtracker.shared;
 
 import mikereduce.shared.InputFormat;
-import mikereduce.shared.MapContext;
 import mikereduce.shared.OutputFormat;
 
 /**

@@ -11,9 +11,11 @@ public abstract class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends C
      *
      * @param context Current state of the map.
      */
-    protected void cleanup(MapContext context){
+    protected void cleanup(MapContext context) {
 
-    };
+    }
+
+    ;
 
     /**
      * Called once per key, value pair.

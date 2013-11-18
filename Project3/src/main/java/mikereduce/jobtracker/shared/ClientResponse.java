@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Class that represents a message from the JobTracker to the client.
  */
-public class ClientResponse implements Serializable{
+public class ClientResponse implements Serializable {
 
     private JobState state;
     private String message;
@@ -13,7 +13,7 @@ public class ClientResponse implements Serializable{
     /**
      * Constructor.
      *
-     * @param state State of the job
+     * @param state   State of the job
      * @param message Message for the user.
      */
     public ClientResponse(JobState state, String message) {
@@ -28,7 +28,6 @@ public class ClientResponse implements Serializable{
     public String getMessage() {
         return message;
     }
-
 
 
 }

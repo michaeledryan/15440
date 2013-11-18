@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * Contains information about a specific job.
  */
-public class JobStatus implements Serializable{
+public class JobStatus implements Serializable {
 
     private JobState state;
 

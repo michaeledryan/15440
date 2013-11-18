@@ -29,7 +29,7 @@ public class JobClient {
      * Run the client CLI for the MapReduce framework. When pointed at a configuration file, parses the file
      * into a JobConfig and submits it to the framework for running. Then waits until the job is completed,
      * receiving periodic updates.
-     *
+     * <p/>
      * The -l option will list running jobs instead of submitting a new one.
      *
      * @param args See help message.

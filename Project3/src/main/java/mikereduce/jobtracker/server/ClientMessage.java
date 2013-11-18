@@ -11,11 +11,12 @@ import java.io.Serializable;
  * Time: 10:08 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ClientMessage implements Serializable{
+public class ClientMessage implements Serializable {
 
     private ClientMessageType type;
 
     private JobConfig conf;
+
     public ClientMessage(ClientMessageType type, JobConfig conf) {
         this.type = type;
         this.conf = conf;

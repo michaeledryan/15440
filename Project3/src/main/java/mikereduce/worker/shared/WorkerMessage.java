@@ -5,14 +5,14 @@ import java.io.Serializable;
 /**
  * Message sent from worker to JobTracker.
  */
-public class WorkerMessage implements Serializable{
+public class WorkerMessage implements Serializable {
 
     private WorkerStatus status;
     private JobStatus job;
     private int numCores;
     private int percent;
 
-    private WorkerMessage(JobStatus job, int percent){
+    private WorkerMessage(JobStatus job, int percent) {
         this.job = job;
         this.percent = percent;
         this.status = WorkerStatus.UPDATE;

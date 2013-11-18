@@ -8,7 +8,7 @@ import mikereduce.shared.OutputFormat;
 /**
  * Simple Reducer. Appends all values together
  */
-public class IdentityReducer extends Reducer<String, String>{
+public class IdentityReducer extends Reducer<String, String> {
 
     @Override
     /**
@@ -25,6 +25,7 @@ public class IdentityReducer extends Reducer<String, String>{
 
     /**
      * Split on space.
+     *
      * @return
      */
     public InputFormat<String, String> getInputFormat() {
@@ -43,6 +44,7 @@ public class IdentityReducer extends Reducer<String, String>{
 
     /**
      * Extremely simple.
+     *
      * @return
      */
     public OutputFormat<String, String> getOutputFormat() {

@@ -23,9 +23,9 @@ public class JobTracker {
         return instance;
     }
 
-   private JobTracker(JobTrackerConf conf) {
-       this.conf = conf;
-   }
+    private JobTracker(JobTrackerConf conf) {
+        this.conf = conf;
+    }
 
     public static void main(String[] args) {
         Options opt = new Options();
