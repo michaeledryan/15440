@@ -5,31 +5,36 @@ import mikereduce.shared.MapContext;
 import mikereduce.shared.OutputFormat;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/10/13
- * Time: 7:45 PM
- * To change this template use File | Settings | File Templates.
+ * This class is extended by a client wishing to use the MapReduce framework.
+ * It must implement the reduce task.
  */
-public class Reducer<KEY extends Comparable, VALUE> {
+public abstract class Reducer<KEY extends Comparable, VALUE> {
 
     /**
-     * Called at the end of the task.
+     * Called at the end of the task to handle any final work.
+     *
+     * @param context Current state of the reduce.
      */
     protected void cleanup(ReduceContext context) {
         // To be implemented
     }
 
-
     /**
-     * Called once per K/V pair.
+     * Called once per key, with all instances of the value.
+     *
+     * @param key     Data key.
+     * @param val     All corresponding values.
+     * @param context Current state of the reduce.
      */
     protected void reduce(KEY key, Iterable<VALUE> val, ReduceContext context) {
         // To be implemented
     }
 
     /**
-     * Generally not overridden.
+     * Runs a single reduce.
+     * Generally NOT overridden.
+     *
+     * @param context Current state of the reduce.
      */
     public void run(ReduceContext<KEY, VALUE> context) {
         setup(context);
@@ -44,26 +49,26 @@ public class Reducer<KEY extends Comparable, VALUE> {
     }
 
     /**
-     * Called before the task runs.
+     * Called before the task runs to carry out any initial setup.
+     *
+     * @param context Current state of the reduce.
      */
     protected void setup(ReduceContext context) {
         // To be implemented.
     }
 
+    /**
+     * Implement this to parse the input data.
+     *
+     * @return Input format.
+     */
+    public abstract InputFormat<KEY, VALUE> getInputFormat();
 
     /**
-     * OVERRIDE THIS!
-     * @return
+     * Implement this to parse the output format.
+     *
+     * @return Output format.
      */
-    public InputFormat<KEY, VALUE> getInputFormat() {
-        return null;
-    }
+    public abstract OutputFormat<KEY, VALUE> getOutputFormat();
 
-    /**
-     * OVERRIDE THIS!
-     * @return
-     */
-    public OutputFormat<KEY, VALUE> getOutputFormat() {
-        return null;
-    }
 }
