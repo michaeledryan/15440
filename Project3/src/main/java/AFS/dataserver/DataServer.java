@@ -53,7 +53,8 @@ public class DataServer {
                 System.err.println("Invalid port number.");
                 System.exit(1);
             }
-            String hostname = InetAddress.getLocalHost().getHostName() + port;
+            String hostname = InetAddress.getLocalHost().getHostName() + ":" +
+                    port;
             String id =
                     cmd.getOptionValue("i", hostname);
             String ns = cmd.getOptionValue("n", "localhost");
