@@ -227,7 +227,7 @@ public class ClientManager implements Runnable {
                 try {
                     sendMessage(jcs);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // Cool your jets.
                 }
                 if (workers.isEmpty()) {
                     startReduce();
@@ -239,7 +239,7 @@ public class ClientManager implements Runnable {
                     sendMessage(jcs);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // No need to be upset
                 }
             }
         }
