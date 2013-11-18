@@ -1,33 +1,51 @@
 package mikereduce.jobtracker.shared;
 
 import mikereduce.shared.Mapper;
+import org.ini4j.Ini;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/9/13
- * Time: 5:19 PM
- * To change this template use File | Settings | File Templates.
+ * Configuration file for a single MapReduce job.
  */
 public class JobConfig implements Serializable {
 
-    private Class inputReader;
+
+    // Do we call this the MikeReduce framework?
     private Class<? extends Mapper> miker;
-    private Class<? extends Partitioner> partitioner;
+
+    // Or the MapRyan framework?
     private Class<? extends Reducer> ryaner;
-    private Class outputWriter;
+
     private String inputPath;
     private String outputPath;
     private int numMappers = 0;
     private int numReducers = 0;
 
-    public JobConfig() {
+    /**
+     * Parses the given File into a JobConfig.
+     *
+     * @param location the File to be parsed.
+     */
+    public JobConfig(File location) {
+        Ini ini = new Ini();
+        try {
+            ini.load(location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        miker = ini.get("main", "mapper", Class.class);
+        ryaner = ini.get("main", "reducer", Class.class);
+        inputPath = ini.get("main", "inputFile");
+        outputPath = ini.get("main", "outputFile");
+        numMappers = ini.get("main", "numMappers", int.class);
+        numReducers = ini.get("main", "numReducers", int.class);
+
 
     }
-
-
 
     public String getInputPath() {
         return inputPath;
@@ -37,44 +55,20 @@ public class JobConfig implements Serializable {
         this.inputPath = inputPath;
     }
 
-    public void setInputReader(Class inputReader) {
-        this.inputReader = inputReader;
-    }
-
-    public void setMiker(Class miker) {
+    public void setMiker(Class<? extends Mapper>  miker) {
         this.miker = miker;
     }
 
-    public void setPartitioner(Class partitioner) {
-        this.partitioner = partitioner;
-    }
-
-    public void setRyaner(Class ryaner) {
+    public void setRyaner(Class<? extends Reducer> ryaner) {
         this.ryaner = ryaner;
-    }
-
-    public void setOutputWriter(Class outputWriter) {
-        this.outputWriter = outputWriter;
     }
 
     public Class getMiker() {
         return miker;
     }
 
-    public Class getPartitioner() {
-        return partitioner;
-    }
-
     public Class getRyaner() {
         return ryaner;
-    }
-
-    public Class getOutputWriter() {
-        return outputWriter;
-    }
-
-    public Class getInputReader() {
-        return inputReader;
     }
 
     public void setOutputPath(String outputPath) {

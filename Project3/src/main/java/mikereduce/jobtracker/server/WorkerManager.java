@@ -1,7 +1,6 @@
 package mikereduce.jobtracker.server;
 
-import mikereduce.jobtracker.shared.JobClientStatus;
-import mikereduce.jobtracker.shared.JobState;
+import mikereduce.jobtracker.shared.ClientResponse;
 import mikereduce.shared.ControlMessageType;
 import mikereduce.shared.WorkerControlMessage;
 import mikereduce.worker.shared.WorkerMessage;
@@ -84,7 +83,7 @@ public class WorkerManager implements Runnable {
                         System.out.println("PERCENT: " + percent);
                         ClientManager client = ClientListener.getInstance().getManager(woo.getJob().getId());
 
-                        JobClientStatus jcs;
+                        ClientResponse jcs;
                         if (percent == 100) {
                             client.reportDone(this);
                         } else {
@@ -131,7 +130,7 @@ public class WorkerManager implements Runnable {
             }
         };
 
-        tim.scheduleAtFixedRate(killMe, 0, 7000);
+        tim.scheduleAtFixedRate(killMe, 0, 15000);
 
     }
 

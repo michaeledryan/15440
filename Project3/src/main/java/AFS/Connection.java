@@ -27,7 +27,7 @@ public class Connection implements DistributedIO {
     private Socket s;
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;
-    private int timeout = 200;
+    private int timeout = 0;
 
     /**
      * Connects to the nameserver.
@@ -174,8 +174,8 @@ public class Connection implements DistributedIO {
                     throw new IOException("Bad message type.");
                 }
                 return rep.getData();
-            } catch (ConnectException | SocketTimeoutException e) {
-
+            } catch (SocketTimeoutException e) {
+                System.out.println("\t asdfasd fasdf");
             }
         }
         throw new IOException("No reachable data nodes.");

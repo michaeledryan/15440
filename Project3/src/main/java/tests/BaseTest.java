@@ -9,9 +9,12 @@ import mikereduce.jobtracker.server.ClientMessageType;
 import mikereduce.jobtracker.server.JobTracker;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.worker.mapnode.MapperMain;
+import org.ini4j.Ini;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Shit test.
@@ -21,6 +24,7 @@ public class BaseTest {
     private static String[] args = {"-c", "test.ini"};
     private static String[] args2 = {"-c", "mapper.ini"};
     private static String[] argsName = {"-p", "9000"};
+    private static String[] argsClient = {"-c", "test1Config.ini"};
     private static String[] argsData1 = {"-p", "8001", "-i", "test1"};
     private static String[] argsData2 = {"-p", "8002", "-i", "test2"};
 
@@ -28,6 +32,8 @@ public class BaseTest {
     public void testConnection() {
 
         JobTracker.main(args);
+        MapperMain.main(args2);
+        MapperMain.main(args2);
         MapperMain.main(args2);
         MapperMain.main(args2);
 
@@ -59,26 +65,25 @@ public class BaseTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        System.out.println("TESTSTESTEST");
-        System.out.println(Arrays.toString("".split("\n")));
-        System.out.println("".split("\n").length);
 
-        JobConfig conf = new JobConfig();
+        JobClient.main(argsClient);
+    }
 
-        conf.setInputReader(String.class);
-        conf.setMiker(IdentityMap.class);
-        conf.setOutputWriter(String.class);
-        conf.setPartitioner(String.class);
-        conf.setRyaner(IdentityReducer.class);
-        conf.setInputPath("a.txt");
-        conf.setOutputPath("testOut.txt");
-        conf.setNumMappers(2);
-        conf.setNumReducers(2);
 
-        ClientMessage cm = new ClientMessage(ClientMessageType.NEW,conf);
+    public void junk() {
+        Ini ini = new Ini();
 
-        System.out.println("sending message...");
-        JobClient.submit(cm, "localhost", 9001);
+        ini.put("main", "mapper", IdentityMap.class.getName());
+        ini.put("main", "reducer", IdentityReducer.class.getName());
+        ini.put("main", "inputFile", "test1.txt");
+        ini.put("main", "outputFile", "out1.txt");
+        ini.put("main", "numMappers", "4");
+        ini.put("main", "numReducers", "2");
+        try {
+            ini.store(new File("test1Config.ini"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

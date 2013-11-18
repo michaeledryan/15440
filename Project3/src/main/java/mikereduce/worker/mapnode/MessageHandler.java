@@ -19,21 +19,22 @@ public class MessageHandler implements Runnable {
 
     private WorkerControlMessage msg;
     private ObjectOutputStream oos;
+    private final String address;
+    private final int port;
 
     public MessageHandler(WorkerControlMessage msg, ObjectOutputStream oos) {
         this.msg = msg;
         this.oos = oos;
+        this.address = msg.getFSHost();
+        this.port = msg.getFSPort();
     }
 
     @Override
     public void run() {
-        // Parse that message! Start the job!
+        // Parse the message! Start the job!
         switch (msg.getType()) {
             case ACK:
                 // Don't really need to do anything
-                break;
-            case KILL:
-
                 break;
             case NEW:
                 // Start the new job
@@ -59,7 +60,7 @@ public class MessageHandler implements Runnable {
             // Construct reducer and context
             final Reducer reducer = (Reducer) conf.getConf().getRyaner().newInstance();
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
-                    new Connection("localhost", 9000), conf.getNumReducers(), conf.getReducerIndex());
+                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
             String[] outPath = new String[1];
             outPath[0] = conf.getOutputLocation();
             oc.setOutputPaths(outPath);
@@ -92,7 +93,7 @@ public class MessageHandler implements Runnable {
             // Construct mapper and context.
             final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
-                    new Connection("localhost", 9000), conf.getNumReducers(), conf.getReducerIndex());
+                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
             final MapContext mc = new MapContext(mapper, oc, conf.getBlock());
 
             // Run job

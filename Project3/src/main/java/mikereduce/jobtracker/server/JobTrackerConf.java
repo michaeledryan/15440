@@ -12,7 +12,8 @@ public class JobTrackerConf {
 
     private int workerPort; // Port for communication from worker nodes.
     private int clientPort; // Port for listening to clients.
-
+    private int fsPort;
+    private String fsAddress;
 
     public JobTrackerConf(File location) {
         Ini ini = new Ini();
@@ -24,6 +25,8 @@ public class JobTrackerConf {
 
         workerPort = ini.get("main", "workerPort", int.class);
         clientPort = ini.get("main", "clientPort", int.class);
+        fsPort = ini.get("main", "fsPort", int.class);
+        fsAddress = ini.get("main", "fsAddress");
 
     }
 
@@ -33,5 +36,13 @@ public class JobTrackerConf {
 
     public int getWorkerPort() {
         return workerPort;
+    }
+
+    public int getFsPort() {
+        return fsPort;
+    }
+
+    public String getFsAddress() {
+        return fsAddress;
     }
 }

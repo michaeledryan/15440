@@ -55,4 +55,7 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
 
     }
 
+    public void finishCommit() {
+        committer.finishCommit();
+    }
 }

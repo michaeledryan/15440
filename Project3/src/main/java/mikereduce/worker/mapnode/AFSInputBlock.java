@@ -29,20 +29,9 @@ public class AFSInputBlock implements InputBlock {
         this.port = port;
     }
 
-
-    public long getOffset() {
-        return offset;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-
     @Override
     public String getLine() {
         if (conn == null) {
-
             setupBlock();
         }
 
@@ -53,7 +42,6 @@ public class AFSInputBlock implements InputBlock {
     public boolean nextLine() {
         if (conn == null) {
             setupBlock();
-
             return block.size() != 0;
 
         } else {
@@ -70,13 +58,24 @@ public class AFSInputBlock implements InputBlock {
         return (block == null) || blockIndex <= block.size();
     }
 
+    /**
+     * Loads the block this node is working on from the DFS into memory. Streams data in chunks to avoid
+     * requests for remote files taking too long.
+     */
     private void setupBlock() {
-        System.out.println("start at line: " + offset + ", end at line: " + (offset + size));
         conn = new Connection("localhost", 9000); // TODO: Add actual location.
-        try {
-            block = new ArrayList<>(Arrays.asList(conn.readLines(filePath, offset, size).split("\n")));
-        } catch (Exception e) {
-            e.printStackTrace();
+        StringBuilder builder = new StringBuilder();
+        for (int j = offset; j < size + offset; j += size / 10) {
+            try {
+                System.out.println("getting : " + j);
+                String n = conn.readLines(filePath, j, Math.min(offset + size - j, size / 10));
+                builder.append(n + "\n");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        // Convert from StringBuilder to block.
+        block = new ArrayList<>(Arrays.asList(builder.toString().split("\n")));
     }
 }

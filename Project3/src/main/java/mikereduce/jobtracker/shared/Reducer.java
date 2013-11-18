@@ -5,11 +5,7 @@ import mikereduce.shared.MapContext;
 import mikereduce.shared.OutputFormat;
 
 /**
- * Created with IntelliJ IDEA.
- * User: michaelryan
- * Date: 11/10/13
- * Time: 7:45 PM
- * To change this template use File | Settings | File Templates.
+ * User-implemented class for running Reduce tasks.
  */
 public class Reducer<KEY extends Comparable, VALUE> {
 
@@ -17,7 +13,7 @@ public class Reducer<KEY extends Comparable, VALUE> {
      * Called at the end of the task.
      */
     protected void cleanup(ReduceContext context) {
-        // To be implemented
+        context.finishCommit();
     }
 
 
@@ -35,7 +31,6 @@ public class Reducer<KEY extends Comparable, VALUE> {
         setup(context);
         try {
             while (context.nextKey()) {
-                System.out.println(" REDUCING ");
                 reduce(context.getCurrentKey(), context.getValues(), context);
             }
         } finally {
@@ -52,16 +47,18 @@ public class Reducer<KEY extends Comparable, VALUE> {
 
 
     /**
-     * OVERRIDE THIS!
-     * @return
+     * Gets the InputFormat for the Mapper.
+     * Override this.
+     * @return an InputFormat to parse input.
      */
     public InputFormat<KEY, VALUE> getInputFormat() {
         return null;
     }
 
     /**
-     * OVERRIDE THIS!
-     * @return
+     * Gets the OutputFormat for the Mapper.
+     * Override this.
+     * @return an OutputFormat to parse input.
      */
     public OutputFormat<KEY, VALUE> getOutputFormat() {
         return null;

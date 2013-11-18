@@ -1,7 +1,7 @@
 package mikereduce.jobtracker.server;
 
 import AFS.Connection;
-import mikereduce.jobtracker.shared.JobClientStatus;
+import mikereduce.jobtracker.shared.ClientResponse;
 import mikereduce.jobtracker.shared.JobConfig;
 import mikereduce.jobtracker.shared.JobState;
 import mikereduce.shared.ControlMessageType;
@@ -19,7 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Handles a single client's task.
+ * Handles a single client's task. Spins up in response to a request to run a job,
+ * runs both phases of the job, and then 
  */
 public class ClientManager implements Runnable {
 
@@ -35,8 +36,13 @@ public class ClientManager implements Runnable {
     private JobConfig conf;
     private int numReducers;
 
+    private int port;
+    private String address;
+
     public ClientManager(Socket client) {
         sock = client;
+        address = JobTracker.getInstance().getConf().getFsAddress();
+        port = JobTracker.getInstance().getConf().getFsPort();
     }
 
     @Override
@@ -53,19 +59,10 @@ public class ClientManager implements Runnable {
                 msg = (ClientMessage) ois.readObject();
                 switch (msg.getType()) {
                     case NEW:
-                        startMap(msg.getConf());
-
                         // Start a new Job.
-                        /*
-                         * This job needs:
-                         *
-                         * An input file specified.
-                         * An output file specified.
-                         * A Mapper class
-                         * A Reducer class
-                         *
-                         */
+                        startMap(msg.getConf());
                         break;
+
                     case LIST:
                         // List all running jobs.
                         break;
@@ -73,13 +70,12 @@ public class ClientManager implements Runnable {
 
                 // Get config to a thing that runs jobs.
 
-
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
 
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
     }
@@ -109,7 +105,9 @@ public class ClientManager implements Runnable {
         jc = conf;
 
         numReducers = conf.getNumReducers();
-        if (numReducers == 0) numReducers = 4;
+        if (numReducers == 0) {
+            numReducers = 4;
+        }
 
         numMappers = conf.getNumMappers();
         if (numMappers == 0) {
@@ -130,13 +128,13 @@ public class ClientManager implements Runnable {
 
             int startLine = i * lineCount / numMappers;
 
-            int endLine = (i != numMappers - 1) ? lineCount / numMappers : lineCount - i * lineCount/numMappers;
+            int endLine = (i != numMappers - 1) ? lineCount / numMappers : lineCount - i * lineCount / numMappers;
 
-             InputBlock ib = new AFSInputBlock(conf.getInputPath(), startLine, endLine, "localhost", 9000); //TODO: MAKE REAL
+            InputBlock ib = new AFSInputBlock(conf.getInputPath(), startLine, endLine, address, port);
 
             WorkerManager manager = myWorkers.get(i);
             WorkerJobConfig wjc = new WorkerJobConfig(conf, ib, outputLoc, jobId, numReducers, i, phase);
-            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc);
+            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc, address, port);
 
             this.workers.put(manager, i);
 
@@ -147,9 +145,9 @@ public class ClientManager implements Runnable {
             }
         }
 
-        JobClientStatus jcs = new JobClientStatus(JobState.RUNNING, "Started the job with id: " + jobId.toString());
+        ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Started the job with id: " + jobId.toString());
         try {
-            oos.writeObject(jcs);
+            sendMessage(jcs);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -162,7 +160,7 @@ public class ClientManager implements Runnable {
      * @param message Message to be sent.
      * @throws IOException If there is a communication problem.
      */
-    public void sendMessage(JobClientStatus message) throws IOException {
+    public void sendMessage(ClientResponse message) throws IOException {
         oos.writeObject(message);
         oos.flush();
     }
@@ -175,10 +173,24 @@ public class ClientManager implements Runnable {
     public void reportDone(WorkerManager workerManager) {
 
         if (!remainingIndices.isEmpty()) {
-            InputBlock ib = new AFSInputBlock(jc.getInputPath(), 0, 0, "localhost", 9000); //TODO: MAKE REAL
 
-            WorkerJobConfig wjc = new WorkerJobConfig(jc, ib, jobId.toString(), jobId, 1, remainingIndices.poll(), phase);
-            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc);
+            int index = remainingIndices.poll();
+            InputBlock ib;
+
+            if (phase == JobPhase.REDUCE) {
+
+                Set<String> intermediateFiles = new HashSet<>();
+
+                for (int j = 0; j < numMappers; j++) {
+                    intermediateFiles.add(jobId.toString() + "_" + j + "," + index);
+                }
+
+                ib = new AFSReduceInputBlock(intermediateFiles, address, port);
+            } else {
+                ib = new AFSInputBlock(jc.getInputPath(), 0, 0, address, port);
+            }
+            WorkerJobConfig wjc = new WorkerJobConfig(jc, ib, jobId.toString(), jobId, 1, index, phase);
+            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc, address, port);
             try {
                 workerManager.sendRequest(message);
             } catch (IOException e) {
@@ -187,9 +199,8 @@ public class ClientManager implements Runnable {
         } else {
             workers.remove(workerManager);
 
-            // if (workers.isEmpty() && phase == JobPhase.MAP) {
             if (phase == JobPhase.MAP) {
-                JobClientStatus jcs = new JobClientStatus(JobState.RUNNING, "Finished map phase");
+                ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Finished map phase");
                 try {
                     sendMessage(jcs);
                 } catch (IOException e) {
@@ -199,7 +210,7 @@ public class ClientManager implements Runnable {
                     startReduce();
                 }
             } else {
-                JobClientStatus jcs = new JobClientStatus(JobState.COMPLETED, "Finished map phase");
+                ClientResponse jcs = new ClientResponse(JobState.COMPLETED, "Finished Reduce phase");
                 try {
                     sendMessage(jcs);
 
@@ -215,7 +226,6 @@ public class ClientManager implements Runnable {
      */
     private void startReduce() {
 
-        System.out.println("\t Trying to reduce.");
         String outputLoc = conf.getOutputPath();
         Map<WorkerManager, Integer> workers = WorkerListener.getInstance().getWorkers();
 
@@ -232,7 +242,6 @@ public class ClientManager implements Runnable {
             myWorkers.add(manager);
         }
 
-
         int i = 0;
         for (WorkerManager manager : myWorkers) {
 
@@ -242,10 +251,12 @@ public class ClientManager implements Runnable {
                 intermediateFiles.add(jobId.toString() + "_" + j + "," + i);
             }
 
-            InputBlock ib = new AFSReduceInputBlock(intermediateFiles, "localhost", 9000);
+            InputBlock ib = new AFSReduceInputBlock(intermediateFiles, address, port);
 
             WorkerJobConfig wjc = new WorkerJobConfig(conf, ib, outputLoc, jobId, numMappers, i, phase);
-            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc);
+            WorkerControlMessage message = new WorkerControlMessage(ControlMessageType.NEW, wjc,
+                    JobTracker.getInstance().getConf().getFsAddress(),
+                    JobTracker.getInstance().getConf().getFsPort());
 
             this.workers.put(manager, i++);
 
@@ -256,9 +267,9 @@ public class ClientManager implements Runnable {
             }
         }
 
-        JobClientStatus jcs = new JobClientStatus(JobState.RUNNING, "Starting reduce.");
+        ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Starting reduce.");
         try {
-            oos.writeObject(jcs);
+            sendMessage(jcs);
         } catch (IOException e) {
             e.printStackTrace();
         }

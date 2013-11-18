@@ -19,7 +19,7 @@ public class JobTracker {
     private static JobTracker instance;
 
 
-    public JobTracker getInstance() {
+    public static JobTracker getInstance() {
         return instance;
     }
 
@@ -68,4 +68,7 @@ public class JobTracker {
         }
     }
 
+    public JobTrackerConf getConf() {
+        return conf;
+    }
 }

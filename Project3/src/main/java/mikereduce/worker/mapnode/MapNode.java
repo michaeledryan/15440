@@ -20,7 +20,7 @@ import java.util.TimerTask;
 public class MapNode implements Runnable {
 
     private Socket sock;
-    private static Set<JobConfig> jobs = new HashSet<JobConfig>();
+    private static Set<JobConfig> jobs = new HashSet<>();
     private MapperConf conf;
     private int numCores = Runtime.getRuntime().availableProcessors();
 

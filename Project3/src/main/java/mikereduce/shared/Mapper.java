@@ -9,7 +9,7 @@ public class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable
      * Called at the end of the task.
      */
     protected void cleanup(MapContext context) {
-        // To be implemented
+        context.finishCommit();
     }
 
 

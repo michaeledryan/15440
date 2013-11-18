@@ -8,5 +8,5 @@ package mikereduce.shared;
  * To change this template use File | Settings | File Templates.
  */
 public enum ControlMessageType {
-    ACK, KILL, NEW;
+    ACK, NEW;
 }

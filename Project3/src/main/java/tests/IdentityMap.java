@@ -12,18 +12,22 @@ public class IdentityMap extends Mapper<String, String, String, String> {
      * Called once per K/V pair.
      */
     protected void map(String key, String val, MapContext context) {
-        context.commit(context.getCurrentKey(), context.getCurrentValue());
+        context.commit(key, val);
+        System.out.println("key: " + key + "; val: " + val);
     }
 
 
     /**
-     * Split on space.
-     * @return
+     * Split on space, assuming one space per line.
+     * First word is key, second is value.
+     *
+     * @return A simple InputFormat
      */
     public InputFormat<String, String> getInputFormat() {
         return new InputFormat<String, String>() {
             @Override
             public String getValue(String currentPair) {
+                System.out.println("\t " + currentPair);
                 return currentPair.split(" ")[1];
             }
 
@@ -36,7 +40,8 @@ public class IdentityMap extends Mapper<String, String, String, String> {
 
     /**
      * Extremely simple.
-     * @return
+     *
+     * @return An output format mapping (K,V) to 'K V'
      */
     public OutputFormat<String, String> getOutputFormat() {
         return new OutputFormat<String, String>() {

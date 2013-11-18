@@ -87,6 +87,9 @@ public class ReduceContext<KEY extends Comparable, VALUE> {
      */
     public void commit(KEY key, VALUE val) {
         committer.commitLine(outputFormat.parse(key, val), key.hashCode());
+    }
 
+    public void finishCommit() {
+        committer.finishCommit();
     }
 }
