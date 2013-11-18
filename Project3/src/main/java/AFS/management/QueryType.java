@@ -1,6 +1,7 @@
 package AFS.management;
 
 /**
+ * AFS administrative queries.
  */
 public enum QueryType {
     FILES, NODES;

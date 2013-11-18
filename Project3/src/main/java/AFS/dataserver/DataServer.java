@@ -15,6 +15,11 @@ public class DataServer {
     static private String helpFooter =
             "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
+    /**
+     * Parse CLI and go!
+     *
+     * @param args CLI.
+     */
     public static void main(String[] args) {
 
         Options opt = new Options();

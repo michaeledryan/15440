@@ -63,7 +63,7 @@ public class FileMap {
     /**
      * Maps key to all values.
      *
-     * @param key Filename.
+     * @param key   Filename.
      * @param value List of hostname:port.
      */
     public void putAll(String key, ArrayList<String> value) {
@@ -231,6 +231,12 @@ public class FileMap {
         return out;
     }
 
+    /**
+     * Gives a listing of all data nodes currently known by the name node as
+     * a formatted string suitable for console output.
+     *
+     * @return Formatted string.
+     */
     public String getNodes() {
         String out = "Node Identifier\tNode hostname:port\n";
         out += StringUtils.repeat("-", 80) + "\n";

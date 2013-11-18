@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Context for a Reducer. Holds input and output channels through which a Reducer performs its tasks.
  */
-public class ReduceContext<KEY extends Comparable, VALUE> {
+public abstract class ReduceContext<KEY extends Comparable, VALUE> {
 
 
     public Class<? extends Reducer> getReducerClass() {

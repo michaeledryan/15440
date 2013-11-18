@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handles a single client's task. Spins up in response to a request to run a job,
- * runs both phases of the job, and then 
+ * runs both phases of the job, and then
  */
 public class ClientManager implements Runnable {
 

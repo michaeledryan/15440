@@ -9,16 +9,12 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
         return mapperClass;
     }
 
-    // Some kind of connection to the host???
-
     private Class<? extends Mapper> mapperClass;
     private OutputCommitter committer;
     private InputBlock reader;
     private String currentPair;
     private InputFormat<KEYIN, VALUEIN> inputFormat;
     private OutputFormat<KEYOUT, VALUEOUT> outputFormat;
-
-    private long pointInBlock = 0;
 
     public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper, OutputCommitter out, InputBlock in) {
         this.mapperClass = mapper.getClass();
@@ -31,7 +27,6 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
     public boolean nextKeyValue() {
         if (reader.nextLine()) {
             currentPair = reader.getLine();
-            pointInBlock = currentPair.length() * 2; // Convert number of chars to bytes. 1 char == 16 bits.
             return true;
         } else return false;
     }

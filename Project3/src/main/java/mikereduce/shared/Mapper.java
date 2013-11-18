@@ -1,27 +1,34 @@
 package mikereduce.shared;
 
 /**
-
+ * This class is extended by a client wishing to use the MapReduce framework.
+ * It must implement the map task.
  */
-public class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable, VALUEOUT> {
+public abstract class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable, VALUEOUT> {
 
     /**
-     * Called at the end of the task.
+     * Called at the end of the task to handle any final work.
+     *
+     * @param context Current state of the map.
      */
-    protected void cleanup(MapContext context) {
-        context.finishCommit();
-    }
+    protected void cleanup(MapContext context){
 
+    };
 
     /**
-     * Called once per K/V pair.
+     * Called once per key, value pair.
+     *
+     * @param key     Data key.
+     * @param val     Data value.
+     * @param context Current state of the map.
      */
-    protected void map(KEYIN key, VALUEIN val, MapContext context) {
-        // To be implemented
-    }
+    protected abstract void map(KEYIN key, VALUEIN val, MapContext context);
 
     /**
-     * Generally not overridden.
+     * Runs a single map.
+     * Generally NOT overridden.
+     *
+     * @param context Current state of the map.
      */
     public void run(MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> context) {
         setup(context);
@@ -30,31 +37,32 @@ public class Mapper<KEYIN extends Comparable, VALUEIN, KEYOUT extends Comparable
                 map(context.getCurrentKey(), context.getCurrentValue(), context);
             }
         } finally {
+            context.finishCommit();
             cleanup(context);
         }
     }
 
     /**
-     * Called before the task runs.
+     * Called before the task runs to carry out any initial setup.
+     *
+     * @param context Current state of the map.
      */
     protected void setup(MapContext context) {
-        // To be implemented.
-    }
 
-
-    /**
-     * OVERRIDE THIS!
-     * @return
-     */
-    public InputFormat<KEYIN, VALUEIN> getInputFormat() {
-        return null;
     }
 
     /**
-     * OVERRIDE THIS!
-     * @return
+     * Implement this to parse the input data.
+     *
+     * @return Input format.
      */
-    public OutputFormat<KEYOUT, VALUEOUT> getOutputFormat() {
-        return null;
-    }
+    public abstract InputFormat<KEYIN, VALUEIN> getInputFormat();
+
+    /**
+     * Implement this to parse the output format.
+     *
+     * @return Output format.
+     */
+    public abstract OutputFormat<KEYOUT, VALUEOUT> getOutputFormat();
+
 }

@@ -157,7 +157,7 @@ public interface DistributedIO {
      * @param path Filename.
      * @return Array of hostname:port.
      * @throws Exception Invalid message received or exception raised by
-     * name node.
+     *                   name node.
      */
     public String[] getLocations(String path) throws Exception;
 
