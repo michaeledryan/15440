@@ -15,6 +15,7 @@ public class FileData {
     private String contents = null;
     private String[] lines = null;
     private int len;
+    private int size;
 
     public FileData(String path) {
         this.f = new File(path);
@@ -31,6 +32,7 @@ public class FileData {
     public String read() throws IOException {
         if (contents == null) {
             contents = FileUtils.readFileToString(f, "US-ASCII");
+            size = contents.length();
             len = getLineCount();
         }
         return contents;
@@ -41,7 +43,6 @@ public class FileData {
             if (contents == null) {
                 this.read();
             }
-            System.out.println(contents);
             lines = contents.split("\n");
             len = lines.length;
         }
@@ -76,6 +77,7 @@ public class FileData {
         contents += data;
         String[] ln = data.split("\n");
         len += ln.length;
+        size += data.length();
         File dir = new File(f.getParent());
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -96,4 +98,7 @@ public class FileData {
         return len;
     }
 
+    public int getSize() {
+        return size;
+    }
 }
