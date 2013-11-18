@@ -132,7 +132,7 @@ public class WorkerManager implements Runnable {
             }
         };
 
-        tim.scheduleAtFixedRate(killMe, 0, 15000);
+        tim.schedule(killMe, 0, 15000);
     }
 
 }
