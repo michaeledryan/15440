@@ -15,11 +15,11 @@ public class IdentityReducer extends Reducer<String, String> {
      * Called once per K/V pair.
      */
     protected void reduce(String key, Iterable<String> vals, ReduceContext context) {
-        String reduced = "";
+        StringBuilder sb = new StringBuilder();
         for (String s : vals) {
-            reduced = reduced + s;
+            sb.append(s);
         }
-        context.commit(key, reduced);
+        context.commit(key, sb.toString());
     }
 
 

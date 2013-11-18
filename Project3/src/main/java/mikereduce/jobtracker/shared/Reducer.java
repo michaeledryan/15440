@@ -25,7 +25,7 @@ public abstract class Reducer<KEY extends Comparable, VALUE> {
      * @param val     All corresponding values.
      * @param context Current state of the reduce.
      */
-    protected abstract void reduce(KEY key, Iterable<VALUE> val, ReduceContext context);
+    protected abstract void reduce(KEY key, Iterable<VALUE> vals, ReduceContext context);
 
     /**
      * Runs a single reduce.

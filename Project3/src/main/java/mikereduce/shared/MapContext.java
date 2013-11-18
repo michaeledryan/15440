@@ -1,9 +1,6 @@
 package mikereduce.shared;
 
-import mikereduce.jobtracker.shared.JobState;
 import mikereduce.worker.mapnode.MessageHandler;
-import mikereduce.worker.shared.JobStatus;
-import mikereduce.worker.shared.WorkerMessage;
 
 import java.io.IOException;
 

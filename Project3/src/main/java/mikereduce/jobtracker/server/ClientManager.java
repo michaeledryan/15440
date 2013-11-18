@@ -67,6 +67,23 @@ public class ClientManager implements Runnable {
                         break;
 
                     case LIST:
+                        Set<WorkerManager> workers = WorkerListener.getInstance().getWorkers().keySet();
+
+                        Set<UUID> uuids = new HashSet<>();
+
+                        for (WorkerManager wm : workers) {
+                            uuids.addAll(wm.jobIds);
+                        }
+
+                        StringBuilder sb = new StringBuilder("Currently running jobs are: \n");
+
+                        for (UUID id : uuids) {
+                            sb.append(id.toString());
+                            sb.append("\n");
+                        }
+
+                        sendMessage(new ClientResponse(JobState.COMPLETED, sb.toString()));
+
                         // List all running jobs.
                         break;
                 }
@@ -98,7 +115,7 @@ public class ClientManager implements Runnable {
 
         int lineCount = 0;
         try {
-            lineCount = new Connection("localhost", 9000).countLines(conf.getInputPath());
+            lineCount = new Connection(address, port).countLines(conf.getInputPath());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,7 +165,9 @@ public class ClientManager implements Runnable {
             }
         }
 
-        ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Started the job with id: " + jobId.toString());
+        ClientResponse jcs = new ClientResponse(JobState.RUNNING,
+                "Started the job with id: " + jobId.toString() + " Copying files for map. " +
+                        "This may take several minutes.");
         try {
             sendMessage(jcs);
         } catch (IOException e) {
@@ -292,6 +311,9 @@ public class ClientManager implements Runnable {
         workers.remove(workerManager);
     }
 
+    /**
+     * Sends an update as if a worker has completed ten percent of its workload.
+     */
     public void sendUpdate() {
         synchronized (lock) {
             if (phase == JobPhase.MAP) {
@@ -299,14 +321,12 @@ public class ClientManager implements Runnable {
                 try {
                     sendMessage(new ClientResponse(JobState.RUNNING, "The map is now " + percentDone + "% percent complete."));
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             } else {
                 percentDone += 10 / numMappers;
                 try {
                     sendMessage(new ClientResponse(JobState.RUNNING, "The reduce is now " + percentDone + "% percent complete."));
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }

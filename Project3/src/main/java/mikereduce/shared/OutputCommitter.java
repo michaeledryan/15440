@@ -22,7 +22,7 @@ public class OutputCommitter {
      * @param numPartitions the number of output partitions for the data.
      * @param index         Used for nomenclature to divide outputs.
      */
-    public OutputCommitter(String path, Connection conn, int numPartitions, int index) {
+    public OutputCommitter(String path, Connection conn, int numPartitions, int index, boolean map) {
         this.outputPaths = new String[numPartitions];
         this.conn = conn;
         this.index = index;
@@ -30,13 +30,16 @@ public class OutputCommitter {
 
         try {
             for (int i = 0; i < numPartitions; i++) {
-                outputPaths[i] = path + "_" + index + "," + i;
-                conn.writeFile(outputPaths[i], "");
+                if (map) {
+                    outputPaths[i] = path + "_" + index + "," + i;
+                    conn.writeFile(outputPaths[i], "");
+                }
                 sb[i] = new StringBuilder();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -57,7 +60,13 @@ public class OutputCommitter {
      * @param hash used for partitioning
      */
     public void commitLine(String line, int hash) {
-        sb[hash % outputPaths.length].append(line);
+        int pos;
+        if (hash >= 0) {
+            pos = hash % outputPaths.length;
+        } else {
+            pos = -hash % outputPaths.length;
+        }
+        sb[pos].append(line);
         commitCount++;
         if ((commitCount % 100) == 0) {
             try {

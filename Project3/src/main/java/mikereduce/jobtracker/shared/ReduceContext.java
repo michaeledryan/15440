@@ -96,7 +96,7 @@ public class ReduceContext<KEY extends Comparable, VALUE> {
     public void commit(KEY key, VALUE val) {
         committer.commitLine(outputFormat.parse(key, val), key.hashCode());
         counter++;
-        if ((counter % (reader.getLines() / 10)) == 0 && numSent < 10) {
+        if (((counter % reader.getLines()) / 10) == 0 && numSent < 10) {
             try {
                 handler.sendUpdate();
                 numSent++;

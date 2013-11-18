@@ -60,7 +60,7 @@ public class MessageHandler implements Runnable {
             // Construct reducer and context
             final Reducer reducer = (Reducer) conf.getConf().getRyaner().newInstance();
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
-                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
+                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex(), false);
             String[] outPath = new String[1];
             outPath[0] = conf.getOutputLocation();
             oc.setOutputPaths(outPath);
@@ -93,7 +93,7 @@ public class MessageHandler implements Runnable {
             // Construct mapper and context.
             final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
-                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
+                    new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex(), true);
             final MapContext mc = new MapContext(mapper, oc, conf.getBlock(), this);
 
             // Run job

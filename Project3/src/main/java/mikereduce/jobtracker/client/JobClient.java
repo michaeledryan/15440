@@ -9,6 +9,7 @@ import org.apache.commons.cli.*;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Simple point of interaction with the MikeReduce framework. This submits
@@ -89,15 +90,20 @@ public class JobClient {
      * @param port port of the JobTracker
      */
     public static void submit(ClientMessage conf, String addr, int port) {
-        Socket sock;
+        Socket sock = null;
 
         ObjectInputStream ois;
         ObjectOutputStream oos;
 
         try {
             sock = new Socket(addr, port);
+        } catch (IOException e1) {
+            System.err.println("Could not connect to JobTracker.");
+            System.exit(1);
+        }
 
-            oos = new ObjectOutputStream(sock.getOutputStream());
+        try {
+        oos = new ObjectOutputStream(sock.getOutputStream());
             ois = new ObjectInputStream(sock.getInputStream());
 
             // Send the config

@@ -1,9 +1,11 @@
 package mikereduce.jobtracker.server;
 
+import com.google.gson.Gson;
 import mikereduce.jobtracker.shared.ClientResponse;
 import mikereduce.shared.ControlMessageType;
 import mikereduce.shared.WorkerControlMessage;
 import mikereduce.worker.shared.WorkerMessage;
+import oracle.jrockit.jfr.settings.JSONElement;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -76,9 +78,6 @@ public class WorkerManager implements Runnable {
                         break;
                     case HEARTBEAT:
                         // After a heartbeat message, keep yourself alive.
-                        if (woo.getJob() != null) {
-                            jobIds.add(woo.getJob().getId());
-                        }
                         WorkerListener.getInstance().getWorkers().put(this, 1);
                         break;
                     case UPDATE:
@@ -89,10 +88,13 @@ public class WorkerManager implements Runnable {
                         if (percent == 100) {
                             client.reportDone(this);
                         } else {
+                            if (woo.getJob() != null) {
+                                jobIds.add(woo.getJob().getId());
+                            }
                             client.sendUpdate();
-                            // What about partial updates?
+
                         }
-                        // Send data to client running job?
+
                         break;
                     case ERROR:
                         // Send error message to client.
@@ -134,7 +136,6 @@ public class WorkerManager implements Runnable {
         };
 
         tim.scheduleAtFixedRate(killMe, 0, 15000);
-
     }
 
 }
