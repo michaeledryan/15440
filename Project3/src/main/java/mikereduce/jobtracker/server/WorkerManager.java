@@ -84,13 +84,12 @@ public class WorkerManager implements Runnable {
                     case UPDATE:
                         // This is updated progress on a job.
                         int percent = woo.getPercent();
-                        System.out.println("PERCENT: " + percent);
                         ClientManager client = ClientListener.getInstance().getManager(woo.getJob().getId());
 
                         if (percent == 100) {
                             client.reportDone(this);
                         } else {
-                            client.sendUpdate(this, percent);
+                            client.sendUpdate();
                             // What about partial updates?
                         }
                         // Send data to client running job?

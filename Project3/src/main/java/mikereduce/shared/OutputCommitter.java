@@ -61,7 +61,6 @@ public class OutputCommitter {
         commitCount++;
         if ((commitCount % 100) == 0) {
             try {
-                System.out.println("committing " + commitCount);
                 conn.writeFile(outputPaths[hash % outputPaths.length], sb[hash % outputPaths.length].toString());
                 sb[hash % outputPaths.length] = new StringBuilder();
             } catch (Exception e) {

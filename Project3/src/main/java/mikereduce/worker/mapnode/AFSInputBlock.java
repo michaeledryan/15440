@@ -71,11 +71,10 @@ public class AFSInputBlock implements InputBlock {
      * requests for remote files taking too long.
      */
     private void setupBlock() {
-        conn = new Connection("localhost", 9000); // TODO: Add actual location.
+        conn = new Connection(hostname, port);
         StringBuilder builder = new StringBuilder();
         for (int j = offset; j < size + offset; j += size / 10) {
             try {
-                System.out.println("getting : " + j);
                 String n = conn.readLines(filePath, j, Math.min(offset + size - j, size / 10));
                 builder.append(n + "\n");
             } catch (Exception e) {

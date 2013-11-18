@@ -6,6 +6,7 @@ import mikereduce.shared.OutputCommitter;
 import mikereduce.shared.OutputFormat;
 import mikereduce.worker.mapnode.MessageHandler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
  * Context for a Reducer. Holds input and output channels through which a Reducer performs its tasks.
  */
 public class ReduceContext<KEY extends Comparable, VALUE> {
+
+
 
 
     public Class<? extends Reducer> getReducerClass() {
@@ -27,6 +30,8 @@ public class ReduceContext<KEY extends Comparable, VALUE> {
     private InputFormat<KEY, VALUE> inputFormat;
     private OutputFormat<KEY, VALUE> outputFormat;
     private final MessageHandler handler;
+    private int counter = 0;
+    private int numSent = 0;
 
     /**
      * Constructor. Sets relevant fields.
@@ -90,6 +95,15 @@ public class ReduceContext<KEY extends Comparable, VALUE> {
      */
     public void commit(KEY key, VALUE val) {
         committer.commitLine(outputFormat.parse(key, val), key.hashCode());
+        counter++;
+        if ((counter % (reader.getLines() / 10)) == 0 && numSent < 10) {
+            try {
+                handler.sendUpdate();
+                numSent++;
+            } catch (IOException e) {
+                //
+            }
+        }
     }
 
     public void finishCommit() {

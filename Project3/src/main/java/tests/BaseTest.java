@@ -56,7 +56,6 @@ public class BaseTest {
 
         try {
             Thread.sleep(3000);
-            System.out.println("done with sleep.");
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

@@ -13,7 +13,6 @@ public class IdentityMap extends Mapper<String, String, String, String> {
      */
     protected void map(String key, String val, MapContext context) {
         context.commit(key, val);
-        System.out.println("key: " + key + "; val: " + val);
     }
 
 

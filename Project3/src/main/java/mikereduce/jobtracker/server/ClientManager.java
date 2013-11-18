@@ -36,6 +36,7 @@ public class ClientManager implements Runnable {
     private JobConfig conf;
     private int numReducers;
     private int percentDone;
+    private Object lock = new Object();
 
     private int port;
     private String address;
@@ -62,6 +63,7 @@ public class ClientManager implements Runnable {
                     case NEW:
                         // Start a new Job.
                         startMap(msg.getConf());
+
                         break;
 
                     case LIST:
@@ -201,7 +203,8 @@ public class ClientManager implements Runnable {
             workers.remove(workerManager);
 
             if (phase == JobPhase.MAP) {
-                ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Finished map phase");
+                percentDone = 0;
+                ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Map phase complete.");
                 try {
                     sendMessage(jcs);
                 } catch (IOException e) {
@@ -211,6 +214,7 @@ public class ClientManager implements Runnable {
                     startReduce();
                 }
             } else {
+
                 ClientResponse jcs = new ClientResponse(JobState.COMPLETED, "Finished Reduce phase");
                 try {
                     sendMessage(jcs);
@@ -284,26 +288,26 @@ public class ClientManager implements Runnable {
      * @param workerManager failed worker
      */
     public void reportFailure(WorkerManager workerManager) {
-        System.out.println("\t" + workers.keySet());
-        System.out.println("\t" + workerManager);
         remainingIndices.add(workers.get(workerManager));
         workers.remove(workerManager);
     }
 
-    public void sendUpdate(WorkerManager workerManager, int percent) {
-        if (phase == JobPhase.MAP) {
-            percentDone += 10 / numMappers;
-            try {
-                sendMessage(new ClientResponse(JobState.RUNNING, "The job is now " + percentDone +"% percent complete."));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            percentDone += 10 / numMappers;
-            try {
-                sendMessage(new ClientResponse(JobState.RUNNING, "The job is now " + percentDone +"% percent complete."));
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void sendUpdate() {
+        synchronized (lock) {
+            if (phase == JobPhase.MAP) {
+                percentDone += 10 / numMappers;
+                try {
+                    sendMessage(new ClientResponse(JobState.RUNNING, "The map is now " + percentDone + "% percent complete."));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                percentDone += 10 / numMappers;
+                try {
+                    sendMessage(new ClientResponse(JobState.RUNNING, "The reduce is now " + percentDone + "% percent complete."));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

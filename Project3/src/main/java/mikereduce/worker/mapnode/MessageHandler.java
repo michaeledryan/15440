@@ -92,7 +92,6 @@ public class MessageHandler implements Runnable {
         try {
             // Construct mapper and context.
             final Mapper mapper = (Mapper) conf.getConf().getMiker().newInstance();
-            System.out.println("\t" + address);
             OutputCommitter oc = new OutputCommitter(conf.getOutputLocation(),
                     new Connection(address, port), conf.getNumReducers(), conf.getReducerIndex());
             final MapContext mc = new MapContext(mapper, oc, conf.getBlock(), this);

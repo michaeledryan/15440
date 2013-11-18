@@ -23,6 +23,7 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
     private InputFormat<KEYIN, VALUEIN> inputFormat;
     private OutputFormat<KEYOUT, VALUEOUT> outputFormat;
     private int counter = 0;
+    private int numSent = 0;
     MessageHandler handler;
 
     public MapContext(Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper,
@@ -60,9 +61,10 @@ public class MapContext<KEYIN extends Comparable, VALUEIN, KEYOUT extends Compar
     public void commit(KEYOUT key, VALUEOUT val) {
         committer.commitLine(outputFormat.parse(key, val), key.hashCode());
         counter++;
-        if ((counter % reader.getLines() / 10) == 0) {
+        if ((counter % (reader.getLines() / 10)) == 0 && numSent < 10) {
             try {
                 handler.sendUpdate();
+                numSent++;
             } catch (IOException e) {
                 //
             }
