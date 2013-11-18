@@ -11,7 +11,7 @@ public class FileCache {
     private static FileCache ourInstance = new FileCache();
     private static ConcurrentHashMap<String, FileData> cache;
     private int size = 0;
-    private final int MAXSIZE = 25 * 1024 * 1024;
+    private final int MAXSIZE = 50 * 1024 * 1024;
 
     public static FileCache getInstance() {
         return ourInstance;
@@ -40,9 +40,7 @@ public class FileCache {
         if (cache.containsKey(path)) {
             fd = cache.get(path);
         } else {
-            fd = new FileData(path);
-            cache.put(path, fd);
-            size += fd.getSize();
+            fd = add(path);
         }
         return fd.read();
     }
@@ -52,9 +50,7 @@ public class FileCache {
         if (cache.containsKey(path)) {
             return cache.get(path).readLines(start, size);
         } else {
-            FileData fd = new FileData(path);
-            cache.put(path, fd);
-            size += fd.getSize();
+            FileData fd = add(path);
             return fd.readLines(start, size);
         }
     }
@@ -64,8 +60,7 @@ public class FileCache {
         if (cache.containsKey(path)) {
             fd = cache.get(path);
         } else {
-            fd = new FileData(path);
-            cache.put(path, fd);
+            fd = add(path);
         }
         size += data.length();
         fd.write(data);
@@ -75,9 +70,7 @@ public class FileCache {
         if (cache.containsKey(path)) {
             return cache.get(path).countLines();
         } else {
-            FileData fd = new FileData(path);
-            cache.put(path, fd);
-            size += fd.getSize();
+            FileData fd = add(path);
             return fd.countLines();
         }
     }
