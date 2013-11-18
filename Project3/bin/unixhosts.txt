@@ -1,4 +1,4 @@
-unix12.andrew.cmu.edu:9001
-unix13.andrew.cmu.edu:9002
-unix14.andrew.cmu.edu:9003
-unix15.andrew.cmu.edu:9004
+unix2.andrew.cmu.edu:34781
+unix3.andrew.cmu.edu:34782
+unix5.andrew.cmu.edu:34783
+unix6.andrew.cmu.edu:34784

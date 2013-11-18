@@ -15,7 +15,7 @@ fi
 
 HOST=`hostname`
 echo "[main]" > mapper-tmp.ini
-echo "port=9002" >> mapper-tmp.ini
+echo "port=27684" >> mapper-tmp.ini
 echo address=$HOST >> mapper-tmp.ini
 
 DIR=`dirname $0`
@@ -35,7 +35,7 @@ do
     echo "Starting a worker on: $REPLY"
     host=${REPLY%:*}
     port=`echo $REPLY | sed 's/.*\://g'`
-    ssh -oStrictHostKeyChecking=no ${host} "cd ${PWD}; sh ${DIR}/dataserver -p ${port} > logs/dataserver${i}.log" &
+    ssh -oStrictHostKeyChecking=no ${host} "cd ${PWD}; sh ${DIR}/dataserver -p ${port} -n ${HOST} > logs/dataserver${i}.log" &
     ssh -oStrictHostKeyChecking=no ${host} "cd ${PWD}; sh ${DIR}/worker -c mapper-tmp.ini > logs/worker${i}.log" &
     i=$(($i+1))
 done
