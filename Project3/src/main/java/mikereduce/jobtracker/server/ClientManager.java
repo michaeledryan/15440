@@ -221,7 +221,7 @@ public class ClientManager implements Runnable {
         } else {
             workers.remove(workerManager);
 
-            if (phase == JobPhase.MAP) {
+            if (phase == JobPhase.MAP && workers.isEmpty()) {
                 percentDone = 0;
                 ClientResponse jcs = new ClientResponse(JobState.RUNNING, "Map phase complete.");
                 try {
@@ -229,10 +229,9 @@ public class ClientManager implements Runnable {
                 } catch (IOException e) {
                     // Cool your jets.
                 }
-                if (workers.isEmpty()) {
-                    startReduce();
-                }
-            } else {
+                startReduce();
+
+            } else if (workers.isEmpty()){
 
                 ClientResponse jcs = new ClientResponse(JobState.COMPLETED, "Finished Reduce phase");
                 try {
@@ -323,7 +322,7 @@ public class ClientManager implements Runnable {
                 } catch (IOException e) {
                 }
             } else {
-                percentDone += 10 / numMappers;
+                percentDone += 10 / numReducers;
                 try {
                     sendMessage(new ClientResponse(JobState.RUNNING, "The reduce is now " + percentDone + "% percent complete."));
                 } catch (IOException e) {

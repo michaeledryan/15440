@@ -14,9 +14,9 @@ public class MagicReducer extends Reducer<String, String> {
     protected void reduce(String key, Iterable<String> vals, ReduceContext context) {
         StringBuilder sb = new StringBuilder();
         for (String s : vals) {
-            sb.append(s + ",\n");
+            sb.append(s + ",");
         }
-        context.commit(key, sb.toString());
+        context.commit(key, sb.toString() + "\n");
     }
 
     @Override
