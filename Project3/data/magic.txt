@@ -1,0 +1,383 @@
+130483:Abundance
+132072:Academy Researchers
+129458:Adarkar Wastes
+135206:Afflict
+130525:Aggressive Urge
+135228:Agonizing Memories
+129459:Air Elemental
+129913:Ambassador Laquatus
+134753:Anaba Bodyguard
+130550:Ancestor's Chosen
+129465:Angel of Mercy
+129466:Angel's Feather
+129711:Angelic Blessing
+129710:Angelic Chorus
+129671:Angelic Wall
+130530:Arcane Teachings
+106426:Arcanis the Omnipotent
+106525:Ascendant Evincar
+135194:Assassinate
+130976:Aura Graft
+132127:Aura of Silence
+135249:Avatar of Might
+129470:Aven Cloudchaser
+130985:Aven Fisher
+129473:Aven Windreader
+129477:Ballista Squad
+132106:Bandage
+129479:Battlefield Forge
+135262:Beacon of Destruction
+130553:Beacon of Immortality
+135270:Beacon of Unrest
+136279:Benalish Knight
+129906:Birds of Paradise
+135267:Blanchwood Armor
+129484:Blaze
+129709:Bloodfire Colossus
+130384:Bloodrock Cyclops
+129491:Bog Wraith
+130534:Bogardan Firefiend
+129494:Boomerang
+129495:Bottle Gnomes
+129496:Brushland
+129882:Cancel
+135185:Canopy Spider
+129497:Caves of Koilos
+135261:Cephalid Constable
+135254:Chimeric Staff
+130554:Cho-Manno, Revolutionary
+135279:Chromatic Star
+135244:Citanul Flute
+130522:Civic Wayfinder
+129501:Clone
+129804:Cloud Elemental
+132069:Cloud Sprite
+129502:Coat of Arms
+135268:Colossus of Sardia
+130521:Commune with Nature
+135275:Composite Golem
+130528:Condemn
+130535:Cone of Flame
+129505:Consume Spirit
+129590:Contaminated Bond
+134757:Counsel of the Soratami
+134758:Crafty Pathmage
+130527:Craw Wurm
+129512:Creeping Mold
+129480:Crucible of Worlds
+129514:Cruel Edict
+129909:Cryoclasm
+129910:Deathmark
+129521:Dehydration
+135223:Deluge
+129522:Demolish
+129523:Demon's Horn
+129524:Demystify
+135250:Denizen of the Deep
+129525:Diabolic Tutor
+134749:Discombobulate
+135219:Distress
+129880:Doomed Necromancer
+135243:Doubling Cube
+143024:Dragon Roost
+129527:Dragon's Claw
+135246:Dreamborn Muse
+135216:Dross Crocodile
+129529:Drudge Skeletons
+129579:Duct Crawler
+129490:Dusk Imp
+129554:Earth Elemental
+135266:Elven Riders
+129533:Elvish Berserker
+129534:Elvish Champion
+129535:Elvish Piper
+135263:Enormous Baloth
+135191:Essence Drain
+129541:Evacuation
+106531:Faerie Conclave
+129544:Fear
+135186:Femeref Archers
+129546:Festering Goblin
+135258:Field Marshal
+129548:Firebreathing
+130379:Fists of the Anvil
+130378:Flamewave Invoker
+129908:Flashfreeze
+130542:Flowstone Slide
+132073:Fog Elemental
+106428:Forbidding Watchtower
+129559:Forest
+129560:Forest
+129561:Forest
+129562:Forest
+135273:Fountain of Youth
+134762:Fugitive Wizard
+129566:Furnace of Rath
+130386:Furnace Whelp
+129789:Gaea's Herald
+106564:Ghitu Encampment
+132105:Ghost Warden
+129568:Giant Growth
+129570:Giant Spider
+129572:Glorious Anthem
+130380:Goblin Elite Infantry
+129578:Goblin King
+135221:Goblin Lore
+129580:Goblin Piker
+129582:Goblin Sky Raider
+129583:Grave Pact
+135256:Graveborn Muse
+129584:Gravedigger
+129586:Grizzly Bears
+129588:Guerrilla Tactics
+132107:Hail of Arrows
+130995:Hate Weaver
+135255:Head Games
+132090:Heart of Light
+135234:Hidden Horror
+132145:High Ground
+129564:Highway Robber
+129591:Hill Giant
+129593:Holy Day
+129594:Holy Strength
+129595:Honor Guard
+129596:Horseshoe Crab
+129598:Howling Mine
+129599:Hunted Wumpus
+135260:Hurkyl's Recall
+129885:Hurricane
+129600:Hypnotic Specter
+132123:Icatian Priest
+129601:Icy Manipulator
+134751:Incinerate
+129606:Island
+129607:Island
+129608:Island
+129609:Island
+106478:Jayemdae Tome
+130500:Joiner Adept
+135240:Juggernaut
+106398:Kamahl, Pit Fighter
+129614:Karplusan Forest
+129911:Karplusan Strider
+129511:Kavu Climber
+130551:Kjeldoran Royal Guard
+129574:Knight of Dusk
+129619:Kraken's Eye
+129620:Lava Axe
+130373:Lavaborn Muse
+135242:Legacy Weapon
+135277:Leonin Scimitar
+129624:Lightning Elemental
+129626:Llanowar Elves
+129536:Llanowar Sentinel
+129627:Llanowar Wastes
+129628:Looming Shade
+135271:Lord of the Pit
+129629:Lord of the Undead
+129638:Loxodon Mystic
+129630:Loxodon Warhammer
+129798:Loyal Sentry
+129631:Lumengrid Warden
+129912:Luminesce
+135226:Lure
+129633:Mahamoti Djinn
+130367:Manabarbs
+136289:Mantis Engine
+106555:March of the Machines
+135218:Mass of Ghouls
+129640:Megrim
+130900:Merfolk Looter
+135272:Midnight Ritual
+129642:Might of Oaks
+130996:Might Weaver
+129643:Millstone
+129644:Mind Bend
+129645:Mind Rot
+135280:Mind Stone
+106405:Mirri, Cat Warrior
+129716:Mobilization
+134748:Mogg Fanatic
+106368:Molimo, Maro-Sorcerer
+135259:Mortal Combat
+129648:Mortivore
+129649:Mountain
+129650:Mountain
+129651:Mountain
+129652:Mountain
+129653:Nantuko Husk
+129655:Natural Spring
+129656:Naturalize
+129658:Nekrataal
+129659:Nightmare
+136283:No Rest for the Wicked
+130547:Nomad Mythmaker
+129663:Orcish Artillery
+129665:Ornithopter
+135282:Overgrowth
+130506:Overrun
+129667:Pacifism
+129668:Paladin en-Vec
+135248:Pariah
+130903:Peek
+129900:Persuasion
+106427:Phage the Untouchable
+132064:Phantom Warrior
+135189:Phyrexian Rager
+135281:Phyrexian Vault
+130526:Pincher Beetles
+129526:Pithing Needle
+129883:Plagiarize
+129678:Plague Beetle
+129679:Plague Wind
+129680:Plains
+129681:Plains
+129682:Plains
+129683:Plains
+106537:Platinum Angel
+136288:Primal Rage
+134752:Prodigal Pyromancer
+129685:Puppeteer
+129801:Pyroclasm
+129687:Quicksand
+130489:Quirion Dryad
+130997:Rage Weaver
+129688:Raging Goblin
+135220:Rain of Tears
+129690:Rampant Growth
+129692:Ravenous Rats
+106552:Razormane Masticore
+130507:Recollect
+135188:Recover
+129696:Regeneration
+129697:Relentless Assault
+135236:Relentless Rats
+129698:Reminisce
+129699:Remove Soul
+132089:Reviving Dose
+106384:Reya Dawnbringer
+106504:Rhox
+130552:Righteousness
+134764:Robe of Mirrors
+129715:Rock Badger
+129704:Rod of Ruin
+135251:Root Maze
+129707:Rootwalla
+129733:Rootwater Commando
+135252:Rootwater Matriarch
+129708:Royal Assassin
+136291:Rule of Law
+136285:Rushwood Dryad
+135217:Sage Owl
+132101:Samite Healer
+130818:Scalpelexis
+129718:Scathe Zombies
+130504:Scion of the Wild
+130374:Scoria Wurm
+135241:Sculpting Steel
+129719:Sea Monster
+129722:Seedborn Muse
+129884:Seismic Assault
+129724:Sengir Vampire
+129726:Serra Angel
+135214:Serra's Embrace
+129693:Severed Legion
+130370:Shatterstorm
+129553:Shimmering Wings
+129730:Shivan Dragon
+130538:Shivan Hellkite
+129731:Shivan Reef
+129732:Shock
+130362:Shunt
+130539:Siege-Gang Commander
+136217:Sift
+130998:Sky Weaver
+129735:Skyhunter Patrol
+132102:Skyhunter Prowler
+129513:Skyhunter Skirmisher
+135182:Skyshroud Ranger
+129803:Sleeper Agent
+130532:Smash
+129471:Snapping Drake
+129739:Soul Feast
+129740:Soul Warden
+130369:Soulblast
+129577:Spark Elemental
+106556:Spawning Pool
+129741:Spellbook
+129901:Spiketail Hatchling
+129742:Spined Wurm
+129743:Spineless Thug
+129744:Spirit Link
+130999:Spirit Weaver
+136509:Spitting Earth
+106473:Squee, Goblin Nabob
+135184:Stalking Tiger
+135264:Stampeding Wildebeests
+130385:Starlight Invoker
+132111:Steadfast Guard
+135235:Steel Golem
+129748:Story Circle
+135197:Stronghold Discipline
+134755:Stun
+129750:Sudden Impact
+129751:Sulfurous Springs
+129509:Sunken Hope
+129753:Suntail Hawk
+129754:Swamp
+129755:Swamp
+129756:Swamp
+129757:Swamp
+135215:Sylvan Basilisk
+130513:Sylvan Scrying
+135231:Tangle Spider
+129761:Telepathy
+132071:Telling Time
+132131:Tempest of Light
+129881:Terramorphic Expanse
+135199:Terror
+135253:The Hive
+129764:Thieving Magpie
+129767:Threaten
+136282:Thrull Surgeon
+130381:Thundering Giant
+129770:Tidings
+129898:Time Stop
+129677:Time Stretch
+129774:Traumatize
+135232:Treasure Hunter
+129777:Treetop Bracers
+106455:Treetop Village
+130498:Troll Ascetic
+129610:True Believer
+129604:Tundra Wolves
+129887:Twincast
+136286:Twitch
+134756:Uncontrollable Anger
+129778:Underground River
+129779:Underworld Dreams
+129780:Unholy Strength
+136218:Unsummon
+130494:Upwelling
+135195:Vampire Bats
+130834:Vedalken Mastermind
+129786:Venerable Monk
+129788:Verdant Force
+130531:Viashino Runner
+130387:Viashino Sandscout
+129792:Viridian Shaman
+136290:Voice of All
+135274:Wall of Air
+136284:Wall of Fire
+132120:Wall of Swords
+129773:Wall of Wood
+130364:Warp World
+129797:Warrior's Honor
+135278:Whispersilk Cloak
+129557:Wild Griffin
+130549:Windborn Muse
+129808:Wrath of God
+129809:Wurm's Tooth
+129810:Yavimaya Coast
+130515:Yavimaya Enchantress
+129790:Youthful Knight
