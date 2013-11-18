@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -173,7 +174,7 @@ public class Connection implements DistributedIO {
                     throw new IOException("Bad message type.");
                 }
                 return rep.getData();
-            } catch (SocketTimeoutException e) {
+            } catch (ConnectException | SocketTimeoutException e) {
 
             }
         }

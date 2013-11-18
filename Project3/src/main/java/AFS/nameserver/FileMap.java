@@ -27,6 +27,12 @@ public class FileMap {
         r = new Random();
     }
 
+    /**
+     * Flattens array into ';' delimited string.
+     *
+     * @param hosts Arrays of hostname:port.
+     * @return Host string.
+     */
     public String flattenHosts(ArrayList<String> hosts) {
         String res = "";
         for (int i = 0; i < hosts.size(); i++) {
@@ -54,6 +60,12 @@ public class FileMap {
         }
     }
 
+    /**
+     * Maps key to all values.
+     *
+     * @param key Filename.
+     * @param value List of hostname:port.
+     */
     public void putAll(String key, ArrayList<String> value) {
         m.put(key, value);
     }
@@ -154,10 +166,21 @@ public class FileMap {
         nodes.put(id, host);
     }
 
+    /**
+     * Translate node identifier to get hostname:port.
+     *
+     * @param id Data node identifier.
+     * @return Corresponding hostname:port.
+     */
     public String getNode(String id) {
         return nodes.get(id);
     }
 
+    /**
+     * Randomizes the ordering of the list.
+     *
+     * @param arr Input data.
+     */
     private void shuffle(ArrayList<String> arr) {
         for (int i = arr.size() - 1; i >= 1; i--) {
             int idx = r.nextInt(i);
@@ -188,6 +211,12 @@ public class FileMap {
         return key != null && nodes.containsKey(key);
     }
 
+    /**
+     * Gives a listing of all files currently stored and their locations as a
+     * formatted string suitable for console output.
+     *
+     * @return Formatted string.
+     */
     public String getFiles() {
         String out = "Filename\tLocation\n";
         out += StringUtils.repeat("-", 80) + "\n";

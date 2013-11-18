@@ -9,7 +9,7 @@ public class Test {
         try {
             Connection conn = new Connection("localhost", 9000);
             conn.writeFile("foo.txt", "x");
-            conn.writeFile("foo.txt", "y");
+            conn.writeFile("foo.txt", "z");
             System.out.println(conn.readFile("foo.txt"));
             System.out.println(conn.readBlock("foo.txt", 2, 4));
             System.out.println(conn.readLine("foo.txt", 0));

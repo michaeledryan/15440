@@ -10,7 +10,7 @@ import java.net.Socket;
 
 /**
  */
-public class ToolImpl implements Tools {
+public class ToolImpl {
 
     private Socket s;
 

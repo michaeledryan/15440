@@ -63,6 +63,7 @@ public class MessageHandler implements Runnable {
     public void run() {
         try {
             Message m = readMessage();
+            FileCache cache = FileCache.getInstance();
             // Default reply. Overwritten where necessary.
             Message resp = Message.ack();
             String path = id + File.separator + m.getPath();
@@ -77,8 +78,7 @@ public class MessageHandler implements Runnable {
                 // Send back file contents.
                 case READ:
                     if (f.exists()) {
-                        String data = FileUtils.readFileToString(f, "US-ASCII");
-                        resp = Message.fileContents(data);
+                        resp = Message.fileContents(cache.read(path));
                     } else {
                         resp = Message.error(
                                 new IOException("File not found."));
@@ -108,29 +108,9 @@ public class MessageHandler implements Runnable {
                 // Send back the specified portion of the file.
                 case READLINES:
                     if (f.exists()) {
-                        String data = FileUtils.readFileToString(f, "US-ASCII");
-                        String[] lines = data.split("\n");
-                        String contents = "";
-                        int limit = m.getStart() + m.getSize();
-                        Boolean abort = false;
-
-                        for (int i = m.getStart(); i < limit; i++) {
-                            if (i >= lines.length) {
-                                abort = true;
-                                break;
-                            }
-                            contents += lines[i];
-                            if (i != limit - 1) {
-                                contents += "\n";
-                            }
-                        }
-
-                        if (abort) {
-                            resp = Message.error(
-                                    new IOException("Lines out of range."));
-                        } else {
-                            resp = Message.fileContents(contents);
-                        }
+                        resp = Message.fileContents(
+                                cache.readLines(path, m.getStart(),
+                                        m.getSize()));
                     } else {
                         resp = Message.error(
                                 new IOException("File not found."));
@@ -140,8 +120,7 @@ public class MessageHandler implements Runnable {
                 // Counts the number of lines.
                 case COUNTLINES:
                     if (f.exists()) {
-                        String data = FileUtils.readFileToString(f, "US-ASCII");
-                        int count = data.split("\n").length;
+                        int count = cache.countLines(path);
                         resp = Message.fileContents(Integer.toString(count));
                     } else {
                         resp = Message.error(
@@ -151,22 +130,13 @@ public class MessageHandler implements Runnable {
 
                 // Append to the file (created if it doesn't exist).
                 case WRITE:
-                    dir = new File(f.getParent());
-                    if (!dir.exists()) {
-                        if (!dir.mkdirs()) {
-                            resp = Message.error(
-                                    new IOException("Failed to create parent " +
-                                            "directories."));
-                        }
-                    }
-                    w = new FileOutputStream(path, true);
-                    w.write(m.getData().getBytes());
-                    w.close();
+                    cache.write(path, m.getData());
                     break;
 
                 // Remove the file.
                 case DELETE:
                     if (f.exists()) {
+                        cache.remove(path);
                         Boolean b = f.delete();
                         if (!b) {
                             resp = Message.error(
