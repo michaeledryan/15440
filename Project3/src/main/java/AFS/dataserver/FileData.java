@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
+ * Contains everything worth keeping in cache for a given file.
+ * Actual disk reads are lazy (i.e. don't occur when the constructor is
+ * called).
  */
 public class FileData {
 
@@ -21,14 +24,21 @@ public class FileData {
         this.f = new File(path);
     }
 
-    public FileData(File f) {
-        this.f = f;
-    }
-
+    /**
+     * File's line count.
+     *
+     * @return Number of lines.
+     */
     private int getLineCount() {
         return contents.split("\n").length;
     }
 
+    /**
+     * Reads a file from cache, or from disk into cache if not present.
+     *
+     * @return File contents.
+     * @throws IOException
+     */
     public String read() throws IOException {
         if (contents == null) {
             contents = FileUtils.readFileToString(f, "US-ASCII");
@@ -38,6 +48,14 @@ public class FileData {
         return contents;
     }
 
+    /**
+     * Reads the lines from cache, or from disk into cache if not present.
+     *
+     * @param start First line to read.
+     * @param size  Number of lines to read.
+     * @return Contents of the specified lines.
+     * @throws IOException
+     */
     public String readLines(int start, int size) throws IOException {
         if (lines == null) {
             if (contents == null) {
@@ -67,9 +85,16 @@ public class FileData {
         return contents;
     }
 
+    /**
+     * Appends new data to the file.
+     * This is both updated in the cache and write-through to disk.
+     *
+     * @param data Data to append.
+     * @throws IOException
+     */
     public void write(String data) throws IOException {
         if (contents == null && f.exists()) {
-            this.readLines(0,0);
+            this.readLines(0, 0);
         } else if (contents == null) {
             contents = "";
             lines = new String[0];
@@ -82,15 +107,21 @@ public class FileData {
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IOException("Failed to create parent " +
-                                "directories.");
+                        "directories.");
             }
         }
-        lines = (String[])ArrayUtils.addAll(lines, ln);
+        lines = (String[]) ArrayUtils.addAll(lines, ln);
         FileOutputStream w = new FileOutputStream(f, true);
         w.write(data.getBytes());
         w.close();
     }
 
+    /**
+     * Get the number of lines in the file.
+     *
+     * @return Line count.
+     * @throws IOException
+     */
     int countLines() throws IOException {
         if (contents == null) {
             this.read();
@@ -98,7 +129,13 @@ public class FileData {
         return len;
     }
 
+    /**
+     * Get the number of bytes in the file.
+     *
+     * @return Byte count.
+     */
     public int getSize() {
         return size;
     }
+
 }

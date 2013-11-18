@@ -86,6 +86,7 @@ public class MessageHandler implements Runnable {
                     break;
 
                 // Send back the specified portion of the file.
+                // Does not use the cache currently.
                 case READBLOCK:
                     if (f.exists()) {
                         r = new FileInputStream(path);

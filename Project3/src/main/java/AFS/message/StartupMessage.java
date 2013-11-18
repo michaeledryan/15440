@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.net.Socket;
 
 /**
+ * At startup, send from data nodes to the name node.
  */
 public class StartupMessage implements Serializable {
 

@@ -12,8 +12,12 @@ public class NameServer {
     static private String helpFooter =
             "Alex Cappiello (acappiel) and Michael Ryan (mer1).";
 
+    /**
+     * Parse CLI and go!
+     *
+     * @param args CLI.
+     */
     public static void main(String[] args) {
-
         Options opt = new Options();
         opt.addOption("n", "nodes", true,
                 "Number of data nodes. Default: 2.");

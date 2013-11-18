@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
+ * Implementation of administrative queries.
  */
 public class ToolImpl {
 
@@ -39,8 +40,14 @@ public class ToolImpl {
         return (Message) obj;
     }
 
-    private String readRequest(Message req) throws Exception {
-
+    /**
+     * Sends the request and gets the reply.
+     *
+     * @param req Request Message.
+     * @return Response.
+     * @throws Exception
+     */
+    private String sendReceive(Message req) throws Exception {
         ObjectOutputStream out =
                 new ObjectOutputStream(s.getOutputStream());
         out.writeObject(req);
@@ -57,10 +64,16 @@ public class ToolImpl {
 
     }
 
+    /**
+     * Execute query and print the result.
+     *
+     * @param type Type of query.
+     * @param arg  Query argument.
+     */
     public void query(String type, String arg) {
         try {
             Message q = Message.adminQuery(type, arg);
-            System.out.println(readRequest(q));
+            System.out.println(sendReceive(q));
         } catch (IllegalArgumentException e) {
             System.err.println("Bad task: " + type);
         } catch (Exception e) {

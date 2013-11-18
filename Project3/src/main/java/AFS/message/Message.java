@@ -3,6 +3,7 @@ package AFS.message;
 import java.io.Serializable;
 
 /**
+ * All messages that pass between clients and the DFS.
  */
 public class Message implements Serializable {
 
@@ -14,6 +15,7 @@ public class Message implements Serializable {
     private int size;
     private Exception exception;
 
+    // Private constructors, so that type is set properly.
     private Message() {
         this.type = MessageType.ACK;
     }
@@ -41,6 +43,7 @@ public class Message implements Serializable {
         this.exception = exception;
     }
 
+    // Message creation interface functions.
     public static Message read(String filename) {
         return new Message(MessageType.READ, filename);
     }

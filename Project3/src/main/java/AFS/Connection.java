@@ -98,7 +98,7 @@ public class Connection implements DistributedIO {
      * @return String representing the hostname and port of the data node.
      *         hostname;port
      * @throws IOException Invalid message received or exception raised by
-     * name node.
+     *                     name node.
      */
     private String[] queryFileLocations(Message req) throws Exception {
         /*if (req.getType() != MessageType.LOCATION) {
@@ -407,7 +407,7 @@ public class Connection implements DistributedIO {
      * @param path Filename.
      * @return Array of hostname:port.
      * @throws Exception Invalid message received or exception raised by
-     * name node.
+     *                   name node.
      */
     public String[] getLocations(String path) throws Exception {
         Message req = Message.location(path);
