@@ -6,22 +6,24 @@ import numpy
 import getopt
 import math
 
+DNACHARS = ["a", "c", "t", "g"]
+
 def usage():
   print '$> ./generateDNA.py <required args> [optional args]\n' +\
-    '\t-c <#>\t\tNumber of clusters to generate\n' + \
-    '\t-p <#>\t\tNumber of strands per cluster\n' + \
-    '\t-o <file>\t\tData output location\n' + \
-    '\t-l [#]\t\tlength of each strand\n'
+    '\t-n <#>\t\tNumber of strands to generate\n' + \
+    '\t-l <#>\t\tLength per strand\n' + \
+    '\t-o <file>\t\tData output location\n'
 
+# Find difference between two DNA strands
+def distance(s1, s2):
+  dist = 0
+  for i in xrange(math.min(len(s1), len(s2))):
+    if (s1[i] != s2[i]):
+      dist += 1
+  return math.min(len(s1), len(s2)) - dist
 
-
-# Find distance between two points
-def distance(p1, p2):
-  return math.sqrt(math.pow((p2[0] - p1[0]), 2) + \
-                  math.pow((p2[1] - p1[1]), 2))
-
-def drawOrigin(max):
-  return numpy.random.uniform(0, max, 2);
+def drawOrigin(strandLength):
+  return "".join(numpy.random.choice(DNACHARS, size=strandLength).tolist());
 
 def tooClose(point, points, min):
   for pair in points:
@@ -31,13 +33,12 @@ def tooClose(point, points, min):
 
 def handleArgs(args):
     # Parse out arguments
-    numClusters = -1
-    numPoints = -1
+    numStrands = -1
+    maxLen = 10
     output = None
-    maxValue = 10
 
     try:
-      optlist, args = getopt.getopt(args[1:], 'c:p:o:v:')
+      optlist, args = getopt.getopt(args[1:], 'n:l:o:')
     except getopt.GetoptError, err:
       print str(err)
       usage()
@@ -45,43 +46,23 @@ def handleArgs(args):
 
     for key, val in optlist:
       # first, the required arguments
-      if   key == '-c':
-          numClusters = int(val)
-      elif key == '-p':
-          numPoints = int(val)
+      if   key == '-n':
+          numStrands = int(val)
+      elif key == '-l':
+          maxLen = int(val)
       elif key == '-o':
           output = val
       # now, the optional argument
-      elif key == '-v':
-          maxValue = float(val)
 
-    if numClusters < 0 or numPoints < 0 or \
-      maxValue < 1 or \
-      output is None:
+    if numStrands < 0 or maxLen < 1 or output is None:
       usage()
       sys.exit()
-    return (numClusters, numPoints, output, maxValue)
+    return (numStrands, output, maxLen)
 
-
-numClusters, numPoints, output, maxValue = handleArgs(sys.argv)
+numStrands, output, strandLength = handleArgs(sys.argv)
 
 writer = csv.writer(open(output, "w"))
+centroids = [drawOrigin(strandLength) for x in xrange(numStrands)]
 
-# For each cluster, generate a random center point
-centroids = []
-minDistance = 0
-for i in xrange(0, numClusters):
-  centroid = drawOrigin(maxValue)
-  while (tooClose(centroid, centroids, minDistance)):
-    centroid = drawOrigin(maxValue);
-  centroids.append(centroid)
-
-# Populate each cluster
-minVariance = 0
-maxVariance = 0.5
-for i in xrange(0, numClusters):
-  variance = numpy.random.uniform(minVariance, maxVariance)
-  cluster = centroids[i]
-  for j in xrange(0, numPoints):
-      x, y = numpy.random.normal(cluster, variance)
-      writer.writerow([x,y])
+for row in centroids:
+  writer.writerow([row])
