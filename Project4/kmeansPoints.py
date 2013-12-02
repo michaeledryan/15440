@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
 import sys
 import csv
@@ -11,8 +11,8 @@ def usage():
   print '$> ./generatePoints.py <required args> [optional args]\n' +\
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
-    '\t-o <file>\t\tData output location\n' + \
-    '\t-i <file>\t\tData input location\n'
+    '\t-o <file>\tData output location\n' + \
+    '\t-i <file>\tData input location\n'
 
 
 # Find distance between two points
@@ -72,7 +72,7 @@ for i in xrange(numIters):
     myKeys = centroids.keys()
     dists = [distance(point, x) for x in myKeys]
     centroids[myKeys[np.argmin(dists)]].append(point)
-  
+
   # Calculate new means from the clusters
   newCentroids = {}
   for center in centroids.keys():
@@ -88,4 +88,4 @@ for i in xrange(numIters):
 # results
 writer = csv.writer(open(outfile, "w"))
 for centroid in oldCentroids:
-  writer.write([centroid[0], centroid[1]])
+  writer.writerow([centroid[0], centroid[1]])
