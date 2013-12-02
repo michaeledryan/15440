@@ -65,6 +65,7 @@ with open(infile, 'rb') as csvfile:
 
 # generate initial centroid list
 centroids = {x: []  for x in random.sample(datapoints, numClusters)}
+
 for i in xrange(numIters):
 
   # put each point in a cluster with the nearest mean

@@ -9,7 +9,7 @@ import random
 from collections import Counter
 
 def usage():
-  print '$> ./generatePoints.py <required args> [optional args]\n' +\
+  print '$> ./generatePoints.py <required args>\n' +\
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
     '\t-o <file>\t\tData output location\n' + \
@@ -24,39 +24,39 @@ def distance(s1, s2):
       dist += 1
   return min(len(s1), len(s2)) - dist
 
+
+# Parse out arguments
 def handleArgs(args):
-    # Parse out arguments
-    numClusters = -1
-    numIters = -1
-    outfile = None
-    infile = None
+  numClusters = -1
+  numIters = -1
+  outfile = None
+  infile = None
 
-    try:
-      optlist, args = getopt.getopt(args[1:], 'c:p:o:i:')
-    except getopt.GetoptError, err:
-      print str(err)
-      usage()
-      sys.exit(2)
+  try:
+    optlist, args = getopt.getopt(args[1:], 'c:p:o:i:')
+  except getopt.GetoptError, err:
+    print str(err)
+    usage()
+    sys.exit(2)
 
-    for key, val in optlist:
-      # first, the required arguments
-      if   key == '-c':
-          numClusters = int(val)
-      elif key == '-p':
-          numIters = int(val)
-      elif key == '-o':
-          outfile = val
-      # now, the optional argument
-      elif key == '-i':
-          infile = val
+  for key, val in optlist:
+    if   key == '-c':
+        numClusters = int(val)
+    elif key == '-p':
+        numIters = int(val)
+    elif key == '-o':
+        outfile = val
+    elif key == '-i':
+        infile = val
 
-    if numClusters < 0 or numIters < 0 or \
-      infile is None or outfile is None:
-      usage()
-      sys.exit()
-    return (numClusters, numIters, outfile, infile)
+  if numClusters < 0 or numIters < 0 or \
+    infile is None or outfile is None:
+    usage()
+    sys.exit()
+  return (numClusters, numIters, outfile, infile)
 
-
+# Find the average of multiple strands. Assuming each strand is
+# the same length, take the mode of the char at each index.
 def meanStrand(strands):
   newStrand = []
   for i in xrange(len(strands[0])):
@@ -64,11 +64,9 @@ def meanStrand(strands):
     newStrand.append(data.most_common(1)[0][0])
   return "".join(newStrand)
 
-
 numClusters, numIters, outfile, infile = handleArgs(sys.argv)
 
 datapoints = []
-
 # parse input file
 with open(infile, 'rb') as csvfile:
   inreader = csv.reader(csvfile)

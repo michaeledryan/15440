@@ -15,14 +15,16 @@ def usage():
 
 
 
-# Find distance between two points
+# Euclidean distance between two points
 def distance(p1, p2):
   return math.sqrt(math.pow((p2[0] - p1[0]), 2) + \
                   math.pow((p2[1] - p1[1]), 2))
 
+# Generate x/y pair within boundaries
 def drawOrigin(max):
   return numpy.random.uniform(0, max, 2);
 
+# Makes sure clusters are spread out
 def tooClose(point, points, min):
   for pair in points:
     if distance(point, pair) < min:

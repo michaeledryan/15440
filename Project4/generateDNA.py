@@ -22,14 +22,9 @@ def distance(s1, s2):
       dist += 1
   return math.min(len(s1), len(s2)) - dist
 
-def drawOrigin(strandLength):
+# Generate random strand
+def randomStrand(strandLength):
   return "".join(numpy.random.choice(DNACHARS, size=strandLength).tolist());
-
-def tooClose(point, points, min):
-  for pair in points:
-    if distance(point, pair) < min:
-      return True
-  return False
 
 def handleArgs(args):
     # Parse out arguments
@@ -62,7 +57,9 @@ def handleArgs(args):
 numStrands, output, strandLength = handleArgs(sys.argv)
 
 writer = csv.writer(open(output, "w"))
-centroids = [drawOrigin(strandLength) for x in xrange(numStrands)]
+# Generate numStrands random strands of length strandLength
+centroids = [randomStrand(strandLength) for x in xrange(numStrands)]
 
+# Write to output
 for row in centroids:
   writer.writerow([row])
