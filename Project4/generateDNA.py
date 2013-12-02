@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
 import sys
 import csv
@@ -12,7 +12,7 @@ def usage():
   print '$> ./generateDNA.py <required args> [optional args]\n' +\
     '\t-n <#>\t\tNumber of strands to generate\n' + \
     '\t-l <#>\t\tLength per strand\n' + \
-    '\t-o <file>\t\tData output location\n'
+    '\t-o <file>\tData output location\n'
 
 # Find difference between two DNA strands
 def distance(s1, s2):

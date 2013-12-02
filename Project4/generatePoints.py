@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
 import sys
 import csv
@@ -10,7 +10,7 @@ def usage():
   print '$> ./generatePoints.py <required args> [optional args]\n' +\
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of points per cluster\n' + \
-    '\t-o <file>\t\tData output location\n' + \
+    '\t-o <file>\tData output location\n' + \
     '\t-v [#]\t\tCeiling on coordinate values\n'
 
 
