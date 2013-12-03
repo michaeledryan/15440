@@ -6,6 +6,7 @@ import numpy as np
 import getopt
 import math
 import random
+from mpi4py import MPI
 
 def usage():
   print '$> ./generatePoints.py <required args> [optional args]\n' +\
@@ -19,7 +20,6 @@ def usage():
 def distance(p1, p2):
   return math.sqrt(math.pow((p2[0] - p1[0]), 2) + \
                   math.pow((p2[1] - p1[1]), 2))
-
 
 def handleArgs(args):
     # Parse out arguments
@@ -65,8 +65,20 @@ with open(infile, 'rb') as csvfile:
 
 # generate initial centroid list
 datapoints = np.array(datapoints)
-centroids = {(x[0], x[1]): []  for x in random.sample(datapoints, numClusters)}
 
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+if rank == 0:
+  print datapoints
+  centroids = {(x[0], x[1]): []  for x in random.sample(datapoints, numClusters)}
+  data = centroids.keys()
+else:
+  data = None
+data = comm.bcast(data, root=0)
+
+centroids = {data[rank-1] : []}
+print "bcast finished and data on rank %d is: "%comm.rank, data[rank-1]
+'''
 for i in xrange(numIters):
 
   # put each point in a cluster with the nearest mean
@@ -91,3 +103,4 @@ for i in xrange(numIters):
 writer = csv.writer(open(outfile, "w"))
 for centroid in oldCentroids:
   writer.writerow([centroid[0], centroid[1]])
+'''
