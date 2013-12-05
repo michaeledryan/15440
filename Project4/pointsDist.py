@@ -96,7 +96,6 @@ for i in xrange(numIters):
     centroids[myKeys[np.argmin(dists)]].append(point)
 
   datapoints = np.array(centroids[myCentroid])
-
   sendLengths = [0] * len(centroidRanks.keys())
 
   # Send updates
@@ -110,26 +109,28 @@ for i in xrange(numIters):
     if (mean != myCentroid):
       myData = comm.recv(source=centroidRanks[mean], tag=0)
       sendLengths[centroidRanks[mean]] = myData
-      print "rank", rank, "got length:", sendLengths[centroidRanks[mean]]
+#      print "rank", rank, "got length:", sendLengths[centroidRanks[mean]]
 
-  print "RECEIVED LENGTHS"
+#  print "RECEIVED LENGTHS"
 
   # Send updates
   means = centroidRanks.keys()
   for mean in means:
     if (mean != myCentroid):
-      print "rank", rank, "sending array of length", len(centroids[mean])
-      print np.array(centroids[mean])
-      comm.Isend([np.array(centroids[mean]), MPI.FLOAT], dest=centroidRanks[mean], tag=1)
+
+      dataToSend = np.array(centroids[mean])
+#      print "OMG SO DATA:", dataToSend.dtype
+#      print "rank", rank, "sending array of length", len(centroids[mean])
+      comm.Isend([dataToSend, MPI.FLOAT], dest=centroidRanks[mean], tag=1)
   
   for mean in means:
     if (mean != myCentroid):
       #myData = np.zeros(sendLengths[centroidRanks[mean]] * 2, 'f')
       #myData = np.zeros(10000, 'float32, float32')
-      myData = np.ndarray(shape=(sendLengths[centroidRanks[mean]], 2), dtype='f')
+      myData = np.empty((sendLengths[centroidRanks[mean]], 2), 'float64')
 
-      print "myData", myData
-      print "rank", rank, "expecting length", sendLengths[centroidRanks[mean]]
+      #print "myData", myData
+      #print "rank", rank, "expecting length", sendLengths[centroidRanks[mean]]
       comm.Recv([myData, MPI.FLOAT], source=centroidRanks[mean], tag=1)
       
       if (myData.size != 0):
@@ -162,7 +163,7 @@ for i in xrange(numIters):
   centroidRanks = newCentroidRanks
   centroids = newCentroids
 
-  print rank, myCentroid
+print rank, myCentroid
 
 # results
 '''
