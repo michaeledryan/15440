@@ -6,10 +6,11 @@ import numpy as np
 import getopt
 import math
 import random
+import hashlib
 from mpi4py import MPI
 
 def usage():
-  print '$> ./generatePoints.py <required args> [optional args]\n' +\
+  #print '$> ./generatePoints.py <required args> [optional args]\n' +\
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
     '\t-o <file>\tData output location\n' + \
@@ -31,7 +32,7 @@ def handleArgs(args):
     try:
       optlist, args = getopt.getopt(args[1:], 'c:p:o:i:')
     except getopt.GetoptError, err:
-      print str(err)
+      #print str(err)
       usage()
       sys.exit(2)
 
@@ -53,6 +54,14 @@ def handleArgs(args):
       sys.exit()
     return (numClusters, numIters, outfile, infile)
 
+
+def effectiveHash(mean):
+  hashVal = 13
+  hashVal = hashVal * 31 + hash(str(mean[0]))
+  hashVal = hashVal * 31 + hash(str(mean[1]))
+  return hashVal % (10**8)
+
+
 numClusters, numIters, outfile, infile = handleArgs(sys.argv)
 
 datapoints = []
@@ -73,97 +82,131 @@ if rank == 0:
   myKeys = centroids.keys()
   for point in datapoints:  
     dists = np.array([distance(point, x) for x in myKeys])
-    centroids[myKeys[np.argmin(dists)]].append((point[0], point[1]))
+    centroids[myKeys[np.argmin(dists)]].append(point)
+
+ ## print "base", centroids
   data = [(x, centroids[x]) for x in centroids.keys()]
 else:
   data = None
 data = comm.bcast(data, root=0)
 
-myCentroid = data[rank][0]
-datapoints = data[rank][1]
+myCentroids = [data[i][0] for i in xrange(rank, numClusters, comm.size)]
+myDataPoints = [np.array(data[i][1]) for i in xrange(rank, numClusters, comm.size)]
 
-print "Initial comms done, get on rank %d with centroid:"%rank, myCentroid
+##print myDataPoints
+##print "Initial comms done, get on rank %d with centroid:"%rank, myCentroids
 
 centroids = {x[0]: [] for x in data}
 
-centroidRanks = {data[i][0]: i for i in xrange(len(data))}
+centroidRanks = {data[i][0]: i % comm.size for i in xrange(len(data))}
+
+##print rank, myCentroids
 for i in xrange(numIters):
 
+
+  print rank, "has tags", [effectiveHash(x) for x in myCentroids]
   # Reshuffle the closeness.
   for point in datapoints:
     myKeys = centroidRanks.keys()
     dists = np.array([distance(point, x) for x in myKeys])
     centroids[myKeys[np.argmin(dists)]].append(point)
 
-  datapoints = np.array(centroids[myCentroid])
-  sendLengths = [0] * len(centroidRanks.keys())
 
-  # Send updates
-
-  means = centroidRanks.keys()
-  for mean in means:
-    if (mean != myCentroid):
-      comm.isend(len(centroids[mean]), dest=centroidRanks[mean], tag=0)
+  for i in xrange(len(myCentroids)):
+    myDataPoints[i] = centroids[myCentroids[i]]
   
-  for mean in means:
-    if (mean != myCentroid):
-      myData = comm.recv(source=centroidRanks[mean], tag=0)
-      sendLengths[centroidRanks[mean]] = myData
-#      print "rank", rank, "got length:", sendLengths[centroidRanks[mean]]
+  #sentLengths = [[]] * len(centroidRanks.keys())
 
-#  print "RECEIVED LENGTHS"
+  ## Instead, listen for updates from each node about each of your centroids
+  # Each node sends a list of (centroid, numUpdates) pairs.
+
+  updatesToSend = [[]] * comm.size;  
+
+  means = centroidRanks.keys()
+  for mean in means:
+    if (mean not in myCentroids):
+      rnk = centroidRanks[mean]
+      updateSize = len(centroids[mean])
+      updatesToSend[rnk].append((mean, updateSize))
+
+  for i in xrange(len(updatesToSend)):
+    if (i != rank):
+      comm.isend(updatesToSend[i], dest=i, tag=7)
+    
+  receivedUpdates = [[]] * comm.size;
+
+  for i in xrange(len(updatesToSend)):
+    if (i != rank):
+      myData = comm.recv(source=i, tag=7)
+      #print "myData is ", myData
+      receivedUpdates[i] = myData
+  
+  #print rank, "received updates....", receivedUpdates
 
   # Send updates
   means = centroidRanks.keys()
   for mean in means:
-    if (mean != myCentroid):
-
+    if (mean not in myCentroids):
       dataToSend = np.array(centroids[mean])
-#      print "OMG SO DATA:", dataToSend.dtype
-#      print "rank", rank, "sending array of length", len(centroids[mean])
-      comm.Isend([dataToSend, MPI.FLOAT], dest=centroidRanks[mean], tag=1)
+      print rank, "sending with dest" , centroidRanks[mean], "and tag", effectiveHash(mean)
+      comm.Isend([dataToSend, MPI.FLOAT], dest=centroidRanks[mean], tag=effectiveHash(mean))
   
-  for mean in means:
-    if (mean != myCentroid):
-      #myData = np.zeros(sendLengths[centroidRanks[mean]] * 2, 'f')
-      #myData = np.zeros(10000, 'float32, float32')
-      myData = np.empty((sendLengths[centroidRanks[mean]], 2), 'float64')
+  # Iterate through received data, going through every received list of tuples
 
-      #print "myData", myData
-      #print "rank", rank, "expecting length", sendLengths[centroidRanks[mean]]
-      comm.Recv([myData, MPI.FLOAT], source=centroidRanks[mean], tag=1)
+  for k in xrange(len(receivedUpdates)):
+    updateList = receivedUpdates[k]
+    for i in xrange(len(updateList)):  
+      if (i != rank):
+        updateLength = updateList[i][1]
+        updateMean = updateList[i][0]
+        updateHash = effectiveHash(updateMean)
+        if (updateMean not in myCentroids):
+          continue
+        myData = np.empty((updateLength, 2), 'float64')  
+        print rank, "looking for source", k, "tag", updateHash
+        comm.Recv([myData, MPI.FLOAT], source=k, tag=updateHash)
       
-      if (myData.size != 0):
-        np.concatenate([datapoints, myData])
+        if (myData.size != 0):
+          j = myCentroids.index(updateMean)
+    
+          myDataPoints[j] = np.array(myDataPoints[j])
+          ##print rank, myDataPoints[j]
+          ##print rank, myData[1], np.array(myData[1])
+
+          np.concatenate([myDataPoints[j], np.array(myData, ndmin=2)])
+
+
+  # Save current means
+  oldCentroids = myCentroids
 
   # Calculate new mean from the clusters
-  newMean = {}
-  newX = np.mean([x[0] for x in datapoints])
-  newY = np.mean([y[1] for y in datapoints])
-  
-  #save old means as well
-  oldCentroid = myCentroid
-  myCentroid = (newX, newY)
+  for i in xrange(len(myCentroids)):
+    newX = np.mean([x[0] for x in myDataPoints[i]])
+    newY = np.mean([y[1] for y in myDataPoints[i]])
+    myCentroids[i] = (newX, newY)
+    
 
   # Send updates
   means = centroidRanks.keys()
   for mean in means:
-    if (mean != myCentroid):
-      comm.isend(myCentroid, dest=centroidRanks[mean], tag=3)
+    if (mean not in myCentroids):
+      comm.isend(myCentroids, dest=(centroidRanks[mean] % comm.size), tag=3)
 
   
-  newCentroids = {myCentroid:[]}
-  newCentroidRanks = {myCentroid:rank}
+  newCentroids = {x : [] for x in myCentroids}
+  newCentroidRanks = {x : rank for x in myCentroids}
   for mean in means:
-    if (mean != myCentroid):
-      myData = comm.recv(source=centroidRanks[mean], tag=3)
-      newCentroids[myData] = []
-      newCentroidRanks[myData] = centroidRanks[mean]
+    if (mean not in myCentroids):
+      myData = comm.recv(source=(centroidRanks[mean] % comm.size), tag=3)
+
+      for datum in myData:
+        newCentroids[datum] = []
+        newCentroidRanks[datum] = centroidRanks[mean]
 
   centroidRanks = newCentroidRanks
   centroids = newCentroids
 
-print rank, myCentroid
+print rank, myCentroids
 
 # results
 '''
