@@ -1,0 +1,27 @@
+Here's a few data points. I'll try some more later.
+Of course, running on my computer 8 and 12 processes won't do so great.
+
+Pickle is consistently dying on certain later inputs. Oh well...
+Am I using stupid input sizes?
+
+Sequential DNA is crying--didn't get a chance to look closely.
+
+I added runAllPoints.sh and runAllDNA.sh to run repeatedly for each core count.
+
+
+Points
+------
+Clusters  Points Per  nIter  Sequential  MPI1   MPI2   MPI4   MPI8   MPI12
+20        20          20     0.240       0.270  1.193  1.221  1.292  1.534
+50        50          50     6.377       7.129  4.697  3.154  4.299  6.742
+100       100         100    1:39        1:38          25.92
+100       200         100    3:24        3:18          56.00
+
+
+DNA
+---
+Strands  Length  Clusters  nIter  Sequential  MPI1   MPI2   MPI4   MPI8   MPI12
+20       20      20        20     --          0.136  1.102  1.106  1.117  1.260
+50       50      50        50     --          1.308  1.725  1.487  1.656  1.972
+100      100     100       100    --          15.18
+200      100
