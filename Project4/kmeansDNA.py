@@ -58,6 +58,8 @@ def handleArgs(args):
 # Find the average of multiple strands. Assuming each strand is
 # the same length, take the mode of the char at each index.
 def meanStrand(strands):
+  if (len(strands) == 0):
+    return None;
   newStrand = []
   for i in xrange(len(strands[0])):
     data = Counter([x[i] for x in strands])
@@ -86,6 +88,7 @@ for i in xrange(numIters):
   # Calculate new means from the clusters
   newCentroids = {}
   for center in centroids.keys():
+    print center
     points = centroids[center]
     newCentroids[meanStrand(points)] = []
 
