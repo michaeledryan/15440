@@ -5,8 +5,8 @@ import csv
 import numpy
 import getopt
 import math
+import random
 
-DNACHARS = ["a", "c", "t", "g"]
 
 def usage():
   print '$> ./generateDNA.py <required args> [optional args]\n' +\
@@ -22,9 +22,13 @@ def distance(s1, s2):
       dist += 1
   return math.min(len(s1), len(s2)) - dist
 
+DNACHARS = ["a", "c", "t", "g"]
 # Generate random strand
 def randomStrand(strandLength):
-  return "".join(numpy.random.choice(DNACHARS, size=strandLength).tolist());
+  result = []
+  for i in xrange(strandLength):
+    result.append(random.choice(DNACHARS))
+  return "".join(result);
 
 def handleArgs(args):
     # Parse out arguments
