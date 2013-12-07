@@ -16,8 +16,8 @@ def usage():
     '\t-i <file>\tData input location\n'
 
 
-# Find distance between two points
-def distance(s1, s2):
+# Find closeness between two points
+def closeness(s1, s2):
   dist = 0
   for i in xrange(min(len(s1), len(s2))):
     if (s1[i] != s2[i]):
@@ -82,13 +82,12 @@ for i in xrange(numIters):
   # put each point in a cluster with the nearest mean
   for point in datapoints:
     myKeys = centroids.keys()
-    dists = [distance(point, x) for x in myKeys]
-    centroids[myKeys[np.argmin(dists)]].append(point)
+    dists = [closeness(point, x) for x in myKeys]
+    centroids[myKeys[np.argmax(dists)]].append(point)
 
   # Calculate new means from the clusters
   newCentroids = {}
   for center in centroids.keys():
-    print center
     points = centroids[center]
     newCentroids[meanStrand(points)] = []
 
