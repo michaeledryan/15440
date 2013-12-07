@@ -12,7 +12,7 @@ import copy
 from mpi4py import MPI
 
 def usage():
-  print '$> ./generatePoints.py <required args> [optional args]\n' + \
+  print '$> ./pointsDist.py <required args>\n' + \
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
     '\t-o <file>\tData output location\n' + \
@@ -143,9 +143,7 @@ for i in xrange(numIters):
 
   # Reassign your own datapoints
   for i in xrange(len(myCentroids)):
-    ##print centroids[myCentroids[i]]
     myDataPoints[i] = np.array(centroids[myCentroids[i]])
-    ##print myDataPoints[i]
   
   # For each centroid, note how many points must be sent to their node
   means = centroidRanks.keys()
@@ -191,7 +189,7 @@ for i in xrange(numIters):
           continue
 
         # Receive new list of points
-        myData = np.zeros((updateLength, 2), 'float64')
+        myData = np.zeros((updateLength+1, 2), 'float64')
         myData = myData[np.nonzero(myData)]
         if (myData.size > 0):
           try :

@@ -9,7 +9,7 @@ import random
 from collections import Counter
 
 def usage():
-  print '$> ./generatePoints.py <required args>\n' +\
+  print '$> ./kmeansDNA.py <required args>\n' +\
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
     '\t-o <file>\tData output location\n' + \
