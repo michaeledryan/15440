@@ -12,7 +12,7 @@ import copy
 from mpi4py import MPI
 
 def usage():
-  print '$> ./generatePoints.py <required args> [optional args]\n' +\
+  print '$> ./generatePoints.py <required args> [optional args]\n' + \
     '\t-c <#>\t\tNumber of clusters to generate\n' + \
     '\t-p <#>\t\tNumber of iterations\n' + \
     '\t-o <file>\tData output location\n' + \
